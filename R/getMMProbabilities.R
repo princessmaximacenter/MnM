@@ -1,0 +1,43 @@
+#' Title
+#'
+#' @param majorityProbability
+#' @param minorityProbability
+#'
+#' @return
+#' @export
+#'
+#' @examples
+getMMProbabilities <- function(majorityProbability,
+                               minorityProbability) {
+
+  MMProbabilityList <- majorityProbability
+  for (i in seq(1:length(minorityProbability))) {
+
+    combineThem <- c(minorityProbability[[i]], majorityProbability[[names(minorityProbability[i])]])
+    combineThem <- combineThem[order(names(combineThem), decreasing = T)]
+
+    combinedThings <- c()
+    tumors <- c()
+
+    for (item in seq(from = 1,   to = (length(combineThem) - 1))) {
+      nextItem <- item + 1
+      if ((names(combineThem)[item] == names(combineThem)[nextItem]) &
+          (names(combineThem)[item] %notin% tumors)) {
+        combinedThings <- c(combinedThings, ((combineThem[item] + combineThem[nextItem]) / 2))
+        tumors <- c(tumors, names(combineThem)[item])
+      } else {
+        if (names(combineThem)[item] %notin% tumors) {
+          combinedThings <- c(combinedThings, combineThem[item] * 0.1 ) # Je wilt dat deze score laag is omdat dit maar door 1 van de 2 wordt gezegd
+          tumors <- c(tumors, names(combineThem)[item])
+        } else if ((names(combineThem)[nextItem] %notin% tumors ) &
+                   nextItem == length(combineThem)) {
+          combinedThings <- c(combinedThings, combineThem[nextItem] * 0.1)
+        }
+      }
+    }
+    MMProbabilityList[[names(minorityProbability[i])]] <- combinedThings
+  }
+
+  return(MMProbabilityList)
+
+}
