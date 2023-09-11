@@ -12,7 +12,6 @@
 #' @return Dataframe containing the genes with their associated F-scores and p-scores from ANOVA.
 #' @export
 #'
-#' @examples
 getAnovaResults <- function(allMaterial, allGenes, classColumn) {
   anovaValues <- data.frame(allGenes = allGenes, p_val = NA, F_val = NA)
   for (i in seq(1:length(allGenes))) {

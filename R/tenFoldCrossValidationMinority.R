@@ -89,8 +89,8 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
     # Run an ANOVA to select the top n genes from the training data for use in the further classification process
     set.seed(whichSeed)
-    interestingANOVAgenes <- getAnovaGenes(metaData  = metaDataCV,
-                                           countData  = countDataCV,
+    interestingANOVAgenes <- selectAnovaGenes(metaDataRef  = metaDataCV,
+                                           countDataRef  = countDataCV,
                                            nANOVAgenes = nANOVAgenes, # How many ANOVA genes
                                            classColumn = classColumn)
 
@@ -100,7 +100,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
     # Select biomaterial IDs as training data per model
     set.seed(whichSeed)
-    samplesTrainDefList <- obtainTrainData(metaData = metaDataCV,
+    samplesTrainDefList <- obtainTrainData(metaDataRef = metaDataCV,
                                            classColumn = classColumn,
                                            nModels = nModels,
                                            maxSamplesPerType = maxSamplesPerType)

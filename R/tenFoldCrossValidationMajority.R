@@ -93,7 +93,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 
     # Select biomaterial IDs as training data per model
     set.seed(whichSeed)
-    samplesTrainDefList <- obtainTrainData(metaData = metaDataCV,
+    samplesTrainDefList <- obtainTrainData(metaDataRef = metaDataCV,
                                            classColumn = classColumn,
                                            nModels = nModels,
                                            maxSamplesPerType = maxSamplesPerType)
@@ -110,7 +110,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
     result <- obtainPredictionMajorityClassifier(rotationsAndScalingsList = rotationsAndScalingsList,
                                        dataTrain = dataCV,
                                        dataTest = testDataCV,
-                                       metaData = metaDataCV,
+                                       metaDataRef = metaDataCV,
                                        samplesTrainDefList = samplesTrainDefList,
                                        testSamples = testSamples,
                                        classColumn = classColumn,
