@@ -1,14 +1,15 @@
-#' Title
+#' Obtain probabilities for classifier predictions
+#'
+#' This function calculates the probability for each prediction, by dividing the number of models predicting a tumor (sub)type by the total number of models ( _nModels_).
 #'
 #' @param classifierResults R-object containing the results from the minority or majority classifier.
 #' The object should contain a list with the probabilities for each prediction.
 #' @param crossValidation A boolean factor specifying whether the R-object was generated within a cross-validation setup.
 #' @param nModels How many models were used to obtain a final prediction?
 #'
-#' @return
+#' @return List of all the samples containing the probabilities for the different sample predictions from the _nModels_ generated models.
 #' @export
 #'
-#' @examples
 obtainProbabilities <- function(classifierResults,
                                    crossValidation,
                                    nModels) {

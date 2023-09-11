@@ -1,3 +1,11 @@
+#' Predict the
+#'
+#' @param riboModel
+#' @param data
+#'
+#' @return
+#' @export
+#'
 predictRiboCounts <- function(riboModel, data) {
   # Predict how much protein coding reads v.s. the ribosomal reads are present within the data
   relevantCoefficients <- riboModelCounts$relevantCoefficients

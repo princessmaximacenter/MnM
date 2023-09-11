@@ -1,4 +1,17 @@
-ObtainTrainData <- function(metaData, classColumn, maxSamplesPerType = 50, nModels = 100) {
+#' Obtain training data subsets
+#'
+#' This function is used to generate different training subsets for the majority voting system within the M&M setup.
+#'
+#' @param metaData Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
+#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
+#' @param nModels How many models should be created for the majority voting system?
+#'
+#' @return A list with the specified number of different training data subsets from the reference cohort,
+#' all with the specified maximum samples per tumor (sub)type.
+#' @export
+#'
+obtainTrainData <- function(metaData, classColumn, maxSamplesPerType = 50, nModels = 100) {
 
   samplesTrainDefList <- list()
   metaData[, classColumn] <- as.factor(metaData[, classColumn])
