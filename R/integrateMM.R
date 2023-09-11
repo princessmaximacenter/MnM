@@ -1,54 +1,59 @@
-#' Title
+#' Integrate results Minority & Majority classifier
 #'
-#' @param minority R-object that contains the results from the minority classifier
-#' @param majority R-object that contains the results from the majority classifier
-#' @param metaDataRef metadata-file for the reference cohort
-#' @param classColumn column name within metadata-file that contains the cancer subtype-labels
-#' @param higherClassColumn column name within metadata-file that contains the cancer type labels
-#' @param crossValidation specify whether the results are from the cross-validation setup or not
+#' Function to obtain final predictions for the M&M algorithm by combining the results of the Minority & Majority classifiers.
 #'
-#' @return
+#' @param minority R-object that contains the results from the Minority classifier
+#' @param majority R-object that contains the results from the Majority classifier
+#' @param metaDataRef Metadata-file for the reference cohort.
+#' @param nModels How many models were used to obtain a final prediction?
+#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
+#' If so, use _subtype = T_. If you want to obtain tumor type predictions instead, use _subtype = F_.
+#' @param classColumn Column name within metadata-file that contains the cancer subtype-labels.
+#' @param higherClassColumn Column name within metadata-file that contains the cancer type labels.
+#' @param crossValidation Specify whether the results are from the cross-validation setup or not.
+#' This is important, as for the cross-validation setup there is a ground truth ($originalCall), while for new predictions there is not.
+#'
+#' @return Dataframe showing the top 3 predictions for the tumor (sub)type, together with their probability scores.
 #' @export
 #'
-#' @examples
 integrateMM <- function(minority,
                         majority,
                         metaDataRef,
+                        nModels,
+                        subtype,
                         classColumn,
                         higherClassColumn,
                         crossValidation = T) {
 
-  probabilitiesMinority <- obtainProbabilities(minority, crossValidation = crossValidation)
-  probabilitiesMajority <- obtainProbabilities(majority, crossValidation = crossValidation)
-  linkClassAndHigherClass <- metaDataRef[ , c(classColumn, higherClassColumn)] %>% unique
-
- # Concatenate not malignant blood samples into one 'tumor type' category
-
-    notMalignant <- c("Not malignant bone marrow",
-                      "Not malignant blood",
-                      "Bone marrow failure"
-    )
-    gsubName <- "Not malignant (Hemato)"
+  probabilitiesMinority <- obtainProbabilities(minority,
+                                               crossValidation = crossValidation,
+                                               nModels = nModels
+                                               )
+  probabilitiesMajority <- obtainProbabilities(majority,
+                                               crossValidation = crossValidation,
+                                               nModels = nModels)
 
 
-
-  for (i in seq(1:length(notMalignant))) {
-    linkClassAndHigherClass$Disease_sub_class <- gsub(notMalignant[i], gsubName, linkClassAndHigherClass$Disease_sub_class)
-
-  }
-
-  minorityProbabilityTumorType <- changeSubtypeNameToType(probabilitiesMinority,
-                                                          linkClassAndHigherClass = linkClassAndHigherClass)
-  majorityProbabilityTumorType <- changeSubtypeNameToType(probabilitiesMajority,
-                                                          linkClassAndHigherClass = linkClassAndHigherClass)
-
-  MMProbabilityList <- getMMProbabilities(minorityProbabilityTumorType = minorityProbabilityTumorType,
-                                          majorityProbabilityTumorType = majorityProbabilityTumorType)
+  if (subtype == F) {
+    linkClassAndHigherClass <- metaDataRef[ , c(classColumn, higherClassColumn)] %>% unique
+    probabilitiesMinority <- changeSubtypeNameToType(probabilitiesMinority,
+                                                          linkClassAndHigherClass = linkClassAndHigherClass,
+                                                     classColumn = classColumn,
+                                                     higherClassColumn = higherClassColumn)
+    probabilitiesMajority <- changeSubtypeNameToType(probabilitiesMajority,
+                                                          linkClassAndHigherClass = linkClassAndHigherClass,
+                                                     classColumn = classColumn,
+                                                     higherClassColumn = higherClassColumn)
+}
+  MMProbabilityList <- getMMProbabilities(minorityProbability = probabilitiesMinority,
+                                          majorityProbability = probabilitiesMajority)
 
   predictionsMM <- getMajorityPredictions(minority = minority,
                                           MMProbabilityList = MMProbabilityList,
                                           higherClassColumn = higherClassColumn,
-                                          crossValidation = crossValidation)
+                                          crossValidation = crossValidation,
+                                          metaDataRef = metaDataRef,
+                                          subtype = subtype)
 
   return(predictionsMM)
 }

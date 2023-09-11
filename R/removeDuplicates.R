@@ -1,12 +1,17 @@
-#' Title
+#' Remove duplicate entries from patients
 #'
-#' @param refCohort
-#' @param inputDir
+#' Function that ensures that there is only one sample per patient per tumor type present within the reference cohort,
+#' to prevent selection bias.
 #'
-#' @return
+#' @param refCohort Reference cohort R-object containing both the RNA-seq count data (refCohort$counts) and
+#' the metadata associated to this count data (refCohort$metaData).
+#' @param inputDir Directory where the sample information is stored. This information is needed to determine if
+#' multiple samples from the same patient within the same diagnosis are used.
+#'
+#' @return The reference cohort cleaned from duplicate samples, with one sample per patient per diagnosis.
+#' This means that if one patient has multiple tumors, multiple samples with the same patient ID can still be present within the dataset.
 #' @export
 #'
-#' @examples
 removeDuplicates <- function(refCohort, inputDir) {
 
   metaData <- refCohort$metaData
@@ -54,12 +59,12 @@ removeDuplicates <- function(refCohort, inputDir) {
 
   newMetaData <- metaData %>% filter(rownames(.) %notin% rownames(removeEntries))
 
-  all_RNA_seq_biomaterial_IDs <- countData %>%
+  allRNAseqBiomaterialIDs <- countData %>%
     colnames()
 
-  selected_RNA_seq_biomaterial_IDs <- rownames(newMetaData)
+  selectedRNAseqBiomaterialIDs <- rownames(newMetaData)
 
-  newCountData <- countData[, all_RNA_seq_biomaterial_IDs %in% selected_RNA_seq_biomaterial_IDs]
+  newCountData <- countData[, allRNAseqBiomaterialIDs %in% selectedRNAseqBiomaterialIDs]
 
   refCohort$counts <- newCountData
   refCohort$metaData <- newMetaData

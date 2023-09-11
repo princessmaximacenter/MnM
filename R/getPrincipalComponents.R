@@ -1,5 +1,16 @@
+#' Title
+#'
+#' @param dataTrain
+#' @param samplesTrainDefList
+#' @param classColumn
+#' @param nModels
+#' @param nFeatures
+#' @param nComps
+#'
+#' @return
+#' @export
+#'
 getPrincipalComponents <- function(dataTrain,
-         metaData,
          samplesTrainDefList,
          classColumn,
          nModels = 100,

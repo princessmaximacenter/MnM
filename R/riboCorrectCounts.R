@@ -1,4 +1,18 @@
-riboCorrectCounts <- function(data,proteinCodingGenes, outputDir){
+#' Correct ribodepletion protocol
+#'
+#' This functions is used to account for the differences in efficacy of the ribodepletion protocol.
+#' It is estimated what is the percentage of protein coding transcripts within the total transcriptome, and subsequently
+#' the protein coding fraction is scaled up to 100%, simultaneously removing certain residual ribosomal RNAs from the dataset.
+#' @param data Dataframe containing the ribo-depleted count data from an RNA-seq experiment.
+#' @param proteinCodingGenes Names of the protein-coding genes within our RNA-seq count data.
+#' @param outputDir Directory where the generated model for predicting the protein fraction should be stored.
+#'
+#' @return list containing the corrected count data ($counts) and the essentials needed to correct new data using the same model ($modelList).
+#' @export
+#'
+riboCorrectCounts <- function(data,
+                              proteinCodingGenes,
+                              outputDir){
   # We look at the protein coding fraction within each patient sample
   # Starting data is the CPM-corrected count data
   proteinCodingFraction <- apply(data[proteinCodingGenes[proteinCodingGenes %in% rownames(data)],],2,sum)/1E6
@@ -31,7 +45,7 @@ riboCorrectCounts <- function(data,proteinCodingGenes, outputDir){
 
   # Divide counts for each sample by the percentage of protein coding sequence.
   # The less protein coding reads, the higher the scale-up of eventual reads.
-  data <- sapply(c(1:ncol(data)),function(x) smart.round(data[,x]/predictProteinCoding[x],digits =3))
+  data <- sapply(c(1:ncol(data)),function(x) smartRound(data[,x]/predictProteinCoding[x],digits =3))
   colnames(data) <- colnames(normalizedData)
 
   # After scaling-up samples with limited numbers of protein coding reads,

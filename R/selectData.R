@@ -1,34 +1,35 @@
-#' Title
+#' Selecting tumor (sub)types
 #'
-#' @param refCohort
-#' @param select_vector
-#' @param depth
-#' @param classColumn
-#' @param n
+#'This function removes all tumor (sub)types from the dataset which do not have _n_ or more samples. The M&M setup
+#'requires an absolute minimum of 3 samples per tumor type for the cross-validation setup,
+#' and 2 for the setup for new samples due to the use of the F-statistic for gene selection.
+#' However, larger minimum numbers can be specified within this function as well.
 #'
-#' @return
+#' @param refCohort Reference cohort R-object containing both the RNA-seq count data (refCohort$counts) and
+#' the metadata associated to this count data (refCohort$metaData).
+#' @param classColumn Column in the metadata where the prediction labels for the classification process are specified.
+#' @param n Specification of the minimum number of samples that should be present for each tumor (sub)type.
+#'
+#' @return The new reference cohort containing only the tumor (sub)types with more than _n_ entries within the dataset.
 #' @export
 #'
-#' @examples
-selectData <- function(refCohort, select_vector = NA, depth = NA, classColumn, n = 0) {
-  if (is.na(select_vector) & is.na(depth)) {
-    metaData <- refCohort$metaData
-    colnumDepth <- which(colnames(refCohort$metaData) == classColumn)
-    abundantTumorTypes <- names(table(metaData[,colnumDepth]))[table(metaData[,colnumDepth]) > n]
-    metaData <- metaData[metaData[,colnumDepth] %in% abundantTumorTypes,]
-  } else {
-    metaData <- refCohort$metaData[refCohort$metaData[, depth] %in% select_vector,]
-    colnumDepth <- which(colnames(refCohort$metaData) == depth)
+#'@import tidyverse dplyr magrittr
+#'
+selectData <- function(refCohort,
+                       classColumn,
+                       n = 3) {
 
-    abundantTumorTypes <- names(table(metaData[,colnumDepth+1]))[table(metaData[,colnumDepth+1]) > n]
-    metaData <- metaData[metaData[,colnumDepth+1] %in% abundantTumorTypes,]
-  }
-  all_RNA_seq_biomaterial_IDs <- refCohort$counts %>%
+  metaData <- refCohort$metaData
+  colnumDepth <- which(colnames(refCohort$metaData) == classColumn)
+  abundantTumorTypes <- names(table(metaData[,colnumDepth]))[table(metaData[,colnumDepth]) >= n]
+  metaData <- metaData[metaData[,colnumDepth] %in% abundantTumorTypes,]
+
+  allRNAseqBiomaterialIDs <- refCohort$counts %>%
     colnames()
 
-  selected_RNA_seq_biomaterial_IDs <- rownames(metaData)
+  selectedRNAseqBiomaterialIDs <- rownames(metaData)
 
-  countData <- refCohort$counts[, all_RNA_seq_biomaterial_IDs %in% selected_RNA_seq_biomaterial_IDs]
+  countData <- refCohort$counts[, allRNAseqBiomaterialIDs %in% selectedRNAseqBiomaterialIDs]
 
   refCohort$counts <- countData
   refCohort$metaData <- metaData

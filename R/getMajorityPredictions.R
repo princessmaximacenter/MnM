@@ -1,21 +1,29 @@
-#' Title
+#' Obtain M&M majority predictions
 #'
-#' @param minority
-#' @param MMProbabilityList
-#' @param higherClassColumn
-#' @param crossValidation
+#' Function to extract the top 3 tumor (sub)type predictions for samples, with their accompanying probability scores.
+#' @param minority R-object that contains the results from the Minority classifier.
+#' @param MMProbabilityList List of all the samples containing the probabilities for the different sample predictions from the integrated M&M classifier.
+#' @param higherClassColumn Column name within metadata-file that contains the cancer type labels.
+#' @param crossValidation Specify whether the results are from the cross-validation setup or not.
+#' @param metaDataRef Metadata-file for the reference cohort.
+#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
+#' If so, use _subtype = T_. If you want to obtain tumor type predictions instead, use _subtype = F_.
 #'
-#' @return
+#' @return Dataframe showing the top 3 predictions for the tumor (sub)type, together with their probability scores.
 #' @export
 #'
-#' @examples
 getMajorityPredictions <- function(minority,
                                    MMProbabilityList,
                                    higherClassColumn,
-                                   crossValidation) {
+                                   crossValidation,
+                                   metaDataRef,
+                                   subtype) {
 
   if (crossValidation == T) {
   predictions <- minority$classifications[, c("predict", "originalCall")]
+  if(subtype == F) {
+    predictions$originalCall <- metaDataRef[rownames(predictions), higherClassColumn]
+  }
   } else {
     predictions <- minority$classifications[, "predict", drop = F]
   }
@@ -43,21 +51,6 @@ getMajorityPredictions <- function(minority,
     predictions$predict2[i] <- names(secondProbability)
     predictions$predict3[i] <- names(thirdProbability)
   }
-
-  predictions$originalCall <- metaDataRef[rownames(predictions), higherClassColumn]
-
-    notMalignant <- c("Not malignant bone marrow",
-                      "Not malignant blood",
-                      "Bone marrow failure" )
-
-    gsubName <- "Not malignant (Hemato)"
-
-  for (i in seq(1:length(notMalignant))) {
-
-    predictions$originalCall <- gsub(notMalignant[i], gsubName, predictions$originalCall)
-
-  }
-
 
 
   return(predictions)

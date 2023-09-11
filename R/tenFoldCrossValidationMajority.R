@@ -1,15 +1,38 @@
+#' 10x cross-validation majority classifier
+#'
+#' Setup to automatically run the 10x stratified cross-validation majority classifier.
+#'
+#'
+#' @param countDataRef Matrix containing the RNA-transcript per million data. Patients are in the columns,
+#' different genes in the rows.
+#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
+#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param nModels How many models should be created for the majority voting system?
+#' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
+#' @param nFeatures How many of the most variable genes within the dataset should we select for principal component analysis (PCA)?
+#' @param nComps How many principal components will be selected after PCA?
+#' @param maxNeighbours What is the maximum number of neigbours to be used for the weighted _k_-nearest neighbor algorithm?
+#' @param whichSeed For reproducibility, the seed can be specified with this parameter.
+#' @param outputDir Directory in which you would like to store the R-object containing the results.
+#' @param proteinDir In which directory can we find the file specifying the names of protein-coding genes within our dataset?
+#' @import tidyverse dplyr magrittr foreach doParallel kknn
+#'
+#' @return R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),
+#'  the probabilities for each classification ($probabilityList), the metadata file associated to the reference cohort ($metaData),
+#'  and metadata for the performed run ($metaDataRun).
+#' @export
+#'
 tenFoldCrossValidationMajority <-  function(countDataRef,
                                             metaDataRef,
                                             classColumn,
                                             nModels = 100,
                                             maxSamplesPerType = 50,
-                                            nComps = 100,
                                             nFeatures = 2500,
+                                            nComps = 100,
                                             maxNeighbours = 25,
                                             whichSeed = 1,
                                             outputDir = "./",
-                                            proteinDir = "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/",
-                                            correctRibosomes = F
+                                            proteinDir = "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/"
 
 ) {
 
@@ -22,7 +45,6 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
     dir.create(directory) }
 
   # Correct for ribosomal protein contamination
-  if (correctRibosomes == T) {
     riboCountFile <- paste0(directory, "modelListRiboCounts.rds")
     if (!file.exists(riboCountFile)) {
 
@@ -39,7 +61,6 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 
     }
     countDataRef <- riboModelList$counts
-  }
 
   # Log-transform data
   dataLogRef <- log(countDataRef +1)
@@ -72,14 +93,13 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 
     # Select biomaterial IDs as training data per model
     set.seed(whichSeed)
-    samplesTrainDefList <- ObtainTrainData(metaData = metaDataCV,
+    samplesTrainDefList <- obtainTrainData(metaData = metaDataCV,
                                            classColumn = classColumn,
                                            nModels = nModels,
                                            maxSamplesPerType = maxSamplesPerType)
 
 
     rotationsAndScalingsList <- getPrincipalComponents(dataTrain = dataCV,
-                                                       metaData = metaDataRef,
                                                        samplesTrainDefList,
                                                        classColumn = classColumn,
                                                        nModels = nModels,
@@ -87,10 +107,10 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                                                        nComps = nComps
     )
 
-    result <- obtainPredictionMajority(rotationsAndScalingsList = rotationsAndScalingsList,
+    result <- obtainPredictionMajorityClassifier(rotationsAndScalingsList = rotationsAndScalingsList,
                                        dataTrain = dataCV,
                                        dataTest = testDataCV,
-                                       metaData = metaDataRef,
+                                       metaData = metaDataCV,
                                        samplesTrainDefList = samplesTrainDefList,
                                        testSamples = testSamples,
                                        classColumn = classColumn,
@@ -136,7 +156,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
     }
 
     # Look at the original calls for each test sample
-    originalCall <- metaData[rownames(result),classColumn]
+    originalCall <- metaDataRef[rownames(result),classColumn]
 
     # Store the bestFit, the Originalcall and the accompanying probability score within the final dataframe.
     ultimatePredictions <- cbind(bestFit,
@@ -173,7 +193,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   crossValidationMajorityResults <- list(classifications = classifications,
                                          wrongClassifications = wrongClassifications,
                                          probabilityList = probabilityList,
-                                         metaData = metaData,
+                                         metaData = metaDataRef,
                                          metaDataRun = metaDataRun
   )
 

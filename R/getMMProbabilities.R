@@ -1,12 +1,15 @@
-#' Title
+#' Integrate Minority & Majority probability scores
 #'
-#' @param majorityProbability
-#' @param minorityProbability
+#' This function calculates the probability for each prediction,
+#' summing up the probabilities for the Minority and Majority classifiers and dividing the probabilities either
+#' by 2 (when both classifiers made the prediction) or 10 (when only one classifier made the prediction).
 #'
-#' @return
+#' @param majorityProbability List of all samples containing the probabilities for the different sample predictions from the Majority classifier.
+#' @param minorityProbability List of all samples containing the probabilities for the different sample predictions from the Minority classifier.
+#'
+#' @return List of all the samples containing the probabilities for the different sample predictions from the integrated M&M classifier.
 #' @export
 #'
-#' @examples
 getMMProbabilities <- function(majorityProbability,
                                minorityProbability) {
 
