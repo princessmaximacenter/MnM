@@ -1,3 +1,17 @@
+#' Determine link accuracy and probability score
+#'
+#' Get the accuracies of predictions associated with specific probability scores.
+#' Score blocks will have a range of 0.1, starting from 1 and incrementally decreasing to 0, or higher if specified with the _sequencesMax_ argument.
+#'
+#' @param predictionsMM Dataframe with the predictions from the M&M classification process.
+#' @param sequencesMax Do you want to stop at a specified probability score threshold? If so, specify here.
+#'
+#' @return Dataframe showing what is the corresponding score block ($Filter), how many samples fall within the probability score range ($total),
+#' how many of these samples receive a correct prediction ($totalCorrect), how many an incorrect prediction ($totalIncorrect),
+#' what is the accuracy within the score block ($accuracy), what is the combined accuracy also with the higher score blocks ($cumulativeAccuracy),
+#' and how many samples are classified in the current and higher score blocks ($cumulativeTotal).
+#' @export
+#'
 getAccuraciesPerScoreBlock <- function(predictionsMM,
                                                sequencesMax = NA) {
 
