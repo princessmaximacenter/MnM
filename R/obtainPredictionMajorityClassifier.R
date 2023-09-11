@@ -1,28 +1,28 @@
-#' Title
+#' Obtain predictions from generated majority models
+#'
+#' This function looks at the accompanying prediction for the test samples for the different generated Majority Classifier models.
 #'
 #' @param rotationsAndScalingsList
-#' @param dataTrain data to be used for training, containing the whole dataset.
-#' @param dataTest data for which the classifier should predict a label.
-#' @param metaData information on the labels of the training data.
-#' @param samplesTrainDefList list of different training data subsets used for the majority voting system.
-#' @param testSamples
-#' @param classColumn
-#' @param nComps
-#' @param maxNeighbours
-#' @param nModels
+#' @param dataTrain Data to be used for training, containing the whole reference cohort.
+#' @param dataTest Data for which the classifier should predict a label.
+#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
+#' @param samplesTrainDefList List of different training data subsets used for the majority voting system.
+#' @param testSamples IDs for test samples from the test data.
+#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param maxNeighbours What is the maximum number of neigbours to be used for the weighted _k_-nearest neighbor algorithm?
+#' @param nModels How many models should be created for the majority voting system?
 #'
-#' @return
+#' @return Dataframe containing the predictions for the _nModels_ different generated models, with the different folds
+#' in the columns and the different samples to be predicted in the rows.
 #' @export
 #'
-#' @examples
-obtainPredictionMajority <- function(rotationsAndScalingsList,
+obtainPredictionMajorityClassifier <- function(rotationsAndScalingsList,
                                      dataTrain,
                                      dataTest,
-                                     metaData,
+                                     metaDataRef,
                                      samplesTrainDefList,
                                      testSamples,
                                      classColumn = classColumn,
-                                     nComps = 100,
                                      maxNeighbours = 25,
                                      nModels = 100
 ) {
@@ -39,7 +39,7 @@ obtainPredictionMajority <- function(rotationsAndScalingsList,
     rotatedTestSamples <- t((dataTest[varFeatures,]-meanGenes[varFeatures])/sdGenes[varFeatures]) %*% rotations %>%
       as.data.frame()
 
-    rotatedTrainData$class <- as.factor(metaData[rownames(rotatedTrainData),classColumn])
+    rotatedTrainData$class <- as.factor(metaDataRef[rownames(rotatedTrainData),classColumn])
 
     rotatedTrainDataK <- rotatedTrainData[grep("\\.",rownames(rotatedTrainData),invert=T),]
 
