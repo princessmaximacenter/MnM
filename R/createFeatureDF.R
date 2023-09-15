@@ -14,7 +14,6 @@
 #' @return Dataframe containing the mean decreases in accuracy / Gini score from removing
 #' different genes during a weighted RF procedure for different models.
 #' The genes are in the rows, the different models in the columns.
-#' @export
 #'
 createFeatureDF <- function(modelList, whichAccuracyMeasure, nANOVAgenes) {
   ##Create an empty dataframe
