@@ -14,7 +14,6 @@
 #'
 #' @return Names of the top most important genes present in the training data,
 #' containing most information to distinguish the different tumor (sub)types.
-#' @export
 #'
 reduceFeatures <- function(dataTrain,
                            samplesTrainDefList,
@@ -44,10 +43,9 @@ reduceFeatures <- function(dataTrain,
     modelList[[i]] <- model
   }
 
-  accuracyValuesDF <- createFeatureDF(ml_models=modelList,
-                                      df_of_interest="importance",
-                                      column="MeanDecreaseAccuracy",
-                                      no_features=nANOVAgenes)
+  accuracyValuesDF <- createFeatureDF(modelList=modelList,
+                                      whichAccuracyMeasure = "MeanDecreaseAccuracy",
+                                      nANOVAgenes=nANOVAgenes)
 
   meanAccuracyValuesDF <- apply(accuracyValuesDF, 1, mean)
 
