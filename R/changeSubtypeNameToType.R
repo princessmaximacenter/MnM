@@ -7,7 +7,6 @@
 #' The dataframe is automatically generated in previous functions from the metadata.
 #'
 #' @return  List of all the samples containing the probabilities for the different tumor type predictions from the minority or majority classifier.
-#' @export
 #'
 changeSubtypeNameToType <- function(probabilities,
                                     linkClassAndHigherClass,
