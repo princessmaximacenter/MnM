@@ -1,20 +1,29 @@
-#' Title
+#' Get confusion matrix information
 #'
-#' @param predictionsMM
-#' @param metaDataRef
-#' @param abbreviations
-#' @param classColumn
-#' @param defineTumorWithColor
-#' @param probabilityScore
+#' This function is designed to extract which tiles of the confusion matrix
+#' do contain reference-prediction information.
+#'
+#' @param predictionsMM Dataframe showing the top 3 predictions for the tumor (sub)type, together with their probability scores.
+#' @param metaDataRef Metadata file containing the links between the patients and
+#' the tumor (sub)type diagnosis within the reference cohort.
+#' @param abbreviations Dataframe containing the links between the tumor (sub)type,
+#' the abbreviation required in the plot, and the domain.
+#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
+#' @param defineTumorWithColor Do you want to have an extra column where the tumors can
+#' be specified with a color?
+#' @param probabilityScore Which probability score do you want to use as a cutoff
+#' for being classified or non-classified?
 #' @import tidyverse dplyr magrittr
-#' @return
+#' @return Dataframe specifying how often certain reference-prediction
+#' combinations are present.
 #' @export
 #'
-#' @examples
 getConfusionMatrixPlot <- function(predictionsMM,
          metaDataRef,
          abbreviations,
          classColumn,
+         domainColumn,
          defineTumorWithColor = F,
          probabilityScore = 0.8) {
   predictionsMMFiltered <- predictionsMM %>% filter(probability1 > probabilityScore)
@@ -40,11 +49,11 @@ getConfusionMatrixPlot <- function(predictionsMM,
   difPredictions <- unique(predictionFrequencies$Reference) %>% as.character()
 
 
-  linkClassAndDomain <- metaDataRef[ , c( classColumn, "Domain")] %>% unique
+  linkClassAndDomain <- metaDataRef[ , c( classColumn, domainColumn)] %>% unique
 
   for (i in seq(1:length(difPredictions))) {
     total <- predictionFrequencies %>% filter(Reference == difPredictions[i])
-    total$Domain <- linkClassAndDomain[linkClassAndDomain[,classColumn] == total$Reference[1], "Domain"]
+    total$Domain <- linkClassAndDomain[linkClassAndDomain[,classColumn] == total$Reference[1], domainColumn]
     totalNum <- sum(total$Freq)
     metaTotal <-predictionsMM %>%
       filter(originalCall == difPredictions[i]) %>%
@@ -66,9 +75,9 @@ getConfusionMatrixPlot <- function(predictionsMM,
     total <- rbind(total, newLine)
 
     if (i == 1) {
-      ggplotDF <- total
+      confusionPlotDF <- total
     } else {
-      ggplotDF <- rbind(ggplotDF, total)
+      confusionPlotDF <- rbind(confusionPlotDF, total)
     }
   }
 
@@ -81,17 +90,17 @@ getConfusionMatrixPlot <- function(predictionsMM,
   }
 
 
-  ggplotDF$Prediction <- factor(ggplotDF$Prediction, levels = abbreviations$abbreviation[abbreviations$abbreviation %in%
-                                                                                           unique(c(ggplotDF$Reference, ggplotDF$Prediction))])
+  confusionPlotDF$Prediction <- factor(confusionPlotDF$Prediction, levels = abbreviations$abbreviation[abbreviations$abbreviation %in%
+                                                                                           unique(c(confusionPlotDF$Reference, confusionPlotDF$Prediction))])
 
-  missingNotClassified <- levels(ggplotDF$Prediction)[levels(ggplotDF$Prediction) %notin% ggplotDF[ggplotDF$Prediction == "Not classified","Reference"] ]
+  missingNotClassified <- levels(confusionPlotDF$Prediction)[levels(confusionPlotDF$Prediction) %notin% confusionPlotDF[confusionPlotDF$Prediction == "Not classified","Reference"] ]
   missingNotClassified <- missingNotClassified[missingNotClassified != "Not classified"]
 
   for (i in seq(1:length(missingNotClassified))) {
     missingNotClassifiedDF <- data.frame(Prediction = "Not classified",
                                          Reference = missingNotClassified[i],
                                          Freq = 0,
-                                         Domain = linkClassAndDomain[linkClassAndDomain[,"abbreviation"] == missingNotClassified[i],"Domain"]    )
+                                         Domain = linkClassAndDomain[linkClassAndDomain[,"abbreviation"] == missingNotClassified[i],domainColumn]    )
     if (i == 1)  {
       missingClassifiedDF <- missingNotClassifiedDF
     } else {
@@ -99,24 +108,24 @@ getConfusionMatrixPlot <- function(predictionsMM,
                                    missingNotClassifiedDF)
     }
   }
-  ggplotDF <- rbind(ggplotDF, missingClassifiedDF)
+  confusionPlotDF <- rbind(confusionPlotDF, missingClassifiedDF)
 
   if (defineTumorWithColor == T) {
-    ggplotDF$Reference <- factor(ggplotDF$Reference,
-                                 levels = levels(ggplotDF$Prediction))
+    confusionPlotDF$Reference <- factor(confusionPlotDF$Reference,
+                                 levels = levels(confusionPlotDF$Prediction))
   } else {
-    ggplotDF$Reference <- factor(ggplotDF$Reference,
-                                 levels = levels(ggplotDF$Prediction)[-1])
+    confusionPlotDF$Reference <- factor(confusionPlotDF$Reference,
+                                 levels = levels(confusionPlotDF$Prediction)[-1])
   }
 
   missingTumors$Domain <- NA
   for (i in seq(1:nrow(missingTumors))) {
-    missingTumors$Domain[i] = linkClassAndDomain[linkClassAndDomain$abbreviation == missingTumors$Prediction[i], "Domain"]
+    missingTumors$Domain[i] = linkClassAndDomain[linkClassAndDomain$abbreviation == missingTumors$Prediction[i], domainColumn]
   }
-  missingTumors$Prediction <- factor(missingTumors$Prediction, levels = levels(ggplotDF$Prediction))
-  missingTumors$Reference <- factor(missingTumors$Reference, levels = levels(ggplotDF$Reference))
+  missingTumors$Prediction <- factor(missingTumors$Prediction, levels = levels(confusionPlotDF$Prediction))
+  missingTumors$Reference <- factor(missingTumors$Reference, levels = levels(confusionPlotDF$Reference))
 
-  ggplotDF <- rbind(ggplotDF, missingTumors)
+  confusionPlotDF <- rbind(confusionPlotDF, missingTumors)
 
-  return(ggplotDF)
+  return(confusionPlotDF)
 }
