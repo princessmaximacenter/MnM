@@ -6,13 +6,15 @@
 #' @param data Dataframe containing the ribo-depleted count data from an RNA-seq experiment.
 #' @param proteinCodingGenes Names of the protein-coding genes within our RNA-seq count data.
 #' @param outputDir Directory where the generated model for predicting the protein fraction should be stored.
+#' @param saveRiboModels Do you want to save the riboModel?
 #'
 #' @return list containing the corrected count data ($counts) and the essentials needed to correct new data using the same model ($modelList).
-#' @export
+
 #'
 riboCorrectCounts <- function(data,
                               proteinCodingGenes,
-                              outputDir){
+                              outputDir,
+                              saveRiboModels = T){
   # We look at the protein coding fraction within each patient sample
   # Starting data is the CPM-corrected count data
   proteinCodingFraction <- apply(data[proteinCodingGenes[proteinCodingGenes %in% rownames(data)],],2,sum)/1E6
@@ -62,6 +64,8 @@ riboCorrectCounts <- function(data,
     dir.create(directory) }
   filename <- paste0(directory, "modelListRiboCounts.rds")
   riboModelList <- list("counts"=data,"riboModel"=modelList)
+  if(saveRiboModels == T) {
   write_rds(riboModelList, file = filename)
+  }
   return(riboModelList)
 }
