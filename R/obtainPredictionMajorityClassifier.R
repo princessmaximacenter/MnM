@@ -2,7 +2,8 @@
 #'
 #' This function looks at the accompanying prediction for the test samples for the different generated Majority Classifier models.
 #'
-#' @param rotationsAndScalingsList
+#' @param rotationsAndScalingsList List containing both the derived PCA-transformation information ($prList)
+#' and the information needed to scale new sample input data to center the features around 0 ($scaleFeaturesList).
 #' @param dataTrain Data to be used for training, containing the whole reference cohort.
 #' @param dataTest Data for which the classifier should predict a label.
 #' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
@@ -35,7 +36,7 @@ obtainPredictionMajorityClassifier <- function(rotationsAndScalingsList,
 
     # Rotate the training data
     rotatedTrainData <- rotationsAndScalingsList[["prList"]][[i]]$x %>% as.data.frame()
-
+    testSamples <- colnames(dataTest)
     rotatedTestSamples <- t((dataTest[varFeatures,]-meanGenes[varFeatures])/sdGenes[varFeatures]) %*% rotations %>%
       as.data.frame()
 
