@@ -4,16 +4,17 @@
 #' showing the reference-prediction combinations for the tumor subtypes.
 #' Using a color coding, it is shown which tumor subtypes belong to the same overheading tumor type.
 #' IMPORTANT: The order of the colors will be applied to the tumor types in the order of the
-#' tumors within the abbreviationsSubtype dataframe. Make sure you specify the
-#' order of the tumor types well within the abbreviationsSubtype, not only concerning the domains,
+#' tumors within the abbreviationSubtype dataframe. Make sure you specify the
+#' order of the tumor types well within the abbreviationSubtype, not only concerning the domains,
 #' but also the subsequent tumor types order and tumor subtypes order.
 #'
 #' @param domain Which domain do you want to plot? This name should be present in the
-#' Domain column of the
+#' domainColumn of the metadata.
 #' @param confusionPlotDFSubtype Dataframe specifying how often certain reference-prediction
 #' combinations for the tumor subtypes are present.
 #' @param nonAvailableTiles  A dataframe containing the empty tiles for a confusion matrix plot.
-#' @param abbreviationsSubtype
+#' @param abbreviationSubtype Dataframe containing the links between the tumor subtype,
+#' the abbreviation required in the plot, the tumor type and the domain.
 #' @param domainCol Which colors should we use for each designated tumor type?
 #' @param colorTiles Which domain color do we want to use?
 #'
@@ -23,13 +24,13 @@
 #'
 plotConfusionMatrixPerDomain <- function(domain,
                                          confusionPlotDFSubtype,
-                                         abbreviationsSubtype,
+                                         abbreviationSubtype,
                                          nonAvailableTiles,
                                          domainCol,
                                          colorTiles = "#012695") {
 
   DomainDF <- confusionPlotDFSubtype %>% filter(Domain == domain)
-  abbreviationsDomain <- abbreviationsSubtype %>% filter(Domain == domain,
+  abbreviationsDomain <- abbreviationSubtype %>% filter(Domain == domain,
                                                          abbreviation %in% as.character(unique(c(DomainDF$Reference, DomainDF$Prediction))) )
   domainSubtypes <- c("Not classified", unique(abbreviationsDomain$abbreviation))
 
