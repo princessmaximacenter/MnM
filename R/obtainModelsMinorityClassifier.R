@@ -1,12 +1,14 @@
-#' Title
+#' Generate Models Minority Classifier
 #'
-#' @param dataTrain
-#' @param samplesTrainDefList
-#' @param nModels
-#' @param ntree
+#' Function to generated weighted Random Forest (RF) models to predict tumor (sub)type labels for new patient samples.
+#' Each model is generated using a different subset of the training data, as specified in the _samplesTrainDefList_.
 #'
-#' @return
-#' @export
+#' @param dataTrain Data to be used for training, containing the whole reference cohort.
+#' @param samplesTrainDefList List of different training data subsets used for the majority voting system.
+#' @param nModels How many models should be created for the majority voting system?
+#' @param ntree How many trees should we use during the weighted RF procedure?
+#'
+#' @return List containing the different Minority Classifier models to use for subsequent tumor (sub)type predictions.
 #'
 obtainModelsMinorityClassifier <- function(dataTrain,
                                            samplesTrainDefList,
