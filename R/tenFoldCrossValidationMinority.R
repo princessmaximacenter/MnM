@@ -21,7 +21,7 @@
 #' the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList)
 #'  and the metadata for the performed run ($metaDataRun).
 #' @export
-#'@import tidyverse dplyr magrittr foreach doParallel randomForest
+#'@import tidyverse dplyr magrittr foreach doParallel randomForest caret glmnet
 
 tenFoldCrossValidationMinority <-  function(countDataRef,
                                             metaDataRef,
