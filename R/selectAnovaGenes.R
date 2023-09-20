@@ -1,4 +1,4 @@
-#' Select most informative genes
+#' Select most informative genes Minority Classifier
 #'
 #' This function allows for the extraction of the genes that are most differently expressed between the different tumor (sub)types.
 #' The gene selection is based on an analysis of variance (ANOVA) with equal variances, where the genes with the highest F-scores are selected.
@@ -10,9 +10,10 @@
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
 #'
 #' @return Vector containing the names of the most interesting genes according to the F-statistic of ANOVA.
-#' @export
 #'
-selectAnovaGenes <- function(metaDataRef, countDataRef, nANOVAgenes = 1000,
+selectAnovaGenes <- function(metaDataRef,
+                             countDataRef,
+                             nANOVAgenes = 1000,
                           classColumn
 ) {
 
@@ -24,7 +25,7 @@ selectAnovaGenes <- function(metaDataRef, countDataRef, nANOVAgenes = 1000,
     countDataRef$class <- as.factor(metaDataRef[,classColumn])
     countDataRef <- createExtraData(countDataRef, classesWith2)
     metaDataRef$class <- as.character(metaDataRef[,classColumn])
-    metaDataRef <- createExtraMetaData(metaData = metaDataRef, classesWith2 = classesWith2)
+    metaDataRef <- createExtraMetaData(metaDataRef = metaDataRef, classesWith2 = classesWith2)
   }
 
   countDataRef$Patient <- rownames(countDataRef)
