@@ -1,17 +1,23 @@
-#' Title
+#' Create fake metadata entries
 #'
-#' @param metaData
-#' @param classesWith2
+#' This function is designed to create new metadata entries for
+#' tumor (sub)types that only have two samples.
+#' Additional entries are needed for analysis of variance (ANOVA),
+#' as each group requires at least three entries to calculate a mean and a standard deviation for each gene.
 #'
-#' @return
-#' @export
 #'
-#' @examples
-createExtraMetaData <- function(metaData,
+#' @param metaDataRef Original metadata file that contains the tumor (sub)type labels.
+#' @param classesWith2 A vector containing the tumor (sub)types that currently
+#' only have two samples within the metadata file.
+#' @import magrittr
+#' @return Metadata file now including extra fake entries, with a minimum of
+#' three entries per tumor (sub)type.
+#'
+createExtraMetaData <- function(metaDataRef,
                                 classesWith2
 ) {
 
-  nestedMetaData <- metaData %>% filter(class %in% classesWith2) %>%
+  nestedMetaData <- metaDataRef %>% filter(class %in% classesWith2) %>%
     group_by(class) %>%
     nest(.) %>%
     mutate(newLines = map(data, ~ .x[1,]))
@@ -28,11 +34,11 @@ createExtraMetaData <- function(metaData,
     }
   }
 
-  col_order <- colnames(metaData)
+  col_order <- colnames(metaDataRef)
   newMetaDataDF <- newMetaDataDF[ , col_order]
 
 
-  metaDataExtra <- rbind(metaData, newMetaDataDF)
+  metaDataExtra <- rbind(metaDataRef, newMetaDataDF)
 
   return(metaDataExtra)
 }
