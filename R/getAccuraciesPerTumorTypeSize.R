@@ -1,19 +1,21 @@
-#' Title
+#' Obtain accuracies per tumor (sub)type sample size
 #'
-#' @param predictionsMM
-#' @param metaDataRef
-#'
-#' @return
+#' @param predictionsMM Dataframe showing the top 3 predictions for the tumor (sub)type, together with their probability scores.
+#' @param metaDataRef Metadata-file for the reference cohort containing the tumor (sub)type labels.
+#' @param classColumn Which column within the metadata file contains the tumor (sub)type labels?
+#' @return Dataframe showing the accuracies for the different tumor size
 #' @export
 #'
-#' @examples
-getAccuraciesPerTumorTypeSize <- function(predictionsMM, probabilityThreshold = 0.8) {
+getAccuraciesPerTumorTypeSize <- function(predictionsMM,
+                                          metaDataRef,
+                                          classColumn,
+                                          probabilityThreshold = 0.8) {
   nCases <- c(1,3,5,10,20,40,100)
   fractionCorrect <- c()
   fractionCorrectFiltered <- c()
   nSamples <- c()
   nSamplesFiltered <- c()
-  patientsPerTumor <- table(predictionsMM$originalCall)
+  patientsPerTumor <- table(metaDataRef[,classColumn])
 
   # Need to add the tumors that are not in the metadata, but are in the test set
 
