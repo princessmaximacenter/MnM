@@ -12,8 +12,7 @@
 #'
 #' @return A dataframe containing the empty tiles for a confusion matrix plot.
 #' @export
-#'
-#' @examples
+#' @import caret
 getNonAvailableTiles <- function(predictionsMM,
          probabilityScore,
          abbreviations,
