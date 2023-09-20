@@ -21,6 +21,8 @@
 #'  the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
 #'   the metadata file associated to the reference cohort ($metaData)
 #'  and the metadata for the performed run ($metaDataRun).
+#'
+#'  @import tidyverse dplyr magrittr randomForest caret glmnet
 #' @export
 #'
 createModelsMinority <-  function(countDataRef,
