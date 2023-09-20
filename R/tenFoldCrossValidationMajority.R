@@ -115,7 +115,6 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                                        testSamples = testSamples,
                                        classColumn = classColumn,
                                        nModels = nModels,
-                                       nComps = nComps,
                                        maxNeighbours = maxNeighbours
     )
 
