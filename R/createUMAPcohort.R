@@ -8,7 +8,10 @@
 #' different genes in the rows.
 #' @param metaDataRef Metadata file containing the links between the patients and
 #' the tumor (sub)type diagnosis within the reference cohort.
-#' @param abbreviationTumorType
+#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
+#' @param abbreviationTumorType Dataframe containing the links between the tumor (sub)type,
+#' the abbreviation required in the plot, and the domain.
 #' @param proteinFile In which directory can we find the file specifying the names of protein-coding genes within our dataset?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #'
@@ -20,6 +23,8 @@
 
 createUMAPcohort <- function(countDataRef,
                              metaDataRef,
+                             classColumn,
+                             domainColumn,
                              abbreviationTumorType,
                              proteinFile = "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/20230320_proteinCodingGenes_gencode31.csv",
                              whichSeed = 1) {
@@ -38,12 +43,13 @@ createUMAPcohort <- function(countDataRef,
   # Log-transform data
   dataLogRef <- log(countDataRef +1) %>% t() %>% as.data.frame()
 
-  metaDataRef <- left_join(metaDataRef, abbreviationTumorType[,c("Disease_sub_class", "abbreviation")])
-  rownames(metaDataRef) <- rownames(newRefCohort$metaData)
+  metaDataJoined <- left_join(metaDataRef, abbreviationTumorType[,c(classColumn, "abbreviation")])
+  rownames(metaDataJoined) <- rownames(metaDataRef)
+  metaDataRef <- metaDataJoined
 
   dataLogRef$abbreviation <- metaDataRef[rownames(dataLogRef), "abbreviation"]
-  dataLogRef$subclass <- metaDataRef[rownames(dataLogRef), "Disease_sub_class"]
-  dataLogRef$Domain <- metaDataRef[rownames(dataLogRef), "Domain"]
+  dataLogRef$subclass <- metaDataRef[rownames(dataLogRef), classColumn]
+  dataLogRef$Domain <- metaDataRef[rownames(dataLogRef), domainColumn]
 
 
   set.seed(whichSeed)
