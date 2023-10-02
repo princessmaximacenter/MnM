@@ -25,10 +25,7 @@ integrateMM <- function(minority,
                         subtype,
                         classColumn,
                         higherClassColumn,
-                        crossValidation = T,
-                        changeNames = F,
-                        substituteNames,
-                        substituteBy
+                        crossValidation = T
 
 
                         ) {
@@ -41,34 +38,10 @@ integrateMM <- function(minority,
                                                crossValidation = crossValidation,
                                                nModels = nModels)
 
-  if (changeNames == T) {
-    for (i in seq(1:length(probabilitiesMinority))) {
-      for (j in seq(1:length(substituteNames))) {
-        names(probabilitiesMinority[[i]]) <- gsub(substituteNames[j], substituteBy, names(probabilitiesMinority[[i]]))
-
-      }
-      probabilitiesMinority[[i]] <- tapply(probabilitiesMinority[[i]], names(probabilitiesMinority[[i]]), sum)
-    }
-
-    for (i in seq(1:length(probabilitiesMajority))) {
-      for (j in seq(1:length(substituteNames))) {
-        names(probabilitiesMajority[[i]]) <- gsub(substituteNames[j], substituteBy, names(probabilitiesMajority[[i]]))
-
-      }
-      probabilitiesMajority[[i]] <- tapply(probabilitiesMajority[[i]], names(probabilitiesMajority[[i]]), sum)
-    }
-
-  }
 
   if (subtype == F) {
     linkClassAndHigherClass <- metaDataRef[ , c(classColumn, higherClassColumn)] %>% unique
-    if (changeNames == T) {
-      for (j in seq(1:length(substituteNames))) {
-        linkClassAndHigherClass[,classColumn] <- gsub(substituteNames[j], substituteBy, linkClassAndHigherClass[,classColumn])
 
-      }
-      linkClassAndHigherClass %<>% unique()
-    }
     probabilitiesMinority <- changeSubtypeNameToType(probabilitiesMinority,
                                                           linkClassAndHigherClass = linkClassAndHigherClass,
                                                      classColumn = classColumn,

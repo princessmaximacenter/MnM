@@ -22,19 +22,21 @@ getMMProbabilities <- function(majorityProbability,
     combinedThings <- c()
     tumors <- c()
 
-    for (item in seq(from = 1,   to = (length(combineThem) - 1))) {
+    for (item in seq(from = 1, to = (length(combineThem) - 1))) {
       nextItem <- item + 1
       if ((names(combineThem)[item] == names(combineThem)[nextItem]) &
           (names(combineThem)[item] %notin% tumors)) {
         combinedThings <- c(combinedThings, ((combineThem[item] + combineThem[nextItem]) / 2))
         tumors <- c(tumors, names(combineThem)[item])
       } else {
-        if (names(combineThem)[item] %notin% tumors) {
+        if ((names(combineThem)[nextItem] %notin% tumors ) &
+            nextItem == length(combineThem)) {
+          combinedThings <- c(combinedThings, combineThem[item] * 0.1, combineThem[nextItem] * 0.1)
+          tumors <- c(tumors, names(combineThem)[item], names(combineThem)[nextItem])
+
+        } else if (names(combineThem)[item] %notin% tumors) {
           combinedThings <- c(combinedThings, combineThem[item] * 0.1 ) # Je wilt dat deze score laag is omdat dit maar door 1 van de 2 wordt gezegd
           tumors <- c(tumors, names(combineThem)[item])
-        } else if ((names(combineThem)[nextItem] %notin% tumors ) &
-                   nextItem == length(combineThem)) {
-          combinedThings <- c(combinedThings, combineThem[nextItem] * 0.1)
         }
       }
     }
