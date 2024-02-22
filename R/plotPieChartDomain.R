@@ -44,8 +44,9 @@ plotPieChartDomain <- function(data,
       myColours <- c(myColours, extraCols)
     }
   }
-  filename <- paste0(storeLocation,
-                     strftime(as.Date(gsub("'", "", Sys.Date())), "%m_%d_%Y"), "_tumortypePie_",domain,".pdf")
+  #filename <- paste0(storeLocation,
+  #                   strftime(as.Date(gsub("'", "", Sys.Date())), "%m_%d_%Y"), "_tumortypePie_",domain,".pdf")
+  filename <- storeLocation
   if (saveImage == T) {
     pdf(file = filename ) }
   par(mar=c(0,0,0,0))

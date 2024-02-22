@@ -8,34 +8,36 @@
 #' @export
 #' @import ggplot2
 #'
-plotAccuraciesPerTumorTypeSizeNoFilter <- function(fractionsCorrect) {
+plotAccuraciesPerTumorTypeSizeNoFilter <- function(fractionsCorrect,
+                                                     MnM = F) {
 
 
   fractionsCorrect$fractionIncorrectUnfiltered <- 1 - fractionsCorrect$fractionCorrect
 
   figureDF <- pivot_longer(fractionsCorrect, cols = c(fractionCorrect, fractionIncorrectUnfiltered),
-                            names_to = "fraction_type", values_to = "all_fractions")
+                           names_to = "fraction_type", values_to = "all_fractions")
 
 
   fractionsCorrect$fractionCorrectPercentUnfiltered <-  paste0("(",fractionsCorrect$fractionCorrect * 100, "%)")
 
   figureDF$fraction_type <- factor(figureDF$fraction_type,
-                                    levels = c("fractionIncorrectUnfiltered", "fractionCorrect"))
+                                   levels = c("fractionIncorrectUnfiltered", "fractionCorrect"))
   # Create plot
   myPlot <- ggplot(figureDF,
-         aes(x = nCases,
-             y = all_fractions
-         )) +
+                   aes(x = nCases,
+                       y = all_fractions
+                   )) +
     theme_classic() +
     ylab("Fraction correct and incorrect samples") +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.05, hjust=1)) +
     geom_bar(aes(fill = fraction_type), stat = "identity",
-             col = "grey",
+             col = "darkgrey",
              position = "stack") +
 
     geom_text(data = fractionsCorrect, aes(label = fractionCorrectPercentUnfiltered,
                                            y =  fractionCorrect - 0.05), size = 3) +
     geom_text(data = fractionsCorrect, aes(label = numbersClassifiedTotal, y = 0.05), size = 3.7) +
+
     #  geom_text(data = fractionClassified, aes(label = notClassifiedName, y = 0.98), size = 3.7) +
     theme(plot.title = element_text(hjust = 0.5)) +
     scale_fill_manual(values = c("fractionCorrect" = "#94D6B4",
@@ -50,5 +52,10 @@ plotAccuraciesPerTumorTypeSizeNoFilter <- function(fractionsCorrect) {
     scale_y_continuous(expand = expansion(mult = c(0, 0))) +
     scale_x_discrete(expand = expansion(mult = c(0.1, 0)))
 
+  if (MnM == T) {
+    myPlot <- myPlot + geom_text(data = fractionsCorrect, aes(label = errorsFiltered, y = 0.95), size = 3.7)
+
+
+  }
   return(myPlot)
 }

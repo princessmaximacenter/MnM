@@ -1,10 +1,21 @@
-newPredictionsMinority <- function(riboModelList, createdModelsMinority, countDataNew,
-                                   outputDir) {
+#' Title
+#'
+#' @param createdModelsMinority
+#' @param countDataNew
+#' @param outputDir
+#' @param saveModel Do you want to save the resulting predictions in an R object?
+#'
+#' @return
+#' @export
+
+newPredictionsMinority <- function(createdModelsMinority, countDataNew,
+                                   outputDir,
+                                   saveModel = F) {
   # Find the predictions for the test data
   # PREPARE DATA
   countDataNew <- apply(countDataNew,2,function(x) (x/sum(x))*1E6)
 
-  countDataNew <- predictRiboCounts(riboModel = riboModelList$riboModel, data = countDataNew)
+  countDataNew <- predictRiboCounts(riboModel = createdModelsMinority$riboModelList$riboModel, data = countDataNew)
 
   dataLogNew <- log(countDataNew + 1) %>% t() %>% as.data.frame()
   dataLogNew <- dataLogNew[ , createdModelsMinority$reducedFeatures, drop = F]
@@ -57,7 +68,12 @@ newPredictionsMinority <- function(riboModelList, createdModelsMinority, countDa
   rownames(classifications) <- rownames(result)
   classificationList <- list(classifications = classifications,
                              probability = probability)
-  filename <- paste0(outputDir,format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"), "/minorityClassifierResult.rds")
+  if (saveModel == T) {
+    directory <- paste0(outputDir,format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"))
+    filename <- paste0(directory, "/minorityClassifierResult.rds")
+    if (!dir.exists(directory)) {
+      dir.create(directory) }
   write_rds(classificationList, file = filename)
+  }
   return(classificationList)
 }

@@ -17,6 +17,9 @@ obtainModelsMinorityClassifier <- function(dataTrain,
 ) {
   modelList <- list()
 
+  #classesVal <- as.character(dataTrain$class) %>% table()
+  #probabilityClasses <- 1 / classesVal
+  #classwt <- as.numeric(probabilityClasses)
   for (i in seq(1:nModels)) {
     print(paste("Working on model", i))
     trainSamples <- samplesTrainDefList[[i]]

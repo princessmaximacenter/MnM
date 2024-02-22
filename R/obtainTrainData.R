@@ -20,7 +20,7 @@ obtainTrainData <- function(metaDataRef, classColumn, maxSamplesPerType = 50, nM
   typeProbs <- 1/sqrt((typesInFold))
 
   for ( j in c(1:nModels)){
-    set.seed(j)
+    #set.seed(j)
     samplesTrainDef <- c()
 
     samplesTrain <- unique(sample(rownames(metaDataRef),

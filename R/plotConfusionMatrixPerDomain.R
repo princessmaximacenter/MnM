@@ -32,8 +32,11 @@ plotConfusionMatrixPerDomain <- function(domain,
   DomainDF <- confusionPlotDFSubtype %>% filter(Domain == domain)
   abbreviationsDomain <- abbreviationSubtype %>% filter(Domain == domain,
                                                          abbreviation %in% as.character(unique(c(DomainDF$Reference, DomainDF$Prediction))) )
-  domainSubtypes <- c("Not classified", unique(abbreviationsDomain$abbreviation))
-
+  abbreviationsExtra <- abbreviationSubtype %>% filter(Domain != domain,
+                                                       abbreviation %in% as.character(unique(c(DomainDF$Reference, DomainDF$Prediction))),
+                                                       Domain != "Not classified")
+  domainSubtypes <- c("Not classified", unique(abbreviationsDomain$abbreviation), unique(abbreviationsExtra$abbreviation))
+  #domainSubtypes <- c(unique(abbreviationsDomain$abbreviation))
   DomainDF$Prediction <- as.character(DomainDF$Prediction) %>% factor(. , levels = domainSubtypes)
 
   DomainDF$Reference <- as.character(DomainDF$Reference) %>% factor(. , levels = domainSubtypes)
@@ -78,14 +81,19 @@ plotConfusionMatrixPerDomain <- function(domain,
     geom_text(color = "white") +
     guides(fill=F) + # removing legend for `fill`
     theme_bw() +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+          axis.text = element_text(size = 14),
+          axis.title = element_text(size = 18),
+          plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")
+          ) +
 
     geom_tile(data = (nonAvailableTilesDomain), fill = "white", color = "lightgrey") +
     scale_y_discrete(drop=FALSE) + scale_x_discrete(drop = FALSE) +
     geom_tile(data = notClassifiedDF, aes(fill = TumorType),
               color = "black") +
     scale_fill_manual(values = c("grey", domainCol),
-                      breaks = namesDomain)
+                      breaks = namesDomain) +
+    labs(y = "Classification")
 
   return(confusionPlot)
 }

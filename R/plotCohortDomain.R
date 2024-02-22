@@ -8,6 +8,7 @@
 #' the domain ($Domain) and the desired abbreviation for the tumor type ($abbreviation)
 #' @return ggplot with all datapoints from the reference cohort,
 #' color coded by the domain.
+#' @export
 #'
 plotCohortDomain <- function(dataUMAP) {
 

@@ -24,13 +24,18 @@ plotConfusionMatrix <- function(confusionPlotDF,
     theme_bw() +
     #labs(title = paste(whichClassification, "Classified Samples")) + #Add Title
     # geom_text(aes(label=Freq), color="black") + # Add values to tiles
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 14),
+          axis.text.y = element_text(size = 14),
+          axis.title = element_text(size = 24),
+          plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")
+          ) +
     scale_fill_manual(values = c("Hemato" = "#880808",
                                  "Solid" =  "#D1944A",
                                  "Neuro" = "#012695"),
                       labels = c("Blood tumors", 'Neurological tumors', "Solid tumors")) +
     scale_y_discrete(drop=FALSE) + scale_x_discrete(drop = FALSE) +
-    geom_tile(data = nonAvailableTiles, fill = "white", color = "lightgrey")
+    geom_tile(data = nonAvailableTiles, fill = "white", color = "lightgrey") +
+    labs(y = "Classification")
 
   return(confusionPlot)
 }

@@ -10,13 +10,14 @@ loadColors <- function() {
                    "#ffee93", "#f6bc66", "#F28041"
                     )
 
-    neuroCol <<- c(  "#abc4ff","#c1d3fe", "#95b8d1",
+    neuroCol <<- c(  "#abc4ff",#"#c1d3fe",
+                     "#95b8d1",
                                  "#50BEC9", "#9bf6ff","#7DEF73", "#caffbf",
                                  "#ffee93", "#f6bc66", "#F28041", "#FF452C", "#ff7477", "#ffafcc",
                                  "#D4ABEF"
                     )
 
-    solidCol <<- c("#FF452C", "#ff7477", "#f08080", "#f4978e", "#f8ad9d",
+    solidCol <<- c("#FF452C", "#ff7477", "#f08080", "#f4978e", #"#f8ad9d",
 
                    "#ffafcc",  "#ffc6ff", "#FC9FFF", "#D4ABEF","#a7bed3","#95b8d1", "#bde0fe",
 

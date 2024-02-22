@@ -15,12 +15,13 @@
 #' different genes in the rows.
 #' @param countDataNew Matrix containing the RNA-transcript per million data for the new samples to be classified.
 #' Patients are in the columns, different genes in the rows.
-#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
+#' @
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
 #' @param nModels How many models should be created for the majority voting system?
 #' @param nComps How many principal components will be selected after PCA?
 #' @param maxNeighbours What is the maximum number of neigbours to be used for the weighted _k_-nearest neighbor algorithm?
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
+#' @param saveModel Do you want to save the resulting predictions in an R object?
 #'
 #' @return R-object containing the final classifications ($classifications) for the samples,
 #' and the probabilities associated to the different classifications ($probability).
@@ -29,12 +30,12 @@
 newPredictionsMajority <- function(createdModelsMajority = createdModelsMajority,
                                    countDataRef,
                                    countDataNew,
-                                   metaDataRef,
                                    classColumn,
-                                   nModels,
-                                   nComps,
-                                   maxNeighbours,
-                                   outputDir
+                                   nModels = 100,
+                                   nComps = 100,
+                                   maxNeighbours = 25,
+                                   outputDir = "./",
+                                   saveModel = F
 ) {
   # Make sure you have CPM counts
   countDataNew <- apply(countDataNew,2,function(x) (x/sum(x))*1E6)
@@ -56,7 +57,7 @@ newPredictionsMajority <- function(createdModelsMajority = createdModelsMajority
   result <- obtainPredictionMajorityClassifier(rotationsAndScalingsList = createdModelsMajority$rotationsAndScalingsList,
                                      dataTrain = dataLogNonZero,
                                      dataTest = dataLogNewNonZero,
-                                     metaData = metaDataRef,
+                                     metaData = createdModelsMajority$metaData,
                                      samplesTrainDefList = createdModelsMajority$samplesTrainDefList,
                                      classColumn = classColumn,
                                      nModels = nModels,
@@ -103,13 +104,13 @@ if (nrow(result) == 1) {
 
   classificationList <- list(classifications = classifications,
                              probability = probability)
-
+if (saveModel == T) {
   directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"))
   if (!dir.exists(directory)) {
     dir.create(directory) }
 
   filename <- paste0(directory, "/majorityClassifierResult.rds")
   write_rds(classificationList, file = filename)
-
+}
   return(classificationList)
 }
