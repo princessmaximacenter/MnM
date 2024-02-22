@@ -59,12 +59,13 @@ riboCorrectCounts <- function(data,
                     "meanGenes"=meanGenes,
                     "varGenes"=varGenes)
 
-  directory <- outputDir
-  if (!dir.exists(directory)) {
-    dir.create(directory) }
-  filename <- paste0(directory, "modelListRiboCounts.rds")
+
   riboModelList <- list("counts"=data,"riboModel"=modelList)
   if(saveRiboModels == T) {
+    directory <- outputDir
+    filename <- paste0(directory, "modelListRiboCounts.rds")
+    if (!dir.exists(directory)) {
+      dir.create(directory) }
   write_rds(riboModelList, file = filename)
   }
   return(riboModelList)
