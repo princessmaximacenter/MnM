@@ -19,7 +19,8 @@ reduceFeatures <- function(dataTrain,
                            samplesTrainDefList,
                            ntree = 500,
                            nModels =10,
-                           howManyFeatures = 300) {
+                           howManyFeatures = 300,
+                           nANOVAgenes) {
 
   modelList <- list()
   nModels <- min(nModels, 10)
