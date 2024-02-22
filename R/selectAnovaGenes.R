@@ -13,16 +13,18 @@
 #'
 selectAnovaGenes <- function(metaDataRef,
                              countDataRef,
-                             nANOVAgenes = 1000,
+                             nANOVAgenes,
                           classColumn
 ) {
 
   countDataRef <- t(countDataRef) %>% as.data.frame
+  allGenes <- colnames(countDataRef)
+
   classesWith2 <- table(metaDataRef[,classColumn])[table(metaDataRef[,classColumn]) == 2] %>%
     names(.)
 
   if (length(classesWith2) > 0 ) {
-    countDataRef$class <- as.factor(metaDataRef[,classColumn])
+    countDataRef$class <- as.factor(metaDataRef[rownames(countDataRef),classColumn])
     countDataRef <- createExtraData(countDataRef, classesWith2)
     metaDataRef$class <- as.character(metaDataRef[,classColumn])
     metaDataRef <- createExtraMetaData(metaDataRef = metaDataRef, classesWith2 = classesWith2)
@@ -32,8 +34,8 @@ selectAnovaGenes <- function(metaDataRef,
 
   metaDataRef$Patient <- rownames(metaDataRef)
   allMaterial <- left_join(metaDataRef, countDataRef, by = "Patient")
-  allGenes <- allMaterial %>%
-    select(where(is.numeric)) %>% colnames
+ # allGenes <- allMaterial %>%
+  #  select(where(is.numeric)) %>% colnames
 
   # Perform an ANOVA test on all genes
   results <- getAnovaResults(allMaterial, allGenes, classColumn)
