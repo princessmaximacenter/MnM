@@ -15,6 +15,7 @@
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
 #' @param proteinDir In which directory can we find the file specifying the names of protein-coding genes within our dataset?
+#' @param patientColumn Column in the metadata file that contains the patient labels.
 #'
 #' @return R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),
 #'  the probabilities for each classification ($probabilityList), the metadata file associated to the reference cohort ($metaData),
@@ -27,6 +28,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                             metaDataRef,
                                             meanExpression = 5,
                                             classColumn,
+                                            patientColumn,
                                             nModels = 100,
                                             nANOVAgenes = 1000,
                                             maxSamplesPerType = 3,
@@ -37,6 +39,32 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                             proteinDir = "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/"
 
 ) {
+
+  `%notin%` <- Negate(`%in%`)
+
+  rownames(metaDataRef) <- metaDataRef[, patientColumn]
+  # Make sure the metadata and count data are in the right format and same order
+  if (nrow(metaDataRef) != ncol(countDataRef)) {
+    stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
+  } else if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
+    stop("Your input data is not as required. Please make sure your patient IDs are within the row names of the metadata, and in the column names of the count data")
+  }
+
+  if (is.numeric(countDataRef) != T) {
+    stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.
+         Non-available measurements are not allowed.")
+
+  }
+
+  tumorEntitiesWithTooFewSamples <- table(metaDataRef[,classColumn])[table(metaDataRef[,classColumn]) < 3] %>% names()
+  if (length(tumorEntitiesWithTooFewSamples) >0) {
+
+    metaDataRef %<>% filter(!!sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
+    print("You have labels within your dataset that have less than 3 available samples.
+          Please note samples with these labels have been removed.")
+
+  }
+  countDataRef <- countDataRef[, rownames(metaDataRef)]
 
   # Make sure you have CPM counts
   countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
@@ -54,7 +82,8 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
       set.seed(whichSeed)
       riboModelList <- riboCorrectCounts(data = countDataRef,
                                          proteinCodingGenes = proteinCodingGenes,
-                                         outputDir = directory
+                                         outputDir = directory,
+                                         saveRiboModels = F
       )
 
     } else {
@@ -120,7 +149,9 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                       samplesTrainDefList = samplesTrainDefList,
                                       ntree = 500,
                                       nModels = nModels,
-                                      howManyFeatures = howManyFeatures)
+                                      howManyFeatures = howManyFeatures,
+                                      nANOVAgenes = nANOVAgenes
+                                      )
 
     dataCV <- dataCV[,c(reducedFeatures, "class")]
 
