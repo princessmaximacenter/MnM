@@ -17,7 +17,8 @@
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
 #' @param proteinDir In which directory can we find the file specifying the names of protein-coding genes within our dataset?
-#'
+#' @param patientColumn Column in the metadata file that contains the patient labels.
+#' @param saveModel
 #' @return R-object containing the rotations and scalings
 #' for each reference cohort subset($rotationsAndScalingList),
 #' the model to correct for the ribodepletion efficacy ($riboModelList),
@@ -31,6 +32,7 @@
 createScalingsMajority <-  function(countDataRef,
                                     metaDataRef,
                                     classColumn,
+                                    patientColumn,
                                     nModels = 100,
                                     maxSamplesPerType = 50,
                                     nComps = 100,
@@ -38,9 +40,34 @@ createScalingsMajority <-  function(countDataRef,
                                     maxNeighbours = 25,
                                     whichSeed = 1,
                                     outputDir = "./",
-                                    proteinDir = "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/"
+                                    proteinDir,
+                                    saveModel = T,
+                                    saveRiboModels = F
 
 ) {
+
+  `%notin%` <- Negate(`%in%`)
+  rownames(metaDataRef) <- metaDataRef[, patientColumn]
+  # Make sure the metadata and count data are in the right format and same order
+  if (nrow(metaDataRef) != ncol(countDataRef)) {
+    stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
+  } else if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
+    stop("Your input data is not as required. Please make sure your patient IDs are within the row names of the metadata, and in the column names of the count data")
+  }
+
+
+  if (is.numeric(countDataRef) != T) {
+    stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.")
+
+  }
+  tumorEntitiesWithTooFewSamples <- table(metaDataRef[,classColumn])[table(metaDataRef[,classColumn]) < 3] %>% names()
+  if (length(tumorEntitiesWithTooFewSamples) >0) {
+
+    metaDataRef %<>% filter(!!sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
+    print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
+    #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
+
+  }
 
   # Make sure you have CPM counts
   countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
@@ -58,7 +85,8 @@ createScalingsMajority <-  function(countDataRef,
     set.seed(whichSeed)
     riboModelList <- riboCorrectCounts(data = countDataRef,
                                        proteinCodingGenes = proteinCodingGenes,
-                                       outputDir = directory
+                                       outputDir = directory,
+                                       saveRiboModels = saveRiboModels
     )
 
   } else {
@@ -114,7 +142,10 @@ createScalingsMajority <-  function(countDataRef,
                                 metaData = metaDataRef,
                                 metaDataRun = metaDataRun)
 
-  filename <- paste0(directory, "/createdModelsMajority.rds")
-  write_rds(createdModelsMajority, file = filename)
+  if (saveModel == T) {
+    filename <- paste0(directory, "/createdModelsMajority.rds")
+    write_rds(createdModelsMajority, file = filename)
+  }
+
   return(createdModelsMajority)
 }

@@ -1,58 +1,72 @@
-calculateMulticlassROC <- function(predictionsMM,
-                                   minority,
-                                   majority,
-                                   crossValidation,
-                                   nModels
+calculateMulticlassROC <- function(predictionsMMFinal,
+                                   metaDataRef,
+                                   classColumn,
+                                   MMProbabilityList,
+                                   filtering,
+                                   probabilityScore = 0.8
                                    ) {
 
-  probabilityForAUC <- data.frame(
-    originalCall = predictionsMM$originalCall)
+  #if (filtering == T) {
+  #  predictionsMMFinal <- predictionsMMFinal %>% filter(probability1 > probabilityScore)
+  #}
+  probabilityForAUCFiltered <- data.frame(
+    originalCall = predictionsMMFinal$originalCall)
 
-  rownames(probabilityForAUC) <- rownames(predictionsMM)
+  rownames(probabilityForAUCFiltered) <- rownames(predictionsMMFinal)
 
-  tumors <- unique(predictionsMM$originalCall)
-
+  #tumors <- unique(metaDataRef[,classColumn])
+  tumors <- unique(predictionsMMFinal$originalCall)
   for (i in seq(1:length(tumors))) {
-    probabilityForAUC[, tumors[i]] <- 0
+    probabilityForAUCFiltered[, tumors[i]] <- 0
 
   }
 
-  probabilitiesMinority <- obtainProbabilities(minority,
-                                               crossValidation = crossValidation,
-                                               nModels = nModels
-  )
-  probabilitiesMajority <- obtainProbabilities(majority,
-                                               crossValidation = crossValidation,
-                                               nModels = nModels)
-
-
-  if (changeNames == T) {
-    for (i in seq(1:length(probabilitiesMinority))) {
-      for (j in seq(1:length(substituteNames))) {
-        names(probabilitiesMinority[[i]]) <- gsub(substituteNames[j], substituteBy, names(probabilitiesMinority[[i]]))
-
-      }
-      probabilitiesMinority[[i]] <- tapply(probabilitiesMinority[[i]], names(probabilitiesMinority[[i]]), sum)
-    }
-
-    for (i in seq(1:length(probabilitiesMajority))) {
-      for (j in seq(1:length(substituteNames))) {
-        names(probabilitiesMajority[[i]]) <- gsub(substituteNames[j], substituteBy, names(probabilitiesMajority[[i]]))
-
-      }
-      probabilitiesMajority[[i]] <- tapply(probabilitiesMajority[[i]], names(probabilitiesMajority[[i]]), sum)
-    }
-
-  }
-
+  if (filtering == T) {
+  MMProbabilityListFiltered <- list()
   for (i in seq(1:length(MMProbabilityList))) {
-    predictions <- MMProbabilityList[[i]]
-    patient <- names(MMProbabilityList[i])
+    if (names(MMProbabilityList[i]) %in% rownames(predictionsMMFinal)) {
+      MMProbabilityListFiltered[[names(MMProbabilityList[i])]] <- MMProbabilityList[[i]]
+    }
+  }
+  } else {
+    MMProbabilityListFiltered <- MMProbabilityList
+  }
+  for (i in seq(1:length(MMProbabilityListFiltered))) {
+    predictions <- MMProbabilityListFiltered[[i]]
+    patient <- names(MMProbabilityListFiltered[i])
     for (j in seq(1:length(predictions))) {
-      probabilityForAUC[patient, names(predictions)[j]] <- as.numeric(predictions[j])
+      if (names(predictions)[j] %in% tumors) {
+      probabilityForAUCFiltered[patient, names(predictions)[j]] <- as.numeric(predictions[j])
+      }
     }
   }
 
+  if (filtering == T) {
+  probabilityForAUCFiltered <- probabilityForAUCFiltered[, -c(56:60)]
+  }
+
+  "Make true diagram"
+  trueDiagram <- matrix(0, nrow = nrow(probabilityForAUCFiltered),
+                        ncol = ncol(probabilityForAUCFiltered) - 1) %>% as.data.frame()
+
+  colnames(trueDiagram) <- colnames(probabilityForAUCFiltered)[-c(1)]
+  rownames(trueDiagram) <- rownames(probabilityForAUCFiltered)
+
+  for (i in seq(1:nrow(trueDiagram))) {
+    originalCall <- probabilityForAUCFiltered$originalCall[i]
+    trueDiagram[i,originalCall] <- 1
+  }
+
+  colnames(trueDiagram) <- paste0(colnames(probabilityForAUCFiltered)[-c(1)], "_true")
+  probabilityForAUC_PR <- probabilityForAUCFiltered
+  colnames(probabilityForAUC_PR)[-c(1)] <- paste0(colnames(probabilityForAUCFiltered)[-c(1)], "_pred_RF")
+
+  colnames(probabilityForAUC_PR)[-c(1)] <- gsub(" ", ".", colnames(probabilityForAUC_PR)[-c(1)])
+  colnames(trueDiagram) <- gsub(" ", ".", colnames(trueDiagram))
+
+  prDFFiltered <- cbind(trueDiagram, probabilityForAUC_PR)
+
+  return(prDFFiltered)
 
 
 }

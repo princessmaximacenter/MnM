@@ -13,7 +13,7 @@
 #' (combined accuracy also with the higher score blocks),
 #' and $cumulativeTotal (how many samples are classified in the current and higher score blocks).
 #'
-getCumulativeAccuracy <- function(totalAccDF) {
+getCumulativeAccuracy <- function(totalAccDF, totalSamples) {
   totalAccDF$cumulativeAccuracy  <- 0
   totalAccDF$cumulativeTotal <- 0
 
@@ -23,11 +23,13 @@ getCumulativeAccuracy <- function(totalAccDF) {
       totalCorrect <- totalAccDF$totalCorrect[i]
       totalAccDF$cumulativeAccuracy[i] <- totalAccDF$accuracy[i]
       totalAccDF$cumulativeTotal[i] <- total
+      totalAccDF$percentClassified[i] <- round(total / totalSamples, digits = 2)
     } else {
       total <- total + totalAccDF$total[i]
       totalCorrect <- totalCorrect + totalAccDF$totalCorrect[i]
       totalAccDF$cumulativeAccuracy[i] <- round(totalCorrect/total * 100, digits = 1)
       totalAccDF$cumulativeTotal[i] <- total
+      totalAccDF$percentClassified[i] <- round(total / totalSamples, digits = 3)
     }
 
   }

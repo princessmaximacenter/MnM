@@ -20,7 +20,7 @@ getMajorityPredictions <- function(minority,
                                    subtype) {
 
   if (crossValidation == T) {
-  predictions <- minority$classifications[, c("predict", "originalCall")]
+  predictions <- minority$classifications[names(MMProbabilityList), c("predict", "originalCall")]
   if(subtype == F) {
     predictions$originalCall <- metaDataRef[rownames(predictions), higherClassColumn]
   }

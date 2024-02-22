@@ -1,0 +1,93 @@
+To do:
+
+
+Alle functies toevoegen
+
+Alle beschrijvingen maken
+
+Optie toevoegen voor de probabilities getMajorityPredictions.
+
+
+Ik moet ook nog de kleurtjes van de tumor types toevoegen :')
+Of trouwens, dat hoeft niet, want de plot is niet per se een functie.
+Ik hoefde alleen de ggplotDF en de nonAvailableTiles te specificeren,
+en die heb ik nu geautomatiseerd. Pfoeh.
+
+Alleen wel dat die tiles ergens nog toegevoegd moeten worden,
+maar weet niet in welke functie dat gebeurt.
+
+Dit is werk voor later.
+
+import(tidyverse)
+import(caret)
+import(dplyr)
+import(magrittr)
+import(foreach)
+
+import(doParallel)
+import(randomForest)
+import(kknn)
+import(glmnet)
+import(UMAP)
+import(multiROC)
+
+
+
+
+
+Functions described:
+
+tenFoldCrossValidationMajority √
+smartRound √
+selectData √
+riboCorrectCounts √
+removeDuplicates √
+predictTest √
+predictRiboCounts
+ObtainTrainData
+obtainProbabilities √
+integrateMM √
+getPrincipalComponents
+getMMProbabilities √
+getMajorityPredictions √
+cleanData √
+removeBiasTestSet √
+tenFoldCrossValidationMinority √
+obtainPredictionMajorityClassifier √
+selectAnovaGenes √
+getPrincipalComponents √
+getAnovaResults √
+getCumulativeAccuracy √
+obtainModelsMinorityClassifier √
+reduceFeatures √
+createExtraData √
+createExtraMetaData √
+predictRiboCounts √
+plotConfusionMatrix √
+plotConfusionMatrixPerDomain √
+
+createFeatureDF
+
+
+getConfusionMatrixPlot
+createScalingsMajority
+
+
+
+getPieDF
+
+Maak functie voor het berekenen van de AUC. (calculateMulticlassROC).
+
+Kijk of er meer samples zijn die eigenlijk weggehaald moeten worden omdat ze van het verkeerde weefseltype zijn.
+√
+
+Find the four samples that are
+
+
+
+for i in {1..10} do sbatch --time=1:10:00 -c 10 --mem 100G bash_wrapper.sh $i done
+
+
+
+
+

@@ -27,10 +27,16 @@ getConfusionMatrixPlot <- function(predictionsMM,
          defineTumorWithColor = F,
          probabilityScore = 0.8) {
   predictionsMMFiltered <- predictionsMM %>% filter(probability1 > probabilityScore)
+  #tumorConfusionMatrix <- confusionMatrix(factor(predictionsMMFiltered$predict,
+   #                                              levels = unique(c(predictionsMMFiltered$originalCall, predictionsMMFiltered$predict))),
+    #                                      factor(predictionsMMFiltered$originalCall, levels = unique(c(predictionsMMFiltered$originalCall,
+     #                                                                                                  predictionsMMFiltered$predict))),
+      #                                    dnn = c("Prediction", "Reference"))
+
   tumorConfusionMatrix <- confusionMatrix(factor(predictionsMMFiltered$predict,
-                                                 levels = unique(c(predictionsMMFiltered$originalCall, predictionsMMFiltered$predict))),
-                                          factor(predictionsMMFiltered$originalCall, levels = unique(c(predictionsMMFiltered$originalCall,
-                                                                                                       predictionsMMFiltered$predict))),
+                                                 levels = unique(c(predictionsMM$originalCall, predictionsMM$predict))),
+                                          factor(predictionsMMFiltered$originalCall, levels = unique(c(predictionsMM$originalCall,
+                                                                                                       predictionsMM$predict))),
                                           dnn = c("Prediction", "Reference"))
   predictionFrequencies <- tumorConfusionMatrix$table %>% as.data.frame() #%>% filter(Freq != 0)
   predictionFrequencies$Prediction <- as.character(predictionFrequencies$Prediction)
@@ -38,13 +44,30 @@ getConfusionMatrixPlot <- function(predictionsMM,
   missingTumors <- predictionFrequencies %>% filter(Reference == Prediction,
                                                     Freq == 0)
 
+  predictionFrequencies %<>% filter(Freq != 0)
+
   for (j in seq(1:nrow(missingTumors))) {
-    missingTumors$Prediction[j] <- abbreviations[abbreviations[,classColumn] == missingTumors$Prediction[j], "abbreviation", drop = T]
-    missingTumors$Reference[j] <- abbreviations[abbreviations[,classColumn] == missingTumors$Reference[j], "abbreviation", drop = T]
+
+
+    if (missingTumors$Reference[j] %notin% unique(predictionsMMFiltered$originalCall)) {
+      missingTumors <- rbind(missingTumors, data.frame(Prediction = "Not classified",
+                                                       Reference = missingTumors$Reference[j],
+                                                       Freq = (nrow(predictionsMM[predictionsMM$originalCall == missingTumors$Reference[j], ]) -
+                                                                 nrow(predictionsMMFiltered[predictionsMMFiltered$originalCall == missingTumors$Reference[j], ])))
+      )
+
+    }
   }
 
 
-  predictionFrequencies %<>% filter(Freq != 0)
+  for (j in seq(1:nrow(missingTumors))) {
+    missingTumors$Prediction[j] <- abbreviations[abbreviations[,classColumn] == missingTumors$Prediction[j], "abbreviation", drop = T]
+    missingTumors$Reference[j] <- abbreviations[abbreviations[,classColumn] == missingTumors$Reference[j], "abbreviation", drop = T]
+
+  }
+
+
+
 
   difPredictions <- unique(predictionFrequencies$Reference) %>% as.character()
 
@@ -91,7 +114,8 @@ getConfusionMatrixPlot <- function(predictionsMM,
 
 
   confusionPlotDF$Prediction <- factor(confusionPlotDF$Prediction, levels = abbreviations$abbreviation[abbreviations$abbreviation %in%
-                                                                                           unique(c(confusionPlotDF$Reference, confusionPlotDF$Prediction))])
+                                                                                           unique(c(confusionPlotDF$Reference, confusionPlotDF$Prediction,
+                                                                                                    missingTumors$Reference))])
 
   missingNotClassified <- levels(confusionPlotDF$Prediction)[levels(confusionPlotDF$Prediction) %notin% confusionPlotDF[confusionPlotDF$Prediction == "Not classified","Reference"] ]
   missingNotClassified <- missingNotClassified[missingNotClassified != "Not classified"]
@@ -108,7 +132,7 @@ getConfusionMatrixPlot <- function(predictionsMM,
                                    missingNotClassifiedDF)
     }
   }
-  confusionPlotDF <- rbind(confusionPlotDF, missingClassifiedDF)
+  #confusionPlotDF <- rbind(confusionPlotDF, missingClassifiedDF)
 
   if (defineTumorWithColor == T) {
     confusionPlotDF$Reference <- factor(confusionPlotDF$Reference,
@@ -120,7 +144,7 @@ getConfusionMatrixPlot <- function(predictionsMM,
 
   missingTumors$Domain <- NA
   for (i in seq(1:nrow(missingTumors))) {
-    missingTumors$Domain[i] = linkClassAndDomain[linkClassAndDomain$abbreviation == missingTumors$Prediction[i], domainColumn]
+    missingTumors$Domain[i] = linkClassAndDomain[linkClassAndDomain$abbreviation == missingTumors$Reference[i], domainColumn]
   }
   missingTumors$Prediction <- factor(missingTumors$Prediction, levels = levels(confusionPlotDF$Prediction))
   missingTumors$Reference <- factor(missingTumors$Reference, levels = levels(confusionPlotDF$Reference))

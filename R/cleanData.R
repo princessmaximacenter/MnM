@@ -13,6 +13,8 @@
 #'
 cleanData <- function(refCohort, classColumn = "Disease_sub_specification1", n = 3,
                       inputDir = "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/CSR/2023_03/") {
+
+  `%notin%` <- Negate(`%in%`)
   newRefCohort <- removeDuplicates(refCohort = refCohort,
                                    inputDir = inputDir)
   newRefCohort <- selectData(newRefCohort,

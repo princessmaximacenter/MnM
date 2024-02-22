@@ -38,7 +38,11 @@ integrateMM <- function(minority,
                                                crossValidation = crossValidation,
                                                nModels = nModels)
 
-
+  if (length(probabilitiesMinority) > length(probabilitiesMajority)) {
+    probabilitiesMinority <- probabilitiesMinority[names(probabilitiesMajority)]
+  } else if (length(probabilitiesMinority) < length(probabilitiesMajority)) {
+    probabilitiesMajority <- probabilitiesMajority[names(probabilitiesMinority)]
+  }
   if (subtype == F) {
     linkClassAndHigherClass <- metaDataRef[ , c(classColumn, higherClassColumn)] %>% unique
 
@@ -61,5 +65,7 @@ integrateMM <- function(minority,
                                           metaDataRef = metaDataRef,
                                           subtype = subtype)
 
-  return(predictionsMM)
+  predictionsList <- list(predictionsMMFinal = predictionsMM,
+                          MMProbabilityList = MMProbabilityList)
+  return(predictionsList)
 }
