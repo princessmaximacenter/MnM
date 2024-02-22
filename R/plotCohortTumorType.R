@@ -7,7 +7,7 @@
 #' @param dataUMAP Dataframe containing the UMAP coordinates, the tumor type ($subclass),
 #' the domain ($Domain) and the desired abbreviation for the tumor type ($abbreviation)
 #' @param domain Which domain do you want to plot the tumor types for?
-#' @param domainCol Which colors do you want to use for the tumor types?
+#' @param domainColor Which colors do you want to use for the tumor types?
 #' @param abbreviationTumorType Abbreviations to be used in the plot for the tumor types.
 #' @param useLabels Do you want to supply labels within the plot?
 #' @param useManualColors Do you want to supply the colors to be used within the UMAP for the labels?
@@ -18,7 +18,7 @@
 #'
 plotCohortTumorType <- function(dataUMAP,
                                 domain,
-                                domainCol,
+                                domainColor,
                                 classColumn,
                                 abbreviationTumorType,
                                 useLabels = T,
@@ -85,7 +85,7 @@ plotCohortTumorType <- function(dataUMAP,
 
   if (useManualColors == T) {
     umapCohortTumorType <- umapCohortTumorType +
-      scale_color_manual(values = domainCol,
+      scale_color_manual(values = domainColor,
                          breaks = domainTumorTypes)
 
 
