@@ -1,5 +1,16 @@
+#' Title
+#'
+#' @param fractionsCorrectTotal
+#'
+#' @return plot with the separate classifier accuracies per frequency bin.
+#' @export
+#' @import ungeviz
+#'
 plotSeparateClassifierAccuracies <- function(fractionsCorrectTotal) {
 
+  if (require("ungeviz") == F) {
+    devtools::install_github("wilkelab/ungeviz")
+  }
   fractionsCorrectTotal %>%
       ggplot(aes(
       x = nCases,
