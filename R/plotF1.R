@@ -4,7 +4,7 @@ plotF1 <- function(dataMeanF1,
                    ) {
 
   set.seed(1)
-  dataMeanF1$meanF1Percent <- paste0(round(dataMeanF1$meanF1,2) * 100, "%")
+  dataMeanF1$meanF1Percent <- paste0(round(dataMeanF1$meanF1,3) * 100, "%")
   dataMeanF1$sdF1[is.na(dataMeanF1$sdF1)] <- 0
   ourPlot <- dataMeanF1 %>%
 
