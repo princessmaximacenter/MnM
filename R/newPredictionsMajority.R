@@ -1,4 +1,4 @@
-#' Predict tumor (sub)type for new samples
+#' Predict tumor (sub)type for new samples with Majority Classifier
 #'
 #' Function to generate predictions for new input samples from their
 #' RNA-seq count data.
@@ -15,7 +15,6 @@
 #' different genes in the rows.
 #' @param countDataNew Matrix containing the RNA-transcript per million data for the new samples to be classified.
 #' Patients are in the columns, different genes in the rows.
-#' @
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
 #' @param nModels How many models should be created for the majority voting system?
 #' @param nComps How many principal components will be selected after PCA?
