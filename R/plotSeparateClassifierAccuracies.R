@@ -35,7 +35,7 @@ plotSeparateClassifierAccuracies <- function(fractionsCorrectTotal) {
     theme(#axis.text.x = element_text(hjust = -0.2),
       axis.title.x = element_text(vjust = -1.8),
       axis.title.y = element_text(vjust = 2),
-      legend.position = "none",
+      #legend.position = "none",
       plot.margin = unit(c(0.2, 0.6, 0.5, 0.5), "lines")) +
     scale_color_manual(values = c("Minority Classifier" = "#f8766d",
                                   "Majority Classifier" =  "#00bfc4"))

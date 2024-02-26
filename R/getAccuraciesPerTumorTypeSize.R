@@ -10,8 +10,8 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
                                           metaDataRef,
                                           classColumn,
                                           rounding = T,
-                                          probabilityThreshold = 0.8) {
-  nCases <- c(1,3,5,10,20,40,100)
+                                          probabilityThreshold) {
+  nCases <- c(1,5,10,20,40,100)
   fractionCorrect <- c()
   fractionCorrect2 <- c()
   fractionCorrect3 <- c()
@@ -82,7 +82,8 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
   }
 
   #nCases <- c("n = 3", paste0("n = ", nCases[-length(nCases)] + 1,"-",nCases[-1])[-1], "n > 100")
-  nCases <- c("n = 3", paste( nCases[-length(nCases)],"< n <=",nCases[-1])[-1], "n > 100")
+  #nCases <- c("n = 3", paste( nCases[-c(1,length(nCases))],"< n <=",nCases[-c(1,2)])[-1], "n > 100")
+  nCases  <- c("3 < n <= 5", paste( nCases[-c(length(nCases))],"< n <=",nCases[-c(1)])[-1], "n > 100")
   if (rounding == T) {
     fractionsCorrect <- data.frame(nSamples = nSamples,
                                                      nSamplesFiltered = nSamplesFiltered,
