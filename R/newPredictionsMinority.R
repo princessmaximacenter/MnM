@@ -1,11 +1,16 @@
-#' Title
+#' Predict tumor (sub)type for new samples with Minority Classifier
 #'
-#' @param createdModelsMinority
-#' @param countDataNew
-#' @param outputDir
+#' @param createdModelsMinority R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),
+#'  the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
+#'   the metadata file associated to the reference cohort ($metaData)
+#'  and the metadata for the performed run ($metaDataRun).
+#' @param countDataNew Matrix containing the RNA-transcript per million data for the new samples to be classified.
+#' Patients are in the columns, different genes in the rows.
+#' @param outputDir Directory in which you would like to store the R-object containing the results.
 #' @param saveModel Do you want to save the resulting predictions in an R object?
 #'
-#' @return
+#' @return R-object containing the final classifications ($classifications) for the samples,
+#' and the probabilities associated to the different classifications ($probability).
 #' @export
 
 newPredictionsMinority <- function(createdModelsMinority, countDataNew,
