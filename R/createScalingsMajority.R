@@ -18,7 +18,7 @@
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
 #' @param proteinDir In which directory can we find the file specifying the names of protein-coding genes within our dataset?
 #' @param patientColumn Column in the metadata file that contains the patient labels.
-#' @param saveModel
+#' @param saveModel Do you want to save your generated scalings in an R-object?
 #' @return R-object containing the rotations and scalings
 #' for each reference cohort subset($rotationsAndScalingList),
 #' the model to correct for the ribodepletion efficacy ($riboModelList),
@@ -73,8 +73,6 @@ createScalingsMajority <-  function(countDataRef,
   countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
 
   directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"), "/")
-  if (!dir.exists(directory)) {
-    dir.create(directory) }
 
   # Correct for ribosomal protein contamination
   riboCountFile <- paste0(directory, "modelListRiboCounts.rds")
@@ -143,7 +141,11 @@ createScalingsMajority <-  function(countDataRef,
                                 metaDataRun = metaDataRun)
 
   if (saveModel == T) {
+
     filename <- paste0(directory, "/createdModelsMajority.rds")
+    if (!dir.exists(directory)) {
+      dir.create(directory) }
+
     write_rds(createdModelsMajority, file = filename)
   }
 
