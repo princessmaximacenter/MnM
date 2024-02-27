@@ -1,3 +1,9 @@
+#' Check out the F1 score metrics for whole dataset
+#'
+#' @param predictionsMM Final predictions with the top 3 final predictions ($predict{2,3})
+#' with their accompanying probability scores ($probability{1,2,3} and the original diagnosis label ($originalCall).
+#' @return
+#'
 getF1ScoreMetrics <- function(predictionsMM) {
 
   tumorConfusionMatrix <- confusionMatrix(factor(predictionsMM$predict,
@@ -20,9 +26,9 @@ getF1ScoreMetrics <- function(predictionsMM) {
 
   confusionDFFiltered <- tumorConfusionMatrixFiltered$byClass %>% as.data.frame()
 
-  macroF1FilteredWithNA <- mean(confusionDFFiltered$F1, na.rm = T) # 0.95
+  macroF1FilteredWithNA <- mean(confusionDFFiltered$F1, na.rm = T)
   confusionDFFiltered[is.na(confusionDFFiltered$F1),"F1"] <- 0
-  macroF1Filtered <- mean(confusionDFFiltered$F1, na.rm = T) # 0.92
+  macroF1Filtered <- mean(confusionDFFiltered$F1, na.rm = T)
   medianF1Filtered <- median(confusionDFFiltered$F1, na.rm = T)
   F1ScoreDF <- data.frame(macroF1 = macroF1,
                           medianF1 = medianF1,
