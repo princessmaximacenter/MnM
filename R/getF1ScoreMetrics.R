@@ -2,7 +2,8 @@
 #'
 #' @param predictionsMM Final predictions with the top 3 final predictions ($predict{2,3})
 #' with their accompanying probability scores ($probability{1,2,3} and the original diagnosis label ($originalCall).
-#' @return
+#' @return Dataframe containing the macro-F1 score for the unfiltered (macroF1) and filtered dataset (macroF1FilteredWithNA, macroF1Filtered), median F1 score
+#' for the unfiltered (medianF1) and filtered dataset (medianF1Filtered).
 #'
 getF1ScoreMetrics <- function(predictionsMM) {
 
