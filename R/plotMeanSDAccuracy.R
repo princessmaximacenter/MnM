@@ -1,5 +1,13 @@
-
-
+#' Plot the results per frequency block
+#'
+#' Note: This function has been replaced with the more
+#'
+#' @param meanNumbers
+#'
+#' @return
+#' @export
+#'
+#' @examples
 plotMeanSDAccuracy <- function(meanNumbers) {
 meanNumbers$fractionCorrectPercent <- paste0("(",round(meanNumbers$meanFractionCorrect,2) * 100, "%)")
 
