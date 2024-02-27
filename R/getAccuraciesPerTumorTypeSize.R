@@ -3,15 +3,25 @@
 #' @param predictionsMM Dataframe showing the top 3 predictions for the tumor (sub)type, together with their probability scores.
 #' @param metaDataRef Metadata-file for the reference cohort containing the tumor (sub)type labels.
 #' @param classColumn Which column within the metadata file contains the tumor (sub)type labels?
-#' @return Dataframe showing the accuracies for the different tumor size
-#' @export
+#' @param rounding Do you want rounded numbers for the performance scores?
+#' @param probabilityThreshold What is the threshold you would like to use to call a classification 'confident'?
+#' @return Dataframe showing the performance scores for the different tumor frequencies (nCases).
+#' Shown are the total amount of samples within the range ($nSamples),
+#' how many are classified confidently ($nSamplesFiltered),
+#' what is the fraction classified confidently ($fraction),
+#' what is the fraction of correct and incorrect classifications within the highest scoring classification ($fractionCorrect and $fractionIncorrect),
+#' the top 2  ($fractionCorrect2) an top 3 highest scoring classifications ($fractioncorrect3).
+#' Furthermore, the fraction correct classifications within the confident classifications is denoted ($fractionCorrectFiltered),
+#' together with the amount of errors remaining in here ($errorsFiltered).
+#'
+#' For the rest, for the confident classifications the average precision ($Precision), F1 score ($F1) and recall ($Recall) for all tumor entities combined is determined.
 #'
 getAccuraciesPerTumorTypeSize <- function(predictionsMM,
                                           metaDataRef,
                                           classColumn,
                                           rounding = T,
                                           probabilityThreshold) {
-  nCases <- c(1,5,10,20,40,100)
+  nCases <- c(1, 5,10,20,40,100)
   fractionCorrect <- c()
   fractionCorrect2 <- c()
   fractionCorrect3 <- c()
@@ -82,7 +92,7 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
   }
 
   #nCases <- c("n = 3", paste0("n = ", nCases[-length(nCases)] + 1,"-",nCases[-1])[-1], "n > 100")
-  #nCases <- c("n = 3", paste( nCases[-c(1,length(nCases))],"< n <=",nCases[-c(1,2)])[-1], "n > 100")
+  #nCases <- c("n = 3", paste( nCases[-length(nCases)],"< n <=",nCases[-1])[-1], "n > 100")
   nCases  <- c("3 < n <= 5", paste( nCases[-c(length(nCases))],"< n <=",nCases[-c(1)])[-1], "n > 100")
   if (rounding == T) {
     fractionsCorrect <- data.frame(nSamples = nSamples,
