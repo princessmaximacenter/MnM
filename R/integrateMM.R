@@ -15,7 +15,13 @@
 #' This is important, as for the cross-validation setup there is a ground truth ($originalCall), while for new predictions there is not.
 #' @param substituteNames Do you want to substitute some names?
 #' @param substituteBy What do you want to substitute it by?
-#' @return Dataframe showing the top 3 predictions for the tumor (sub)type, together with their probability scores.
+#' @return List containing the a dataframe with the final predictions (predictionsMMFinal),
+#' and a list with the probability scores for all classification labels that were assigned to samples (MMProbabilityList).
+#'
+#'
+#' predictionsMMFinal contains the top 3 final predictions ($predict{2,3}) with their accompanying probability scores
+#' ($probability{1,2,3} and the original diagnosis label ($originalCall).
+#'
 #' @export
 #'
 integrateMM <- function(minority,
