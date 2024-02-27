@@ -1,5 +1,15 @@
-plotComparisonBetweenClassifiers <- function(comparisonDF) {
-
+#' Plot comparison between classifiers
+#'
+#' @param comparisonDF Dataframe containing the accuracy ($meanAccuracy), precision ($meanPrecision),
+#' recall ($meanRecall), and their standard deviations for M&M and other classifirs on a subset of the data ($Subset)
+#' with a specific number of samples ($numberSamples), either within the training data or test set ($TrainOrTest).
+#' @param subsampling Did you use subsampling to generate your comparisonDF?
+#'
+#' @return plot showing the accuracy, precision and recall for M&M and other classifiers for specific subsets of the dataset will be returned.
+#' Included are error bars for the results based on either different seeds used for the cross-valiation results or subsampling.
+#'
+plotComparisonBetweenClassifiers <- function(comparisonDF, subsampling) {
+  if (subsampling == T) {
   comparisonDF <- comparisonDF %>% group_by(Subset, TrainOrTest, type) %>%
     summarise(
       numberSamples = mean(nSamples),
@@ -10,6 +20,7 @@ plotComparisonBetweenClassifiers <- function(comparisonDF) {
       sdPrecision = sd(precision),
       sdRecall = sd(recall)
     )
+  }
 
 
   comparisonDFLonger <- pivot_longer(comparisonDF, cols = c(meanAccuracy,
