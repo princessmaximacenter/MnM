@@ -1,3 +1,14 @@
+#' Plot precision-recall curves of classifier comparison - global
+#'
+#' @param dataPR Dataframe containing the precision and recall values at specific cutoffs,
+#' for both the train and test set. Also, a minimum and maximum precision are supplied
+#' to generate a shadow of the fluctuations.
+#' @param otherClassifierName What is the name of the other classifier within dataPR?
+#' @param removeLegend Do you want to remove the legend?
+#'
+#' @return Precision-recall curve for train and test dataset of M&M and other classifier, with a shadow for cross-validation.
+#' This function shows the full range from 0-1 for the precision values.
+#'
 plotPRPlotGlobal <- function(dataPR,
                              otherClassifierName) {
   dataPR$type <- factor(dataPR$type, levels = c("M&M", otherClassifierName))

@@ -1,3 +1,13 @@
+#' Plot precision-recall curves of classifier comparison - zoom
+#'
+#' @param dataPR Dataframe containing the precision and recall values at specific cutoffs,
+#' for both the train and test set. Also, a minimum and maximum precision are supplied
+#' to generate a shadow of the fluctuations.
+#' @param otherClassifierName What is the name of the other classifier within dataPR?
+#' @param removeLegend Do you want to remove the legend?
+#'
+#' @return Precision-recall curve for train and test dataset of M&M and other classifier, with a shadow for cross-validation.
+#' This function shows a close-up of the high precision range.
 plotPRPlotZoomed <- function(dataPR,
                              otherClassifierName,
                              removeLegend = T) {

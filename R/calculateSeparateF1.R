@@ -1,3 +1,24 @@
+#' Calculate performance measures for separate tumor (sub)types
+#'
+#' @param nSeeds How many seeds was the cross-validation setup run with?
+#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param crossValidation Specify whether the results are from the cross-validation setup or not.
+#' @param minorityDir Directory in which the minority model(s) are stored.
+#' @param majorityDir Directory in which the majority model(s) are stored.
+#' @param nModels How many models were created for the majority voting system?
+#' @param subtype  Do you want to obtain the predictions on the tumor subtype classification level?
+#' @param throwOut  Are there samples you would like to remove from the test set due to poor data quality? If so, add their rownames here.
+#' @param metaDataTest  Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.
+#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
+#' @param filterOrNot Do you want to analyse the confident classifications only?
+#' @param probabilityThreshold What is the threshold you would like to use to call a classification 'confident'?
+#'
+#' @return Dataframe containing the mean precision ($meanPrecision), F1-score ($meanF1), recall ($meanRecall)
+#' and sensitivity per tumor (sub)type ($tumorType).
+#' Results are stratified by the population frequency ($nCases).
+#' @export
+#'
 calculateSeparateF1 <- function(
     nSeeds,
     classColumn,
@@ -10,7 +31,8 @@ calculateSeparateF1 <- function(
     throwOut,
     metaDataTest,
     metaDataRef,
-    filterOrNot) {
+    filterOrNot,
+    probabilityThreshold) {
 
 
 
@@ -55,14 +77,14 @@ calculateSeparateF1 <- function(
       fractionsCorrect <- extractIndividualValuesF1(predictionsMMFinal,
                                                     metaDataRef = metaDataRef,
                                                     classColumn = classColumn,
-                                                    probabilityThreshold = 0.72,
+                                                    probabilityThreshold = probabilityThreshold,
                                                     filterOrNot = filterOrNot
                                                     )
     } else {
       fractionsCorrect <- extractIndividualValuesF1(predictionsMMFinal,
                                                     metaDataRef = metaDataRef,
                                                     classColumn = higherClassColumn,
-                                                    probabilityThreshold = 0.8,
+                                                    probabilityThreshold = probabilityThreshold,
                                                     filterOrNot = filterOrNot)
 
     }
@@ -73,8 +95,8 @@ calculateSeparateF1 <- function(
       accuracyDF <- rbind(accuracyDF, fractionsCorrect)
     }
   }
-
-  meanNumbers <- accuracyDF %>% group_by(tumorType, nCases) %>%
+  accuracyDF$nCases <- factor(accuracyDF$nCases, levels = unique(accuracyDF$nCases))
+  meanNumbers <- accuracyDF %>% group_by(nCases, tumorType) %>%
     summarise(
 
       meanPrecision = mean(Precision),
@@ -83,9 +105,8 @@ calculateSeparateF1 <- function(
       meanSensitivity = mean(Sensitivity)
     )
 
-  nCases <- c(1,3,5,10,20,40,100)
  # levelsNCases <- c("n = 3", paste( nCases[-length(nCases)],"< n <=",nCases[-1])[-1], "n > 100", "All")
-  levelsNCases <- c("n = 3", paste( nCases[-length(nCases)],"< n <=",nCases[-1])[-1], "n > 100")
-  meanNumbers$nCases <- factor(meanNumbers$nCases, levels = levelsNCases)
+  #levelsNCases <- unique(meanNumbers$nCases)
+  #meanNumbers$nCases <- factor(meanNumbers$nCases, levels = levelsNCases)
 return(meanNumbers)
 }

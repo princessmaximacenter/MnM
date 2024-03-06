@@ -1,14 +1,25 @@
+#' Title
+#'
+#' @param predictionsMMFinal Dataframe containing the final classification ($predict) and original diagnosis label ($originalCall).
+#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
+#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param MMProbabilityList List with the probability scores for all classification labels that were assigned to samples.
+#' @param filtering Do you want to use filtered classifications only?
+#' @param probabilityThreshold What is the threshold you would like to use to call a classification 'confident'?
+#'
+#' @return No idea.
+#'
 calculateMulticlassROC <- function(predictionsMMFinal,
                                    metaDataRef,
                                    classColumn,
                                    MMProbabilityList,
                                    filtering,
-                                   probabilityScore = 0.8
+                                   probabilityThreshold
                                    ) {
 
-  #if (filtering == T) {
-  #  predictionsMMFinal <- predictionsMMFinal %>% filter(probability1 > probabilityScore)
-  #}
+  if (filtering == T) {
+   predictionsMMFinal <- predictionsMMFinal %>% filter(probability1 > probabilityThreshold)
+  }
   probabilityForAUCFiltered <- data.frame(
     originalCall = predictionsMMFinal$originalCall)
 

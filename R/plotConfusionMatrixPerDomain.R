@@ -9,13 +9,13 @@
 #' but also the subsequent tumor types order and tumor subtypes order.
 #'
 #' @param domain Which domain do you want to plot? This name should be present in the
-#' domainColumn of the metadata.
+#' domainColorumn of the metadata.
 #' @param confusionPlotDFSubtype Dataframe specifying how often certain reference-prediction
 #' combinations for the tumor subtypes are present.
 #' @param nonAvailableTiles  A dataframe containing the empty tiles for a confusion matrix plot.
 #' @param abbreviationSubtype Dataframe containing the links between the tumor subtype,
 #' the abbreviation required in the plot, the tumor type and the domain.
-#' @param domainCol Which colors should we use for each designated tumor type?
+#' @param domainColor Which colors should we use for each designated tumor type?
 #' @param colorTiles Which domain color do we want to use?
 #'
 #' @return ggplot object containing the tumor subtype confusion matrix.
@@ -26,7 +26,7 @@ plotConfusionMatrixPerDomain <- function(domain,
                                          confusionPlotDFSubtype,
                                          abbreviationSubtype,
                                          nonAvailableTiles,
-                                         domainCol,
+                                         domainColor,
                                          colorTiles = "#012695") {
 
   DomainDF <- confusionPlotDFSubtype %>% filter(Domain == domain)
@@ -91,7 +91,7 @@ plotConfusionMatrixPerDomain <- function(domain,
     scale_y_discrete(drop=FALSE) + scale_x_discrete(drop = FALSE) +
     geom_tile(data = notClassifiedDF, aes(fill = TumorType),
               color = "black") +
-    scale_fill_manual(values = c("grey", domainCol),
+    scale_fill_manual(values = c("grey", domainColor),
                       breaks = namesDomain) +
     labs(y = "Classification")
 
