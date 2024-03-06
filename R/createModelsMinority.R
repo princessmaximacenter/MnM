@@ -40,7 +40,7 @@ createModelsMinority <-  function(countDataRef,
                                   whichSeed = 1,
                                   outputDir = "./",
                                   proteinDir,
-                                  saveModel
+                                  saveModel = T
 
 ) {
 
