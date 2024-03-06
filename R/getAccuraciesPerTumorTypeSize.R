@@ -63,7 +63,7 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
     tumorConfusionMatrixSelection <- tumorConfusionMatrix$byClass %>% as.data.frame() %>% filter(rownames(.) %in% paste0("Class: ", selectionMoreThanNCases))
 
     tumorConfusionMatrixSelection$F1[is.na(tumorConfusionMatrixSelection$F1)] <- 0
-    tumorConfusionMatrixSelection$Precision[is.na(tumorConfusionMatrixSelection$Precision)] <- 0
+    #tumorConfusionMatrixSelection$Precision[is.na(tumorConfusionMatrixSelection$Precision)] <- 0
     recall <- table(filteredResultTest[,"originalCall"]) / patientsPerTumor[names(patientsPerTumor) %in% names(table(filteredResultTest[,"originalCall"]))]
 
     nSamples[i] <- nrow(subsetResultTest)
@@ -84,7 +84,7 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
 
     #sensitivity[i] <- mean(tumorConfusionMatrixSelection$sensitivity)
     #specificity[i] <- mean(tumorConfusionMatrixSelection$specificity)
-    Precision[i] <- mean(tumorConfusionMatrixSelection$Precision)
+    Precision[i] <- mean(tumorConfusionMatrixSelection$Precision, na.rm = T)
     #Recall[i] <- mean(tumorConfusionMatrixSelection$Recall)
     F1[i] <- mean(tumorConfusionMatrixSelection$F1)
     Recall[i] <- mean(recall)# Make this how many of the samples are included into the classified samples
@@ -93,7 +93,7 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
 
   #nCases <- c("n = 3", paste0("n = ", nCases[-length(nCases)] + 1,"-",nCases[-1])[-1], "n > 100")
   #nCases <- c("n = 3", paste( nCases[-length(nCases)],"< n <=",nCases[-1])[-1], "n > 100")
-  nCases  <- c("3 < n <= 5", paste( nCases[-c(length(nCases))],"< n <=",nCases[-c(1)])[-1], "n > 100")
+  nCases  <- c("3 <= n <= 5", paste( nCases[-c(length(nCases))],"< n <=",nCases[-c(1)])[-1], "n > 100")
   if (rounding == T) {
     fractionsCorrect <- data.frame(nSamples = nSamples,
                                                      nSamplesFiltered = nSamplesFiltered,
@@ -153,7 +153,7 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
 
   recall <- table(filteredResultTest[,"originalCall"]) / patientsPerTumor[names(patientsPerTumor) %in% names(table(filteredResultTest[,"originalCall"]))]
   tumorConfusionMatrixSelection <- tumorConfusionMatrix$byClass %>% as.data.frame()
-  tumorConfusionMatrixSelection$Precision[is.na(tumorConfusionMatrixSelection$Precision)] <- 0
+  #tumorConfusionMatrixSelection$Precision[is.na(tumorConfusionMatrixSelection$Precision)] <- 0
   tumorConfusionMatrixSelection$F1[is.na(tumorConfusionMatrixSelection$F1)] <- 0
   if (rounding == T) {
     allSamplesCorrect <-  data.frame(nSamples = nSamples,
@@ -169,7 +169,7 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
                                      numbersClassifiedFiltered = paste0("N = ", nSamplesFiltered),
                                      numbersClassifiedTotal = paste0("N = ", nSamples),
                                      errorsFiltered = paste0("N = ", errorsFiltered),
-                                     Precision = mean(tumorConfusionMatrixSelection$Precision),
+                                     Precision = mean(tumorConfusionMatrixSelection$Precision, na.rm = T),
                                      F1= mean(tumorConfusionMatrixSelection$F1),
                                      Recall = mean(recall)
                                      )
@@ -187,7 +187,7 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
                                       numbersClassifiedFiltered = paste0("N = ", nSamplesFiltered),
                                       numbersClassifiedTotal = paste0("N = ", nSamples),
                                       errorsFiltered = paste0("N = ", errorsFiltered),
-                                     Precision = mean(tumorConfusionMatrixSelection$Precision),
+                                     Precision = mean(tumorConfusionMatrixSelection$Precision, na.rm = T),
                                      F1 = mean(tumorConfusionMatrixSelection$F1),
                                      Recall = mean(recall))
   }
