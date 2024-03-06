@@ -6,7 +6,7 @@ extractIndividualValuesF1 <- function(predictionsMM,
                                       ) {
 
 
-  nCases <- c(1,3,5,10,20,40,100)
+  nCases <- c(1,5,10,20,40,100)
   patientsPerTumor <- table(metaDataRef[,classColumn])
 
   if (filterOrNot == T) {
@@ -14,12 +14,12 @@ extractIndividualValuesF1 <- function(predictionsMM,
   } else {
     predictionsMMFiltered <- predictionsMM
   }
-  tumorConfusionMatrix <- confusionMatrix(factor(predictionsMMFiltered$predict,
+  tumorConfusionMatrix <- caret::confusionMatrix(factor(predictionsMMFiltered$predict,
                                                  levels = unique(c(predictionsMMFiltered$originalCall))),
                                           factor(predictionsMMFiltered$originalCall, levels =  unique(c(predictionsMMFiltered$originalCall))),
                                           dnn = c("Prediction", "Reference"))
 
-  subsets <- c("n = 3", paste( nCases[-length(nCases)],"< n <=",nCases[-1])[-1], "n > 100")
+  subsets <- c("3 <= n <= 5", paste( nCases[-c(length(nCases))],"< n <=",nCases[-c(1)])[-1], "n > 100")
 
   for ( i in 1:(length(nCases))){
 
