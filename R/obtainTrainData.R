@@ -17,7 +17,7 @@ obtainTrainData <- function(metaDataRef, classColumn, maxSamplesPerType = 50, nM
   metaDataRef[, classColumn] <- as.factor(metaDataRef[, classColumn])
 
   typesInFold <- table(metaDataRef[, classColumn])
-  typeProbs <- 1/sqrt((typesInFold))
+  typeProbs <- 1/sqrt(typesInFold)
 
   for ( j in c(1:nModels)){
     #set.seed(j)
