@@ -166,7 +166,7 @@ createModelsMinority <-  function(countDataRef,
   filename <- paste0(directory, "/createdModelsMinority.rds")
   if (!dir.exists(directory)) {
     dir.create(directory) }
-  write_rds(createdModelsMinority, file = filename)
+  saveRDS(createdModelsMinority, file = filename)
   }
   return(createdModelsMinority)
 }
