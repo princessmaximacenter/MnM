@@ -12,9 +12,9 @@
 #' @param textSizeClass What size should the letters have for the tumor type?
 #' @param textSizeSubspec What size should the letters have for the tumor subtype?
 #' @param freqSameTumorType How many subtypes belong to one tumor type? In order of the tumor types.
-#' @param domainColor Which colors do you want to use to color your plot?
+#' @param plotColors Which colors do you want to use to color your plot?
 #' @param saveImage Do you want to save your image? Boolean (T/F) input.
-#' @param storeLocation
+#' @param storeLocation Where do you want to save the image?
 #'
 #' @return Piechart of how many samples are present within the dataset belonging to a
 #' certain tumor type, and to a certain tumor subtype.
@@ -29,7 +29,7 @@ plotPieChartDomain <- function(data,
                                textSizeClass = 0.5,
                                textSizeSubspec = 0.45,
                                freqSameTumorType,
-                               domainColor,
+                               plotColors,
                                saveImage = T,
                                storeLocation) {
 
@@ -37,7 +37,7 @@ plotPieChartDomain <- function(data,
   n <- length(table(data[,higherClassColumn]))
 
   for (i in seq(1:length(freqSameTumorType))) {
-    extraCols <- rep(domainColor[i], freqSameTumorType[i])
+    extraCols <- rep(plotColors[i], freqSameTumorType[i])
     if (i == 1) {
       myColours <- extraCols
     } else {
@@ -80,7 +80,7 @@ plotPieChartDomain <- function(data,
        init.angle = 0,
        labels = rep("",length(unique(data[,higherClassColumn]))),
        border = "white",radius=0.38,
-       col=domainColor)
+       col=plotColors)
   par(new=T)
   tumorTypeSubtypePie(sapply(unique(data[,higherClassColumn]),
               function(x) sum(data$counts[data[,higherClassColumn] == x])),

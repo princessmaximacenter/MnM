@@ -7,10 +7,14 @@
 #' @param dataUMAP Dataframe containing the UMAP coordinates, the tumor type ($subclass),
 #' the domain ($Domain) and the desired abbreviation for the tumor type ($abbreviation)
 #' @param domain Which domain do you want to plot the tumor types for?
-#' @param domainColor Which colors do you want to use for the tumor types?
-#' @param abbreviationTumorType Abbreviations to be used in the plot for the tumor types.
+#' @param plotColors Which colors do you want to use for the tumor types?
+#' @param abbreviations Abbreviations to be used in the plot for the tumor (sub)types.
 #' @param useLabels Do you want to supply labels within the plot?
+#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param subtype Do you want to visualize the subtypes of one tumor type?
+#' #' @param tumorType If subtype == T, which tumor type would you want to visualize?
 #' @param useManualColors Do you want to supply the colors to be used within the UMAP for the labels?
+#'
 #' @return ggplot with only the datapoints of the selected domain,
 #' color coded by the tumor type.
 #' @import ggrepel
@@ -18,24 +22,29 @@
 #'
 plotCohortTumorType <- function(dataUMAP,
                                 domain,
-                                domainColor,
+                                tumorType,
+                                plotColors,
                                 classColumn,
-                                abbreviationTumorType,
+                                subtype = F,
+                                abbreviations,
                                 useLabels = T,
                                 useManualColors = F
                                 ) {
 
 
+  if (subtype == F) {
+  umapDomain <- dataUMAP %>% dplyr::filter(Domain == domain)
+  } else {
+    umapDomain <- dataUMAP %>% dplyr::filter(subclass == tumorType)
+  }
+  dataLogUMAPlabels <- umapDomain %>% dplyr::filter(!(duplicated(abbreviation)))
 
-  umapDomain <- dataUMAP %>% filter(Domain == domain)
-  dataLogUMAPlabels <- umapDomain %>% filter(!(duplicated(abbreviation)))
-
-  dataLogUMAPlabels %<>% arrange(subclass)
+  dataLogUMAPlabels %<>% dplyr::arrange(subclass)
   dataLogUMAPlabels$abbreviation <- factor(dataLogUMAPlabels$abbreviation, levels = unique(dataLogUMAPlabels$abbreviation))
 
 
-  abbreviationTumorType %<>% filter(!!sym(classColumn) %in% umapDomain$subclass)
-  domainTumorTypes <- abbreviationTumorType %>% filter(Domain == domain) %>% select(abbreviation) %>% deframe()
+  abbreviations %<>% dplyr::filter(!!sym(classColumn) %in% umapDomain$subclass)
+  domainTumorTypes <- abbreviations %>% filter(Domain == domain) %>% dplyr::select(abbreviation) %>% tibble::deframe()
 
 
   dataLogUMAPlabels <- umapDomain %>% filter(!(duplicated(abbreviation)))
@@ -68,7 +77,7 @@ plotCohortTumorType <- function(dataUMAP,
 
   if (useLabels == T) {
     umapCohortTumorType <- umapCohortTumorType +
-      geom_label_repel(data = dataLogUMAPlabels,
+      ggrepel::geom_label_repel(data = dataLogUMAPlabels,
                        aes(color = abbreviation,
                            label = abbreviation),
                        max.overlaps = 40,
@@ -85,7 +94,7 @@ plotCohortTumorType <- function(dataUMAP,
 
   if (useManualColors == T) {
     umapCohortTumorType <- umapCohortTumorType +
-      scale_color_manual(values = domainColor,
+      scale_color_manual(values = plotColors,
                          breaks = domainTumorTypes)
 
 
