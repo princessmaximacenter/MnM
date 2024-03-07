@@ -23,7 +23,7 @@ reduceFeatures <- function(dataTrain,
                            nANOVAgenes) {
 
   modelList <- list()
-  nModels <- min(nModels, 10)
+  nModels <- min(nModels, 100)
   for (i in seq(1:nModels)) {
     samplesTrainDef <- samplesTrainDefList[[i]]
 
