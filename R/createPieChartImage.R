@@ -25,7 +25,7 @@
 #' the abbreviation required in the plot, the tumor type and the domain.
 #' @param abbreviationTumorType Dataframe containing the links between the tumor type,
 #' the abbreviation required in the plot, and the domain.
-#' @param domainCol Which colors do you want to use to color your plot?
+#' @param domainColor Which colors do you want to use to color your plot?
 #'
 #' @return Piechart of how many samples are present within the dataset belonging to a
 #' certain tumor type, and to a certain tumor subtype.
@@ -45,7 +45,7 @@ createPieChartImage <- function(metaDataRef,
          saveImage = F,
          textSizeClass = 0.5,
          textSizeSubspec = 0.5,
-         domainCol) {
+         domainColor) {
 
   pieDF <- getPieDF(metaDataRef = metaDataRef,
                     abbreviationSubtype = abbreviationSubtype,
@@ -59,7 +59,7 @@ namesDomain <- abbreviationTumorType %>% filter(!!sym(domainColumn) == whichDoma
   select(abbreviation) %>%
   deframe()
 
-pieChartDF <- pieDF[pieDF[,domainColumn] == whichDomain,]
+pieChartDF <- pieDF[pieDF[,domainColorumn] == whichDomain,]
 pieChartDF <- pieChartDF %>% slice(order(factor(!!sym(higherClassColumn), levels = namesDomain)))
 
 freqSameTumorType <- pieChartDF[,higherClassColumn] %>% table
@@ -73,7 +73,7 @@ plotPieChartDomain(data = pieChartDF,
                      textSizeClass = textSizeClass,
                      textSizeSubspec = textSizeSubspec,
                      freq = freqSameTumorType,
-                   domainCol = domainCol,
+                   domainColor = domainColor,
                      saveImage = saveImage,
                     storeLocation = storeLocation
 )
