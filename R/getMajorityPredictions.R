@@ -29,10 +29,10 @@ getMajorityPredictions <- function(minority,
   }
 
   predictions$probability1 <- NA
-  predictions$probability2 <- NA
-  predictions$probability3 <- NA
   predictions$predict2 <- NA
+  predictions$probability2 <- NA
   predictions$predict3 <- NA
+  predictions$probability3 <- NA
 
   for (i in seq(1:length(MMProbabilityList))) {
     allProbs <- MMProbabilityList[[i]]
