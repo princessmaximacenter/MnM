@@ -28,7 +28,7 @@ newPredictionsMinority <- function(createdModelsMinority, countDataNew,
   # Also create test data and specify which biomaterial IDs are in there
   #testSamples <- rownames(dataLogNew)
 
-  result <- predictTest(createdModelsMinority$modelList, dataLogNew)
+  result <- predictTest(modelList = createdModelsMinority$modelList, testData = dataLogNew)
 
   print("Finished with predicting results")
 
