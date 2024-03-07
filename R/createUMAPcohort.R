@@ -10,7 +10,7 @@
 #' the tumor (sub)type diagnosis within the reference cohort.
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
 #' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param abbreviationTumorType Dataframe containing the links between the tumor (sub)type,
+#' @param abbreviations Dataframe containing the links between the tumor (sub)type,
 #' the abbreviation required in the plot, and the domain.
 #' @param proteinFile In which directory can we find the file specifying the names of protein-coding genes within our dataset?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
@@ -22,9 +22,11 @@
 createUMAPcohort <- function(countDataRef,
                              metaDataRef,
                              classColumn,
+                             higherClassColumn,
                              domainColumn,
                              correctRibo = T,
-                             abbreviationTumorType,
+                             abbreviations,
+                             subtype =F,
                              proteinFile = "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/20230320_proteinCodingGenes_gencode31.csv",
                              whichSeed = 1) {
 
@@ -41,31 +43,38 @@ createUMAPcohort <- function(countDataRef,
   }
   # Log-transform data
   dataLogRef <- log(countDataRef +1) %>% t() %>% as.data.frame()
-  #dataLogRef <- countDataRef %>% t() %>% as.data.frame()
 
-  abbreviationTumorType %<>% filter(!!sym(classColumn) %in% unique(metaDataRef[, classColumn]))
+  abbreviations %<>% filter(!!sym(classColumn) %in% unique(metaDataRef[, classColumn]))
 
-  metaDataJoined <- left_join(metaDataRef, abbreviationTumorType[,c(classColumn, "abbreviation")])
+  metaDataJoined <- left_join(metaDataRef, abbreviations[,c(classColumn, "abbreviation")])
   rownames(metaDataJoined) <- rownames(metaDataRef)
   metaDataRef <- metaDataJoined
-
-  dataLogRef$abbreviation <- metaDataRef[rownames(dataLogRef), "abbreviation"]
-  dataLogRef$subclass <- metaDataRef[rownames(dataLogRef), classColumn]
-  dataLogRef$Domain <- metaDataRef[rownames(dataLogRef), domainColumn]
 
   set.seed(whichSeed)
   dataLogUMAP <- dataLogRef %>%
     select(where(is.numeric)) %>%
-    #uwot::umap(., ret_model = T)
     umap::umap()
   colnames(dataLogUMAP$layout) <- c("UMAP1", "UMAP2")
 
   dataUMAP <- dataLogUMAP$layout %>%
     as.data.frame()
 
-  dataUMAP <- cbind(dataUMAP, dataLogRef[, c("subclass","Domain", "abbreviation"), drop = F])
+  dataUMAP$abbreviation <- metaDataRef[rownames(dataUMAP), "abbreviation"]
+
+  dataUMAP$Domain <- metaDataRef[rownames(dataUMAP), domainColumn]
+
+if (subtype == T) {
+  dataUMAP$subclass <- metaDataRef[rownames(dataUMAP), higherClassColumn]
+  dataUMAP$subtype <- metaDataRef[rownames(dataUMAP), classColumn]
+
+} else {
+  dataUMAP$subclass <- metaDataRef[rownames(dataUMAP), classColumn]
+}
+
+
+  #dataUMAP <- cbind(dataUMAP, dataLogRef[, c("subclass","Domain", "abbreviation"), drop = F])
   dataUMAPList <- list(dataUMAP = dataUMAP)
-       #umapTransform = dataLogUMAP)
+
   if (correctRibo == T) {
     dataUMAPList$riboModelList <- riboModelList
   }
