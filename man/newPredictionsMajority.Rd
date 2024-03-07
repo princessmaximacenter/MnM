@@ -2,7 +2,7 @@
 % Please edit documentation in R/newPredictionsMajority.R
 \name{newPredictionsMajority}
 \alias{newPredictionsMajority}
-\title{Predict tumor (sub)type for new samples}
+\title{Predict tumor (sub)type for new samples with Majority Classifier}
 \usage{
 newPredictionsMajority(
   createdModelsMajority = createdModelsMajority,

@@ -7,7 +7,7 @@
 plotCohortTumorType(
   dataUMAP,
   domain,
-  domainCol,
+  domainColor,
   classColumn,
   abbreviationTumorType,
   useLabels = T,
@@ -20,7 +20,7 @@ the domain ($Domain) and the desired abbreviation for the tumor type ($abbreviat
 
 \item{domain}{Which domain do you want to plot the tumor types for?}
 
-\item{domainCol}{Which colors do you want to use for the tumor types?}
+\item{domainColor}{Which colors do you want to use for the tumor types?}
 
 \item{abbreviationTumorType}{Abbreviations to be used in the plot for the tumor types.}
 

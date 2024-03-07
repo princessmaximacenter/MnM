@@ -9,7 +9,7 @@ getAccuraciesPerTumorTypeSize(
   metaDataRef,
   classColumn,
   rounding = T,
-  probabilityThreshold = 0.8
+  probabilityThreshold
 )
 }
 \arguments{
@@ -18,9 +18,22 @@ getAccuraciesPerTumorTypeSize(
 \item{metaDataRef}{Metadata-file for the reference cohort containing the tumor (sub)type labels.}
 
 \item{classColumn}{Which column within the metadata file contains the tumor (sub)type labels?}
+
+\item{rounding}{Do you want rounded numbers for the performance scores?}
+
+\item{probabilityThreshold}{What is the threshold you would like to use to call a classification 'confident'?}
 }
 \value{
-Dataframe showing the accuracies for the different tumor size
+Dataframe showing the performance scores for the different tumor frequencies (nCases).
+Shown are the total amount of samples within the range ($nSamples),
+how many are classified confidently ($nSamplesFiltered),
+what is the fraction classified confidently ($fraction),
+what is the fraction of correct and incorrect classifications within the highest scoring classification ($fractionCorrect and $fractionIncorrect),
+the top 2  ($fractionCorrect2) an top 3 highest scoring classifications ($fractioncorrect3).
+Furthermore, the fraction correct classifications within the confident classifications is denoted ($fractionCorrectFiltered),
+together with the amount of errors remaining in here ($errorsFiltered).
+
+For the rest, for the confident classifications the average precision ($Precision), F1 score ($F1) and recall ($Recall) for all tumor entities combined is determined.
 }
 \description{
 Obtain accuracies per tumor (sub)type sample size

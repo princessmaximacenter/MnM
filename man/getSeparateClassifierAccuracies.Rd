@@ -11,7 +11,8 @@ getSeparateClassifierAccuracies(
   classColumn,
   higherClassColumn,
   subtype = F,
-  probabilityThreshold,
+  probabilityThresholdMajority,
+  probabilityThresholdMinority,
   nModels
 )
 }
@@ -29,9 +30,9 @@ This is important, as for the cross-validation setup there is a ground truth ($o
 
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
 
-\item{probabilityThreshold}{What is the probability score threshold that needs to be used to filter confident sample classifications with?}
-
 \item{nModels}{How many models were used to obtain a final prediction?}
+
+\item{probabilityThreshold}{What is the probability score threshold that needs to be used to filter confident sample classifications with?}
 }
 \value{
 Dataframe containing the total amount of samples ($nSamples), how many samples pass the the probability score threshold ($nSamplesFiltered),

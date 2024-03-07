@@ -2,7 +2,7 @@
 % Please edit documentation in R/newPredictionsMinority.R
 \name{newPredictionsMinority}
 \alias{newPredictionsMinority}
-\title{Title}
+\title{Predict tumor (sub)type for new samples with Minority Classifier}
 \usage{
 newPredictionsMinority(
   createdModelsMinority,
@@ -12,8 +12,22 @@ newPredictionsMinority(
 )
 }
 \arguments{
+\item{createdModelsMinority}{R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),
+the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
+the metadata file associated to the reference cohort ($metaData)
+and the metadata for the performed run ($metaDataRun).}
+
+\item{countDataNew}{Matrix containing the RNA-transcript per million data for the new samples to be classified.
+Patients are in the columns, different genes in the rows.}
+
+\item{outputDir}{Directory in which you would like to store the R-object containing the results.}
+
 \item{saveModel}{Do you want to save the resulting predictions in an R object?}
 }
+\value{
+R-object containing the final classifications ($classifications) for the samples,
+and the probabilities associated to the different classifications ($probability).
+}
 \description{
-Title
+Predict tumor (sub)type for new samples with Minority Classifier
 }

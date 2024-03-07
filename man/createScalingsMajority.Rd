@@ -47,6 +47,8 @@ the tumor (sub)type diagnosis within the reference cohort.}
 \item{outputDir}{Directory in which you would like to store the R-object containing the results.}
 
 \item{proteinDir}{In which directory can we find the file specifying the names of protein-coding genes within our dataset?}
+
+\item{saveModel}{Do you want to save your generated scalings in an R-object?}
 }
 \value{
 R-object containing the rotations and scalings
