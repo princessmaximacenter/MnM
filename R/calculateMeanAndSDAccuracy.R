@@ -1,17 +1,40 @@
+#' Calculate performance of M&M on total train and test set
+#'
+#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param minorityDir Directory in which the minority model(s) are stored.
+#' @param majorityDir Directory in which the majority model(s) are stored.
+#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
+#' @param metaDataTest Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.
+#' @param throwOut Are there samples you would like to remove from the test set due to poor data quality? If so, add their rownames here.
+#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
+#' @param crossValidation Specify whether the results are from the cross-validation setup or not.
+#' @param nModels  How many models were created for the majority voting system?
+#' @param nSeeds How many seeds was the cross-validation setup run with?
+#' @param rounding Do you want rounded numbers for the performance scores?
+#' @param probabilityThreshold What is the threshold you would like to use to call a classification 'confident'?
+#'
+#' @return Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases).
+#' Included are the averages for the percentage of correctly and incorrectly classified samples ($meanFractionCorrect and $meanFractionIncorrect),
+#' correctly and incorrectly classified 'confident' samples ($meanFractionCorrectFiltered and $meanFractionIncorrectFiltered),
+#' averaged precision values for the average of all tumor entities within the frequency range ($meanPrecision),
+#' averaged recall values for the average of all tumor entities within the frequency range ($meanRecall),
+#' and averaged F1 scores for the average of all tumor entities within the frequency range ($meanF1).
+#' Please note that the precision, F1 and recall are calculated for the confident sample classifications only.
+#'The total amount of samples within each frequency range ($meanSamples) is also specified.
 calculateMeanAndSDAccuracy <- function(classColumn,
                                        higherClassColumn,
                                        minorityDir,
                                        majorityDir,
                                        metaDataRef,
-                                       metaDataTest = NA,
-                                       throwOut = NA,
+                                       metaDataTest,
+                                       throwOut,
          subtype = F,
          crossValidation = T,
          nModels,
          nSeeds,
          rounding,
          probabilityThreshold
-      #   subset = F
          ) {
 
   for (i in seq(1:nSeeds)) {
@@ -43,16 +66,9 @@ calculateMeanAndSDAccuracy <- function(classColumn,
       predictionsMMFinal$originalCall <- metaDataTest[rownames(predictionsMMFinal), higherClassColumn]
       } else {
       predictionsMMFinal$originalCall <- metaDataTest[rownames(predictionsMMFinal), classColumn]
+      }
+
     }
-    }
-   # if (subset[1] != F) {
-   #   predictionsMMFinal %<>% filter(rownames(.) %in% subset)
-
-
-   # }
-
-
-
 
     if (subtype == T) {
       fractionsCorrect <- getAccuraciesPerTumorTypeSize(predictionsMMFinal,
@@ -95,7 +111,8 @@ calculateMeanAndSDAccuracy <- function(classColumn,
       medianF1 = median(F1),
       sdPrecision = sd(Precision),
       sdF1 = sd(F1),
-      sdRecall = sd(Recall)
+      sdRecall = sd(Recall),
+      meanSamples = mean(nSamples)
     )
 
   return(meanNumbers)
