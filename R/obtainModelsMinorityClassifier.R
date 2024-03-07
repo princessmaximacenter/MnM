@@ -35,7 +35,7 @@ obtainModelsMinorityClassifier <- function(dataTrain,
     classwt <- as.numeric(probabilityClasses)
 
     # Generate RF model on training subset
-    model <- randomForest(x = train.data,
+    model <- randomForest::randomForest(x = train.data,
                           y = as.factor(train.category),
                           importance = T,
                           ntree = ntree,
