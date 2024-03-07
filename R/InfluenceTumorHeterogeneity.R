@@ -1,12 +1,29 @@
+#' Title
+#'
+#' @param metaDataRef
+#' @param predictionsMM
+#' @param predictionsMMSubtype
+#' @param trainOrTest
+#' @param probabilityScoreTumor
+#' @param probabilityScoreSubtype
+#' @param metaDataFFPE
+#' @param predictionsFFPE
+#' @param predictionsFFPESubtype
+#'
+#' @return
+#' @export
+#'
+#' @examples
 InfluenceTumorHeterogeneity <- function(metaDataRef,
                                         predictionsMM,
                                         predictionsMMSubtype,
                                         trainOrTest,
-                                       # predictionsMMTest,
-                                       # predictionsMMTestSubtype,
                                         probabilityScoreTumor,
                                         probabilityScoreSubtype,
-                                       testSet) {
+                                       metaDataFFPE = NA,
+                                       predictionsFFPE,
+                                       predictionsFFPESubtype
+                                       ) {
 
   tumorStatusTrain <- primaryRecurrenceMetastasisNumbers(metaDataRef = metaDataRef,
                                                          predictionsMM = predictionsMM,
@@ -14,7 +31,7 @@ InfluenceTumorHeterogeneity <- function(metaDataRef,
                                                          labelTypes = c("Primary", "Recurrence", "Metastasis"),
                                                          probabilityScore = probabilityScoreTumor,
                                                          includeAllRow = T)
-#  tumorStatusTrain$trainOrTest <- trainOrTest
+
   tumorStatusTrain$type <- "TumorType"
 
   treatmentStatusTrain <- primaryRecurrenceMetastasisNumbers(metaDataRef = metaDataRef,
@@ -22,41 +39,11 @@ InfluenceTumorHeterogeneity <- function(metaDataRef,
                                                              columnOfInterest = "SystemicTreatment",
                                                              labelTypes = c("Yes", "No"),
                                                              probabilityScore = probabilityScoreTumor)
-  # if (crossValidation == T) {
-  # treatmentStatusTrain$trainOrTest <- "Train"
-  # } else {
-  #   treatmentStatusTrain$trainOrTest <- "Test"
-  # }
+
 
   treatmentStatusTrain$type <- "TumorType"
   treatmentStatusTrain$labelType <- c("Systemic treatment",
                                       "No treatment")
-
-
-  # metaDataTest <- newTestSet$metaData %>% filter(rownames(.) %notin% throwOut)
-  # tumorStatusTest <- primaryRecurrenceMetastasisNumbers(metaDataRef = metaDataTest,
-  #                                                       predictionsMM = predictionsMMTestFiltered,
-  #                                                       probabilityScore = probabilityScoreTumor,
-  #                                                       columnOfInterest = "Status",
-  #                                                       labelTypes = c("Primary", "Recurrence", "Metastasis")
-  # )
-
-
- # tumorStatusTest$trainOrTest <- "Test"
- # tumorStatusTest$type <- "TumorType"
-
-
-
-  # treatmentStatusTest <- primaryRecurrenceMetastasisNumbers(metaDataRef = metaDataTest,
-  #                                                           predictionsMM = predictionsMMTestFiltered,
-  #                                                           probabilityScore = probabilityScoreTumor,
-  #                                                           columnOfInterest = "SystemicTreatment",
-  #                                                           labelTypes = c("Yes", "No")
-  # )
-  # treatmentStatusTest$trainOrTest <- "Test"
-  # treatmentStatusTest$type <- "TumorType"
-  # treatmentStatusTest$labelType <- c("Systemic treatment",
-  #                                    "No treatment")
 
   tumorStatusSubtypeTrain <-  primaryRecurrenceMetastasisNumbers(metaDataRef = metaDataRef,
                                                                  predictionsMM = predictionsMMSubtype,
@@ -66,7 +53,6 @@ InfluenceTumorHeterogeneity <- function(metaDataRef,
                                                                  includeAllRow = T
   )
   tumorStatusSubtypeTrain$type <- "TumorSubtype"
-  #tumorStatusSubtypeTrain$trainOrTest <- trainOrTest
 
 
   treatmentStatusSubtypeTrain <-  primaryRecurrenceMetastasisNumbers(metaDataRef = metaDataRef,
@@ -76,31 +62,30 @@ InfluenceTumorHeterogeneity <- function(metaDataRef,
                                                                      labelTypes = c("Yes", "No")
   )
   treatmentStatusSubtypeTrain$type <- "TumorSubtype"
-  #treatmentStatusSubtypeTrain$trainOrTest <- "Train"
   treatmentStatusSubtypeTrain$labelType <- c("Systemic treatment",
                                              "No treatment")
-  if (trainOrTest == "Test") {
-  predictionsMMTestPreviously <- read.table("~/Documents/data/tumorClassification/output/finalResults/MnMResults/predictionsMMTest.tsv",
-                                            sep = "\t",
-                                            header = T)
 
-  predictionsMMSubtypeTestPreviously <- read.table("~/Documents/data/tumorClassification/output/finalResults/MnMResults/predictionsMMSubtypeTest.tsv",
-                                                   sep = "\t",
-                                                   header = T)
+  statusDF <- rbind(tumorStatusTrain,
+                    tumorStatusSubtypeTrain,
+                    treatmentStatusTrain,
+                    treatmentStatusSubtypeTrain)
 
-  FFPEResults <- primaryRecurrenceMetastasisNumbers(metaDataRef = testSet$metaData,
-                                                    predictionsMM = predictionsMMTestPreviously,
+
+  if (!is.na(metaDataFFPE)[1]) {
+
+  FFPEResults <- primaryRecurrenceMetastasisNumbers(metaDataRef = metaDataFFPE,
+                                                    predictionsMM = predictionsFFPE,
                                                     labelTypes = "FFPE",
-                                                    columnOfInterest = "Disease_sub_specification2",
-                                                    probabilityScore = 0.8)
+                                                    columnOfInterest = "general_observation",
+                                                    probabilityScore = probabilityScoreTumor)
 
 
 
-  FFPEResultsSubtype <- primaryRecurrenceMetastasisNumbers(metaDataRef = testSet$metaData,
-                                                           predictionsMM = predictionsMMSubtypeTestPreviously,
+  FFPEResultsSubtype <- primaryRecurrenceMetastasisNumbers(metaDataRef = metaDataFFPE,
+                                                           predictionsMM = predictionsFFPESubtype,
                                                            labelTypes = "FFPE",
-                                                           columnOfInterest = "Disease_sub_specification2",
-                                                           probabilityScore = 0.7)
+                                                           columnOfInterest = "general_observation",
+                                                           probabilityScore = probabilityScoreSubtype)
 
   FFPEResults$type <- "TumorType"
 
@@ -110,58 +95,13 @@ InfluenceTumorHeterogeneity <- function(metaDataRef,
 
   FFPEResultsSubtype$type <- "TumorSubtype"
 
-  }
-  # tumorStatusSubtypeTest <-  primaryRecurrenceMetastasisNumbers(metaDataRef = metaDataTest,
-  #                                                               predictionsMM = predictionsMMSubtypeTestFiltered,
-  #                                                               probabilityScore = probabilityScoreSubtype,
-  #                                                               columnOfInterest = "Status",
-  #                                                               labelTypes = c("Primary", "Recurrence", "Metastasis")
-  # )
-  # tumorStatusSubtypeTest$type <- "TumorSubtype"
-  # tumorStatusSubtypeTest$trainOrTest <- "Test"
 
-
-  # treatmentStatusSubtypeTest <-  primaryRecurrenceMetastasisNumbers(metaDataRef = metaDataTest,
-  #                                                                   predictionsMM = predictionsMMSubtypeTestFiltered,
-  #                                                                   probabilityScore = probabilityScoreSubtype,
-  #                                                                   columnOfInterest = "SystemicTreatment",
-  #                                                                   labelTypes = c("Yes", "No")
-  # )
- # treatmentStatusSubtypeTest$type <- "TumorSubtype"
- # treatmentStatusSubtypeTest$trainOrTest <- "Test"
- # treatmentStatusSubtypeTest$labelType <- c("Systemic treatment",
- #                                           "No treatment")
-
-
-  statusDF <- rbind(tumorStatusTrain,
-                   # tumorStatusTest,
-                    tumorStatusSubtypeTrain,
-                   # tumorStatusSubtypeTest,
-                    treatmentStatusTrain,
-                    #treatmentStatusTest,
-                    treatmentStatusSubtypeTrain
-                   # treatmentStatusSubtypeTest
-  )
-
-  if (trainOrTest == "Test") {
-    statusDF <- rbind(statusDF, FFPEResults, FFPEResultsSubtype)
-
+  statusDF <- rbind(statusDF,
+                    FFPEResults,
+                    FFPEResultsSubtype)
   }
   statusDF %<>% unique()
 
-  #statusDFLonger <- statusDF %>% pivot_longer(cols = c("accuracy",
-    #                                                   "precision",
-     #                                                  "recall"
- # ),
-  #names_to = "measurementType"
- # )
- # statusDFLonger$valuePercent <- paste0(round(statusDFLonger$value * 100,2), "%")
-  # statusDFLonger$labelType <- factor(statusDFLonger$labelType,
-  #                                    levels = c("Primary",
-  #                                               "Recurrence",
-  #                                               "Metastasis",
-  #                                               "No treatment",
-  #                                               "Systemic treatment"))
 
   statusDF$labelType <- factor(statusDF$labelType,
                                      levels = c("All", "Primary",
@@ -171,14 +111,7 @@ InfluenceTumorHeterogeneity <- function(metaDataRef,
                                                 "Systemic treatment",
                                                 "FFPE"))
 
-  #statusDFLonger$trainOrTest <- trainOrTest
   statusDF$trainOrTest <- trainOrTest
- # statusDFLonger$trainOrTest <- factor(statusDFLonger$trainOrTest,
-  #                                     levels = c("Train", "Test"))
-
-  # statusDFLonger$type <- factor(statusDFLonger$type,
-  #                               levels = c("TumorType", "TumorSubtype"))
-
   statusDF$type <- factor(statusDF$type,
                           levels = c("TumorType", "TumorSubtype"))
   return(statusDF)

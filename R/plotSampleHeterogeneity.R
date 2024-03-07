@@ -8,54 +8,10 @@ plotSampleHeterogeneity <- function(tumorHeterogeneityTrain,
 
   getPalette <- colorRampPalette(RColorBrewer::brewer.pal(10, "Spectral"))
 
-
-  FFPEResults$type <- "TumorType"
-  FFPEResults$trainOrTest <- "Test"
-
-  FFPEResults <- FFPEResults %>% group_by(labelType,
-                                                  trainOrTest,
-                                                  type,
-                                                  numberSamples
-  ) %>%
-    summarise(
-      meanAccuracy = mean(accuracy),
-      meanPrecision = mean(precision),
-      meanRecall = mean(recall),
-      #meanIncorrect = mean(1 - fractionCorrect),
-      #meanFractionIncorrectFiltered = mean(1 - fractionCorrectFiltered),
-      sdAccuracy = sd(accuracy),
-      sdPrecision = sd(precision),
-      sdRecall = sd(recall)
-    )
-
-  # FFPEResults <- FFPEResults[c("labelType", "trainOrTest",
-  #                              "type", "numberSamples",
-  #                              "meanAccuracy", "meanPrecision",
-  #                              "meanRecall", "sdAccuracy",
-  #                              "sdPrecision")]
-
-  FFPEResultsSubtype$type <- "TumorSubtype"
-  FFPEResultsSubtype$trainOrTest <- "Test"
-
-  FFPEResultsSubtype  <- FFPEResultsSubtype %>% group_by(labelType,
-                                                  trainOrTest,
-                                                  type,
-                                                  numberSamples
-  ) %>%
-    summarise(
-      meanAccuracy = mean(accuracy),
-      meanPrecision = mean(precision),
-      meanRecall = mean(recall),
-      #meanIncorrect = mean(1 - fractionCorrect),
-      #meanFractionIncorrectFiltered = mean(1 - fractionCorrectFiltered),
-      sdAccuracy = sd(accuracy),
-      sdPrecision = sd(precision),
-      sdRecall = sd(recall)
-    )
   totalHeterogeneityDF <- rbind(tumorHeterogeneityTrain,
                                 tumorHeterogeneityTest,
-                                FFPEResults,
-                                FFPEResultsSubtype
+                                #FFPEResults,
+                                #FFPEResultsSubtype
                                 )
 
   totalHeterogeneityDF$labelType <- as.character(totalHeterogeneityDF$labelType)
@@ -79,11 +35,6 @@ plotSampleHeterogeneity <- function(tumorHeterogeneityTrain,
                                                                          values_to = "standardDeviation")
 
   tumorHeterogeneityLonger2$measurementType <- gsub("mean", "", tumorHeterogeneityLonger2$measurementType)
- # tumorHeterogeneityLonger2$measurementType <- gsub("meanPrecision", "precision", tumorHeterogeneityLonger2$measurementType)
- # tumorHeterogeneityLonger2$measurementType <- gsub("meanRecall", "recall", tumorHeterogeneityLonger2$measurementType)
-
- # tumorHeterogeneityLonger2$whichSD <- gsub("sdAccuracy", "Accuracy", tumorHeterogeneityLonger2$whichSD)
- # tumorHeterogeneityLonger2$whichSD <- gsub("sdPrecision", "recision", tumorHeterogeneityLonger2$whichSD)
   tumorHeterogeneityLonger2$whichSD <- gsub("sd", "", tumorHeterogeneityLonger2$whichSD)
 
   tumorHeterogeneityLonger3 <- tumorHeterogeneityLonger2 %>% filter(whichSD == measurementType)
