@@ -17,7 +17,7 @@ plotTop3Accuracy <- function(meanAndSDPlotTrain,
   names_to = "topN",
   values_to = "fractionsCorrect"
   )
-  top23Longer$fractionCorrectPercent <- paste0(round(top23Longer$fractionsCorrect * 100, 0), "%")
+  top23Longer$fractionCorrectPercent <- paste0(round(top23Longer$fractionsCorrect * 100, 1), "%")
 
   top23ForSD <- top23Longer %>% pivot_longer(cols = c("sdFractionCorrect", "sdFractionCorrect2", "sdFractionCorrect3"),
                                              names_to = "whichFraction",
@@ -44,13 +44,13 @@ plotTop3Accuracy <- function(meanAndSDPlotTrain,
     geom_col(position = "dodge",
              col = "black") +
     facet_grid(trainOrTest~nCases, space = "free", scales = "free" ) +
-    theme(axis.text.x = element_text(angle = 90),
+    theme(axis.text.x = element_blank(),
           legend.title = element_blank(),
           plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")
           ) +
     geom_text(aes(y = fractionsCorrect - 0.05),
               position = position_dodge(0.9),
-              size = 2,
+              size = 1.8,
               color = "white") +
 
     labs(y = "Fraction correct",
