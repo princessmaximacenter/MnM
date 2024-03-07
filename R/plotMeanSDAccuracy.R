@@ -1,62 +1,75 @@
-#' Plot the results per frequency block
+#' Plot the results per frequency range of tumor entities
 #'
 #' Note: This function has been replaced with the more
+#' @param meanAndSDPlotTrain Dataframe resulting from function calculateMeanAndSDAccuracy, for training data
+#' @param meanAndSDPlotTest Dataframe resulting from function calculateMeanAndSDAccuracy, for test data
 #'
-#' @param meanNumbers
+#' @return Plot showing the accuracy for train and test set for the different frequencies
 #'
-#' @return
-#' @export
-#'
-#' @examples
-plotMeanSDAccuracy <- function(meanNumbers) {
-meanNumbers$fractionCorrectPercent <- paste0("(",round(meanNumbers$meanFractionCorrect,2) * 100, "%)")
+plotMeanSDAccuracy <- function(meanAndSDPlotTrain,
+                               meanAndSDPlotTest = NA
+                               ) {
+  meanAndSDPlotTrain$type <- "Train"
 
-figureDF2 <- pivot_longer(meanNumbers, cols = c(meanFractionCorrect, meanFractionIncorrect),
-                          names_to = "fraction_type", values_to = "all_fractions")
+  if (!is.na(meanAndSDPlotTest)[1]) {
+  meanAndSDPlotTest$type <- "Test"
 
-figureDF2$fraction_type <- factor(figureDF2$fraction_type,
-                                  levels = c("meanFractionIncorrect", "meanFractionCorrect"))
+  meanAndSDPlot <- rbind(meanAndSDPlotTrain,
+                                meanAndSDPlotTest)
 
-#theme_set(theme_classic())
-figureDF3 <- figureDF2 %>% filter(fraction_type == "meanFractionCorrect")
-# Create plot
-ggplot(figureDF2,
-       aes(x = nCases,
-           y = all_fractions
-       )) +
-  theme_classic() +
-  ylab("Fraction correct and incorrect samples") +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.05, hjust=1)) +
-  geom_bar(aes(fill = fraction_type), stat = "identity",
-           col = "darkgrey",
-           position = "stack") +
-  #geom_linerange(aes(ymin= minFractionCorrectMajority, ymax= maxFractionCorrectMajority), width=.2,
-  #               position=position_dodge(.9),
-  #              col = "darkgrey") +
-  geom_errorbar(data = figureDF3, aes(ymin= all_fractions - sdFractionCorrect, ymax= all_fractions + sdFractionCorrect), width=.2,
-                position=position_dodge(.9),
-                col = "#7F7384") +
-  geom_text(data = meanNumbers, aes(label = fractionCorrectPercent,
-                                    y =  meanFractionCorrect - 0.05), size = 3) +
-  geom_text(data = meanNumbers, aes(label = paste0("N = ", nSamples), y = 0.05), size = 3.7) +
-  #  geom_text(data = fractionClassified, aes(label = notClassifiedName, y = 0.98), size = 3.7) +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  scale_fill_manual(values = c("meanFractionCorrect" = "#94D6B4",
-                               "meanFractionIncorrect" =  "#F7C19C"),
-                    labels = c('Incorrectly Classified', 'Correctly Classified')) +
 
-  labs(x = "Number of patients per tumor type (n)") +
-  theme(legend.title = element_blank()) +
-  theme(#axis.text.x = element_text(hjust = -0.2),
-    axis.title.x = element_text(vjust = -1.8),
-    axis.title.y = element_text(vjust = 2)) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0))) +
-  scale_x_discrete(expand = expansion(mult = c(0.1, 0))) +
-  geom_bar(data = figureDF3,
-           aes(y = 1),
-           fill = NA,
-           color = "black",
-           linewidth = 0.7,
-           stat = "identity"
-  )
+  meanAndSDPlot$type <- factor( meanAndSDPlot$type, levels = c("Train", "Test"))
+  } else {
+    meanAndSDPlot <- meanAndSDPlotTrain
+  }
+  meanAndSDPlot$fractionCorrectPercent <- paste0(round(meanAndSDPlot$meanFractionCorrectFiltered * 100, 1), "%")
+
+  ggplot(meanAndSDPlot,
+         aes(x = type,
+             y = meanFractionCorrectFiltered,
+             alpha = type
+         )) +
+    theme_classic() +
+    ylab("Fraction correct samples") +
+    geom_bar(
+      width = 1,
+      stat = "identity",
+      col = "black",
+      position = "stack",
+      fill = "#8bc644") +
+    geom_errorbar(
+      aes(ymin= meanFractionCorrectFiltered - sdFractionCorrect,
+          ymax= meanFractionCorrectFiltered + sdFractionCorrect),
+      width=.2,
+      position=position_dodge(.9),
+      col = "#7F7384"
+
+    ) +
+    scale_alpha_manual(values = c("Train" = 1,
+                                  "Test" = 0.5)) +
+    geom_text(aes(label = fractionCorrectPercent,
+                  y =  meanFractionCorrectFiltered - 0.05), size = 4,
+              alpha = 1) +
+    geom_text(#data = totalMeanThing,
+      aes(label = paste0("N = ", meanCasesFiltered), y = 0.05), size = 4,
+      angle = 90,
+      alpha = 1) +
+    theme(plot.title = element_text(hjust = 0.5)) +
+
+    labs(x = "Number of patients per tumor type (n)") +
+    theme(legend.title = element_blank(),
+          legend.position = "none",
+          axis.ticks.x = element_blank(),
+          axis.title.x = element_text(vjust = -1.8, size = 25),
+          axis.title.y = element_text(vjust = 2, size = 25),
+          axis.text = element_text(size = 13, vjust = 0.05),
+          panel.border = element_blank(), panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.line = element_line(colour = "black"),
+          panel.spacing = unit(1.2,"lines"),
+          plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")
+    ) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0))) +
+    scale_x_discrete(expand = expansion(mult = c(0.1, 0))) +
+    facet_grid(~nCases, scales = "free_x", space = "free_x")
 }
