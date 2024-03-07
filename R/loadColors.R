@@ -10,10 +10,11 @@ loadColors <- function() {
                    "#ffee93", "#f6bc66", "#F28041"
                     )
 
-    neuroCol <<- c(  "#abc4ff",#"#c1d3fe",
+    neuroCol <<- c(  "#abc4ff","#c1d3fe",
                      "#95b8d1",
                                  "#50BEC9", "#9bf6ff","#7DEF73", "#caffbf",
-                                 "#ffee93", "#f6bc66", "#F28041", "#FF452C", "#ff7477", "#ffafcc",
+                                 "#ffee93", "#f6bc66", "#F28041", "#FF452C", #"#ff7477",
+                     "#ffafcc",
                                  "#D4ABEF"
                     )
 
