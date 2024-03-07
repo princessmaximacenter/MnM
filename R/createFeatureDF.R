@@ -10,10 +10,10 @@
 #' models do you want to use, the mean decrease in accuracy (MeanDecreaseAccuracy)
 #' or the mean decrease in the Gini score (MeanDecreaseGini)?
 #' @param nANOVAgenes How many genes did we select during the ANOVA procedure?
-#'
 #' @return Dataframe containing the mean decreases in accuracy / Gini score from removing
 #' different genes during a weighted RF procedure for different models.
 #' The genes are in the rows, the different models in the columns.
+#' @import dplyr tibble
 #'
 createFeatureDF <- function(modelList, whichAccuracyMeasure, nANOVAgenes) {
   ##Create an empty dataframe
@@ -23,12 +23,12 @@ createFeatureDF <- function(modelList, whichAccuracyMeasure, nANOVAgenes) {
   for (i in seq_along(modelList)) {
 
     columnValues <- as.data.frame(modelList[[i]][["importance"]]) %>%
-      select(all_of(whichAccuracyMeasure)) %>%
-      arrange(desc(all_of(whichAccuracyMeasure))) %>%
-      slice(1:nANOVAgenes) %>%
-      rownames_to_column(var = "Gene") %>%
-      mutate(model = i) %>%
-      rename(value = whichAccuracyMeasure)
+      dplyr::select(all_of(whichAccuracyMeasure)) %>%
+      dplyr::arrange(desc(all_of(whichAccuracyMeasure))) %>%
+      dplyr::slice(1:nANOVAgenes) %>%
+      tibble::rownames_to_column(var = "Gene") %>%
+      dplyr::mutate(model = i) %>%
+      dplyr::rename(value = whichAccuracyMeasure)
 
     #Append to Dataframe
     empty_df <- rbind(empty_df, columnValues)

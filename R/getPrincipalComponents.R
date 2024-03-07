@@ -47,7 +47,7 @@ getPrincipalComponents <- function(dataTrain,
 
     dataScale <- apply(dataTrainFiltered[varFeatures,], 2, function(x) (x-meanGenes[varFeatures])/sdGenes[varFeatures])
 
-    pr <- prcomp(t(dataScale),
+    pr <- stats::prcomp(t(dataScale),
                  rank.=nComps)
 
     prList[[i]] <- pr
