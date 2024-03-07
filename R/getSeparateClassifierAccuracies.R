@@ -23,57 +23,44 @@ getSeparateClassifierAccuracies <- function(minority,
                                              classColumn,
                                              higherClassColumn,
                                              subtype = F,
-                                            probabilityThreshold,
+                                            probabilityThresholdMajority,
+                                            probabilityThresholdMinority,
                                              nModels) {
 
-  minorityResults <- convertClass(minority,
-                                  crossValidation = crossValidation,
-                                  classColumn = classColumn,
-                                  higherClassColumn = higherClassColumn,
-                                  metaDataRef = minority$metaData,
-                                  nModels = nModels
-  )
+  predictionsList <- integrateMM(minority = minority,
+              majority = majority,
+              metaDataRef = metaDataRef,
+              nModels = nModels,
+              subtype = subtype,
+              classColumn = classColumn,
+              higherClassColumn = higherClassColumn,
+              crossValidation = crossValidation,
+              integrate = F)
 
-
-  majorityResults <- convertClass(majority,
-                                  crossValidation = crossValidation,
-                                  classColumn = classColumn,
-                                  higherClassColumn = higherClassColumn,
-                                  metaDataRef = majority$metaData,
-                                  nModels = nModels
-  )
-
-
+  predictionsMajority <- predictionsList$predictionsMajority
+  predictionsMinority <- predictionsList$predictionsMinority
 
   if (subtype == F) {
-    minorityResults$originalCall <- minorityResults$originalCallHigherClass
-    minorityResults$predict <- minorityResults$finalHigherClass
-    minorityResults$probability1 <- minorityResults$finalHigherClassScore
 
-    minorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = minorityResults,
+    minorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = predictionsMinority,
                                                         metaDataRef = minority$metaData,
                                                         classColumn = higherClassColumn,
-                                                        probabilityThreshold = probabilityThreshold)
+                                                        probabilityThreshold = probabilityThresholdMinority)
 
-
-    majorityResults$originalCall <- majorityResults$originalCallHigherClass
-    majorityResults$predict <- majorityResults$finalHigherClass
-    majorityResults$probability1 <- majorityResults$finalHigherClassScore
-
-    majorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = majorityResults,
+    majorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = predictionsMajority,
                                                         metaDataRef = majority$metaData,
                                                         classColumn = higherClassColumn,
-                                                        probabilityThreshold = probabilityThreshold)
+                                                        probabilityThreshold = probabilityThresholdMajority)
   } else {
-    minorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = minorityResults,
+    minorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = predictionsMinority,
                                                         metaDataRef = minority$metaData,
                                                         classColumn = classColumn,
-                                                        probabilityThreshold = probabilityThreshold)
+                                                        probabilityThreshold = probabilityThresholdMinority)
 
-    majorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = majorityResults,
+    majorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = predictionsMajority,
                                                         metaDataRef = majority$metaData,
                                                         classColumn = classColumn,
-                                                        probabilityThreshold = probabilityThreshold)
+                                                        probabilityThreshold = probabilityThresholdMajority)
 
   }
 
