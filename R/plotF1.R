@@ -26,7 +26,7 @@ plotF1 <- function(dataMeanF1,
     ) +
     geom_hpline(#aes(fill = fraction_type),
       width = 2,
-      size = 0.001,
+      size = 1,
       stat = "identity",
       col = "darkgrey",
       #col = "black",
