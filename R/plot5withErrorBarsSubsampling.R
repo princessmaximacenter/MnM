@@ -19,12 +19,12 @@
 #' @param subsamplePercentage Which percentage of samples would you want to subsample each time?
 #' @param nModels  How many models were created for the majority voting system?
 #' @param nSeeds How many seeds was the cross-validation setup run with?
-#' @param plotResults Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?
+#' @param returnPlot Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?
 #'
-#' @return  If plotResults == F, a dataframe containing the accuracy ($meanAccuracy), precision ($meanPrecision),
+#' @return  If returnPlot == F, a dataframe containing the accuracy ($meanAccuracy), precision ($meanPrecision),
 #' recall ($meanRecall), and their standard deviations for M&M and other classifirs on a subset of the data ($Subset)
 #' with a specific number of samples ($numberSamples), either within the training data or test set ($TrainOrTest) will be returned.
-#' If plotResults == T, a plot showing the accuracy, precision and recall for M&M and other classifiers for specific subsets of the dataset will be returned.
+#' If returnPlot == T, a plot showing the accuracy, precision and recall for M&M and other classifiers for specific subsets of the dataset will be returned.
 #' Included are error bars for the results of the 10 seeds used for the cross-valiation results.
 #'
 plot5withErrorBarsSubsampling <- function(classColumn,
@@ -40,7 +40,7 @@ plot5withErrorBarsSubsampling <- function(classColumn,
                                           #   otherDataSetsTest,
                                           nModels,
                                           nSeeds,
-                                          plotResults = F
+                                          returnPlot = F
 ) {
 
   predictionsMMAverageList <- combineSeedPredictions(nSeeds = nSeeds,
@@ -210,7 +210,7 @@ plot5withErrorBarsSubsampling <- function(classColumn,
                                tTestDFTotal)
     }
   }
-  if (plotResults == T) {
+  if (returnPlot == T) {
     return(plotComparisonBetweenClassifiers(tTestDFCombined, subsampling = T))
 
   } else {
