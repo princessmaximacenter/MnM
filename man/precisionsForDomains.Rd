@@ -2,7 +2,7 @@
 % Please edit documentation in R/precisionsForDomains.R
 \name{precisionsForDomains}
 \alias{precisionsForDomains}
-\title{Title}
+\title{Compare results between samples from different domains}
 \usage{
 precisionsForDomains(
   nSeeds,
@@ -21,8 +21,38 @@ precisionsForDomains(
 )
 }
 \arguments{
-\item{metaDataRef}{}
+\item{nSeeds}{How many seeds was the cross-validation setup run with?}
+
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+
+\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
+
+\item{domainColumn}{Column in the metadata file that contains the domain labels.}
+
+\item{crossValidation}{Specify whether the results are from the cross-validation setup or not.}
+
+\item{minorityDir}{Directory in which the minority model(s) are stored.}
+
+\item{majorityDir}{Directory in which the majority model(s) are stored.}
+
+\item{nModels}{How many models were created for the majority voting system?}
+
+\item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
+
+\item{throwOut}{Are there samples you would like to remove from the test set due to poor data quality? If so, add their rownames here.}
+
+\item{metaDataTest}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.}
+
+\item{probabilityThreshold}{What is the probability score threshold you would like to use to call a classification 'confident' for M&M?}
+
+\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
+}
+\value{
+Dataframe containing the mean accuracy ($meanAccuracy),
+precision ($meanPrecision), and recall ($meanRecall),
+together with their standard deviations ($sdAccuracy,
+$sdPrecision, $sdRecall), and the total number of samples associated to the domain group ($nSamples)
 }
 \description{
-Title
+Compare results between samples from different domains
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotSampleHeterogeneity.R
 \name{plotSampleHeterogeneity}
 \alias{plotSampleHeterogeneity}
-\title{Title}
+\title{Plot results for data heterogeneity}
 \usage{
 plotSampleHeterogeneity(
   tumorHeterogeneityTrain,
@@ -11,8 +11,16 @@ plotSampleHeterogeneity(
 )
 }
 \arguments{
-\item{subtype}{}
+\item{tumorHeterogeneityTrain}{Dataframe containing the results for different sources of heterogeneity within the training data}
+
+\item{tumorHeterogeneityTest}{Dataframe containing the results for different sources of heterogeneity within the test data}
+
+\item{subtype}{Do you want to perform the analyses on the tumor subtype classification level?}
+}
+\value{
+Plot showing the accuracy, precision and recall for samples coming from different treatment statuses (treated, untreated)
+and tumor statuses (primary, recurrence, metastasis)
 }
 \description{
-Title
+Plot results for data heterogeneity
 }
