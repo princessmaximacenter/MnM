@@ -1,7 +1,15 @@
+#' Plot results for data heterogeneity
+#'
+#' @param tumorHeterogeneityTrain Dataframe containing the results for different sources of heterogeneity within the training data
+#' @param tumorHeterogeneityTest Dataframe containing the results for different sources of heterogeneity within the test data
+#' @param subtype Do you want to perform the analyses on the tumor subtype classification level?
+#'
+#' @return Plot showing the accuracy, precision and recall for samples coming from different treatment statuses (treated, untreated)
+#' and tumor statuses (primary, recurrence, metastasis)
+#' @export
 plotSampleHeterogeneity <- function(tumorHeterogeneityTrain,
                                     tumorHeterogeneityTest,
-                                    FFPEResults,
-                                    FFPEResultsSubtype,
+
                                     subtype
 
                                     ) {
@@ -10,8 +18,6 @@ plotSampleHeterogeneity <- function(tumorHeterogeneityTrain,
 
   totalHeterogeneityDF <- rbind(tumorHeterogeneityTrain,
                                 tumorHeterogeneityTest,
-                                #FFPEResults,
-                                #FFPEResultsSubtype
                                 )
 
   totalHeterogeneityDF$labelType <- as.character(totalHeterogeneityDF$labelType)

@@ -1,3 +1,25 @@
+#' Calculate the influence of tumor heterogeneity on performance M&M
+#'
+#' @param minorityDir Directory in which the minority model(s) are stored.
+#' @param majorityDir Directory in which the majority model(s) are stored.
+#' @param trainOrTest Do you want to calculate for the reference cohort ("Train") or independent test set ("Test")?
+#' @param nSeeds How many seeds was the cross-validation setup run with?
+#' @param nModels How many models were created for the majority voting system?
+#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
+#' @param metaDataTest Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.
+#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param probabilityScoreTumor What is the probability score threshold you would like to use to call a classification 'confident' on the tumor type level?
+#' @param probabilityScoreSubtype What is the probability score threshold you would like to use to call a classification 'confident' on the tumor subtype level?
+#' @param metaDataFFPE Metadata file containing the links between the patients and the tumor (sub)type diagnosis for the FFPE samples.
+#' @param predictionsFFPE Predictions for the FFPE samples on the tumor type level.
+#' @param predictionsFFPESubtype Predictions for the FFPE samples on the tumor subtype level.
+#' @param throwOut Are there samples you would like to remove from the test set due to poor data quality? If so, add their rownames here.
+#'
+#' @return Dataframe containing the results concerning the samples from different sources of tumor heterogeneity for all train or test datasets.
+#' @export
+#' @import magrittr
+#'
 calculateMeanAndSDInfluenceTumorHeterogeneity <- function(
     minorityDir,
     majorityDir,
@@ -11,7 +33,9 @@ calculateMeanAndSDInfluenceTumorHeterogeneity <- function(
     probabilityScoreTumor,
     probabilityScoreSubtype,
     throwOut,
-    testSet
+    metaDataFFPE = NA,
+    predictionsFFPE,
+    predictionsFFPESubtype
   ) {
 
 
@@ -85,7 +109,9 @@ calculateMeanAndSDInfluenceTumorHeterogeneity <- function(
                                                    trainOrTest = trainOrTest,
                                                    probabilityScoreTumor = probabilityScoreTumor,
                                                    probabilityScoreSubtype = probabilityScoreSubtype,
-                                                   testSet = testSet)
+                                                   metaDataFFPE = metaDataFFPE,
+                                                   predictionsFFPE = predictionsFFPE,
+                                                   predictionsFFPESubtype = predictionsFFPESubtype)
    }
     statusDFLonger$seed <- i
     if (i == 1) {
@@ -104,8 +130,6 @@ calculateMeanAndSDInfluenceTumorHeterogeneity <- function(
       meanAccuracy = mean(accuracy),
       meanPrecision = mean(precision),
       meanRecall = mean(recall),
-      #meanIncorrect = mean(1 - fractionCorrect),
-      #meanFractionIncorrectFiltered = mean(1 - fractionCorrectFiltered),
       sdAccuracy = sd(accuracy),
       sdPrecision = sd(precision),
       sdRecall = sd(recall)
