@@ -15,12 +15,14 @@
 #' This is important, as for the cross-validation setup there is a ground truth ($originalCall), while for new predictions there is not.
 #' @param substituteNames Do you want to substitute some names?
 #' @param substituteBy What do you want to substitute it by?
-#' @return List containing the a dataframe with the final predictions (predictionsMMFinal),
+#' @return If integrate = T: List containing the a dataframe with the final predictions (predictionsMMFinal),
 #' and a list with the probability scores for all classification labels that were assigned to samples (MMProbabilityList).
 #'
-#'
-#' predictionsMMFinal contains the top 3 final predictions ($predict{2,3}) with their accompanying probability scores
+#' predictionsMMFinal contains the top 3 final classification labels ($predict{2,3}) with their accompanying probability scores
 #' ($probability{1,2,3} and the original diagnosis label ($originalCall).
+#'
+#' If integrate = F: List containing a dataframe with the final predictions separately for the Minority Classifier ($predictionsMinority)
+#' and Majority Classifier ($predictionsMajority)
 #'
 #' @export
 #'
@@ -31,7 +33,8 @@ integrateMM <- function(minority,
                         subtype,
                         classColumn,
                         higherClassColumn,
-                        crossValidation = T
+                        crossValidation = T,
+                        integrate = T
 
 
                         ) {
@@ -60,7 +63,8 @@ integrateMM <- function(minority,
                                                           linkClassAndHigherClass = linkClassAndHigherClass,
                                                      classColumn = classColumn,
                                                      higherClassColumn = higherClassColumn)
-}
+  }
+  if (integrate == T) {
   MMProbabilityList <- getMMProbabilities(minorityProbability = probabilitiesMinority,
                                           majorityProbability = probabilitiesMajority)
 
@@ -73,5 +77,23 @@ integrateMM <- function(minority,
 
   predictionsList <- list(predictionsMMFinal = predictionsMM,
                           MMProbabilityList = MMProbabilityList)
+  } else {
+    predictionsMinority <- getMajorityPredictions(minority = minority,
+                                                  MMProbabilityList = probabilitiesMinority,
+                                                  higherClassColumn = higherClassColumn,
+                                                  crossValidation = crossValidation,
+                                                  metaDataRef = metaDataRef,
+                                                  subtype = subtype)
+
+    predictionsMajority <- getMajorityPredictions(minority = majority,
+                                                  MMProbabilityList = probabilitiesMajority,
+                                                  higherClassColumn = higherClassColumn,
+                                                  crossValidation = crossValidation,
+                                                  metaDataRef = metaDataRef,
+                                                  subtype = subtype)
+
+    predictionsList <- list(predictionsMinority = predictionsMinority,
+                            predictionsMajority = predictionsMajority)
+  }
   return(predictionsList)
 }
