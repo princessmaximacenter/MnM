@@ -8,9 +8,11 @@ createUMAPcohort(
   countDataRef,
   metaDataRef,
   classColumn,
+  higherClassColumn,
   domainColumn,
   correctRibo = T,
-  abbreviationTumorType,
+  abbreviations,
+  subtype = F,
   proteinFile =
     "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/20230320_proteinCodingGenes_gencode31.csv",
   whichSeed = 1
@@ -27,7 +29,7 @@ the tumor (sub)type diagnosis within the reference cohort.}
 
 \item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
-\item{abbreviationTumorType}{Dataframe containing the links between the tumor (sub)type,
+\item{abbreviations}{Dataframe containing the links between the tumor (sub)type,
 the abbreviation required in the plot, and the domain.}
 
 \item{proteinFile}{In which directory can we find the file specifying the names of protein-coding genes within our dataset?}

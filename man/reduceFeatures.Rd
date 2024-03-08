@@ -24,6 +24,8 @@ reduceFeatures(
 
 \item{howManyFeatures}{How many features should we keep after determining
 the most important genes using the Random Forest Importance Score?}
+
+\item{nANOVAgenes}{How many genes did we select during the ANOVA procedure?}
 }
 \value{
 Names of the top most important genes present in the training data,

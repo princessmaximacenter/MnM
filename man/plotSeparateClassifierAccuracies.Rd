@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotSeparateClassifierAccuracies.R
 \name{plotSeparateClassifierAccuracies}
 \alias{plotSeparateClassifierAccuracies}
-\title{Title}
+\title{Get results for separate classifiers as compared to M&M}
 \usage{
 plotSeparateClassifierAccuracies(
   minorityDir,
@@ -15,15 +15,42 @@ plotSeparateClassifierAccuracies(
   subtype,
   nModels,
   nSeeds,
+  metaDataRef,
   returnPlot = T
 )
 }
 \arguments{
-\item{fractionsCorrectTotal}{}
+\item{minorityDir}{Directory in which the minority model(s) are stored.}
+
+\item{majorityDir}{Directory in which the majority model(s) are stored.}
+
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+
+\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
+
+\item{probabilityThreshold}{What is the probability score threshold you would like to use to call a
+classification 'confident' for a M&M prediction?}
+
+\item{probabilityThresholdMajority}{What is the probability score threshold you would like to use to call a
+classification 'confident' for a Majority Classifier prediction?}
+
+\item{probabilityThresholdMinority}{What is the probability score threshold you would like to use to call a
+classification 'confident' for a Minority Classifier prediction?}
+
+\item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
+
+\item{nModels}{How many models were created for the majority voting system?}
+
+\item{nSeeds}{How many seeds was the cross-validation setup run with?}
+
+\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.}
+
+\item{returnPlot}{Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?}
 }
 \value{
-plot with the separate classifier accuracies per frequency bin.
+plot with the separate classifier accuracy (Minority Classifier,
+Majority Classifier and M&M) stratified on population frequency.
 }
 \description{
-Title
+Get results for separate classifiers as compared to M&M
 }

@@ -17,7 +17,7 @@ plot5withErrorBarsSubsampling(
   subsamplePercentage,
   nModels,
   nSeeds,
-  plotResults = F
+  returnPlot = F
 )
 }
 \arguments{
@@ -49,13 +49,13 @@ and what is the name that you would like to attach to the subset of the data ($s
 
 \item{nSeeds}{How many seeds was the cross-validation setup run with?}
 
-\item{plotResults}{Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?}
+\item{returnPlot}{Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?}
 }
 \value{
-If plotResults == F, a dataframe containing the accuracy ($meanAccuracy), precision ($meanPrecision),
+If returnPlot == F, a dataframe containing the accuracy ($meanAccuracy), precision ($meanPrecision),
 recall ($meanRecall), and their standard deviations for M&M and other classifirs on a subset of the data ($Subset)
 with a specific number of samples ($numberSamples), either within the training data or test set ($TrainOrTest) will be returned.
-If plotResults == T, a plot showing the accuracy, precision and recall for M&M and other classifiers for specific subsets of the dataset will be returned.
+If returnPlot == T, a plot showing the accuracy, precision and recall for M&M and other classifiers for specific subsets of the dataset will be returned.
 Included are error bars for the results of the 10 seeds used for the cross-valiation results.
 }
 \description{

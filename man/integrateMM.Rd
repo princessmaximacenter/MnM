@@ -41,11 +41,14 @@ This is important, as for the cross-validation setup there is a ground truth ($o
 \item{substituteBy}{What do you want to substitute it by?}
 }
 \value{
-List containing the a dataframe with the final predictions (predictionsMMFinal),
+If integrate = T: List containing the a dataframe with the final predictions (predictionsMMFinal),
 and a list with the probability scores for all classification labels that were assigned to samples (MMProbabilityList).
 
-predictionsMMFinal contains the top 3 final predictions ($predict{2,3}) with their accompanying probability scores
+predictionsMMFinal contains the top 3 final classification labels ($predict{2,3}) with their accompanying probability scores
 ($probability{1,2,3} and the original diagnosis label ($originalCall).
+
+If integrate = F: List containing a dataframe with the final predictions separately for the Minority Classifier ($predictionsMinority)
+and Majority Classifier ($predictionsMajority)
 }
 \description{
 Function to obtain final predictions for the M&M algorithm by combining the results of the Minority & Majority classifiers.

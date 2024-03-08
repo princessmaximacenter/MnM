@@ -45,7 +45,7 @@ calculateMeanAndSDAccuracy(
 
 \item{rounding}{Do you want rounded numbers for the performance scores?}
 
-\item{probabilityThreshold}{What is the threshold you would like to use to call a classification 'confident'?}
+\item{probabilityThreshold}{What is the probability score threshold you would like to use to call a classification 'confident'?}
 }
 \value{
 Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases).

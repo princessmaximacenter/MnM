@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculateMeanAndSDOverall.R
 \name{calculateMeanAndSDOverall}
 \alias{calculateMeanAndSDOverall}
-\title{Title}
+\title{Calculate mean and standard deviation for whole dataset}
 \usage{
 calculateMeanAndSDOverall(
   classColumn,
@@ -51,5 +51,5 @@ calculateMeanAndSDOverall(
 Dataframe to be used for
 }
 \description{
-Title
+Calculate mean and standard deviation for whole dataset
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculateSeparateF1.R
 \name{calculateSeparateF1}
 \alias{calculateSeparateF1}
-\title{Title}
+\title{Calculate performance measures for separate tumor (sub)types}
 \usage{
 calculateSeparateF1(
   nSeeds,
@@ -53,5 +53,5 @@ and sensitivity per tumor (sub)type ($tumorType).
 Results are stratified by the population frequency ($nCases).
 }
 \description{
-Title
+Calculate performance measures for separate tumor (sub)types
 }

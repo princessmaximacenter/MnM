@@ -10,7 +10,7 @@ calculateMulticlassROC(
   classColumn,
   MMProbabilityList,
   filtering,
-  probabilityScore
+  probabilityThreshold
 )
 }
 \arguments{
@@ -18,7 +18,16 @@ calculateMulticlassROC(
 
 \item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
 
-\item{probabilityScore}{}
+\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+
+\item{MMProbabilityList}{List with the probability scores for all classification labels that were assigned to samples.}
+
+\item{filtering}{Do you want to use filtered classifications only?}
+
+\item{probabilityThreshold}{What is the threshold you would like to use to call a classification 'confident'?}
+}
+\value{
+No idea.
 }
 \description{
 Title

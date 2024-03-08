@@ -13,7 +13,7 @@ plotPieChartDomain(
   textSizeClass = 0.5,
   textSizeSubspec = 0.45,
   freqSameTumorType,
-  domainCol,
+  plotColors,
   saveImage = T,
   storeLocation
 )
@@ -37,11 +37,11 @@ Domain column of the domainColumn of the metadata.}
 
 \item{freqSameTumorType}{How many subtypes belong to one tumor type? In order of the tumor types.}
 
-\item{domainCol}{Which colors do you want to use to color your plot?}
+\item{plotColors}{Which colors do you want to use to color your plot?}
 
 \item{saveImage}{Do you want to save your image? Boolean (T/F) input.}
 
-\item{storeLocation}{}
+\item{storeLocation}{Where do you want to save the image?}
 }
 \value{
 Piechart of how many samples are present within the dataset belonging to a

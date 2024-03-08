@@ -9,13 +9,13 @@ plotConfusionMatrixPerDomain(
   confusionPlotDFSubtype,
   abbreviationSubtype,
   nonAvailableTiles,
-  domainCol,
+  domainColor,
   colorTiles = "#012695"
 )
 }
 \arguments{
 \item{domain}{Which domain do you want to plot? This name should be present in the
-domainColumn of the metadata.}
+domainColorumn of the metadata.}
 
 \item{confusionPlotDFSubtype}{Dataframe specifying how often certain reference-prediction
 combinations for the tumor subtypes are present.}
@@ -25,7 +25,7 @@ the abbreviation required in the plot, the tumor type and the domain.}
 
 \item{nonAvailableTiles}{A dataframe containing the empty tiles for a confusion matrix plot.}
 
-\item{domainCol}{Which colors should we use for each designated tumor type?}
+\item{domainColor}{Which colors should we use for each designated tumor type?}
 
 \item{colorTiles}{Which domain color do we want to use?}
 }
