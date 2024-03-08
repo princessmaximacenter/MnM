@@ -12,7 +12,7 @@
 #' @param nModels  How many models were created for the majority voting system?
 #' @param nSeeds How many seeds was the cross-validation setup run with?
 #' @param rounding Do you want rounded numbers for the performance scores?
-#' @param probabilityThreshold What is the threshold you would like to use to call a classification 'confident'?
+#' @param probabilityThreshold What is the probability score threshold you would like to use to call a classification 'confident'?
 #'
 #' @return Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases).
 #' Included are the averages for the percentage of correctly and incorrectly classified samples ($meanFractionCorrect and $meanFractionIncorrect),

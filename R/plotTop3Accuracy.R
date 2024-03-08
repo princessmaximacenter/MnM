@@ -1,3 +1,16 @@
+#' Plot accuracy within the top 3 highest scoring classification labels M&M
+#'
+#' @param meanAndSDPlotTrain Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases) for the reference cohort.
+#' Object obtained from running the function calculateMeanAndSDAccuracy
+#' @param meanAndSDPlotTest  Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases) for the test set.
+#' Object obtained from running the function calculateMeanAndSDAccuracy
+#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
+#' @param subtype Do you want to analyse the results on the tumor subtype classification level?
+#'
+#' @return Plot showing the accuracy if not only the top scoring classification label, but also the second and third highest labels are taken into consideration.
+#' Plot is segregated into the different class frequencies.
+#' @export
+#'
 plotTop3Accuracy <- function(meanAndSDPlotTrain,
                              meanAndSDPlotTest,
                              metaDataRef,

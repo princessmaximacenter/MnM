@@ -1,8 +1,23 @@
-#' Title
+#' Get results for separate classifiers as compared to M&M
 #'
-#' @param fractionsCorrectTotal
+#' @param minorityDir Directory in which the minority model(s) are stored.
+#' @param majorityDir Directory in which the majority model(s) are stored.
+#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param probabilityThreshold What is the probability score threshold you would like to use to call a
+#' classification 'confident' for a M&M prediction?
+#' @param probabilityThresholdMajority What is the probability score threshold you would like to use to call a
+#' classification 'confident' for a Majority Classifier prediction?
+#' @param probabilityThresholdMinority What is the probability score threshold you would like to use to call a
+#' classification 'confident' for a Minority Classifier prediction?
+#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
+#' @param nModels How many models were created for the majority voting system?
+#' @param nSeeds How many seeds was the cross-validation setup run with?
+#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
+#' @param returnPlot Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?
 #'
-#' @return plot with the separate classifier accuracies per frequency bin.
+#' @return plot with the separate classifier accuracy (Minority Classifier,
+#' Majority Classifier and M&M) stratified on population frequency.
 #'
 plotSeparateClassifierAccuracies <- function(minorityDir,
                                              majorityDir,

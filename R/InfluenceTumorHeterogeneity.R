@@ -1,19 +1,19 @@
-#' Title
+#'  Calculate results for single dataset concerning tumor heterogeneity
 #'
-#' @param metaDataRef
-#' @param predictionsMM
-#' @param predictionsMMSubtype
-#' @param trainOrTest
-#' @param probabilityScoreTumor
-#' @param probabilityScoreSubtype
-#' @param metaDataFFPE
-#' @param predictionsFFPE
-#' @param predictionsFFPESubtype
+#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
+#' @param predictionsMM Dataframe containing the top 3 final tumor type classification labels ($predict{2,3}) with their accompanying probability scores
+#' ($probability{1,2,3} and the original diagnosis label ($originalCall).
+#' @param predictionsMMSubtype Dataframe containing the top 3 final tumor subtype classification labels ($predict{2,3}) with their accompanying probability scores
+#' ($probability{1,2,3} and the original diagnosis label ($originalCall).
+#' @param trainOrTest Do you want to calculate for the reference cohort ("Train") or independent test set ("Test")?
+#' @param probabilityScoreTumor What is the probability score threshold you would like to use to call a classification 'confident' on the tumor type level?
+#' @param probabilityScoreSubtype What is the probability score threshold you would like to use to call a classification 'confident' on the tumor subtype level?
+#' @param metaDataFFPE Metadata file containing the links between the patients and the tumor (sub)type diagnosis for the FFPE samples.
+#' @param predictionsFFPE Predictions for the FFPE samples on the tumor type level.
+#' @param predictionsFFPESubtype Predictions for the FFPE samples on the tumor subtype level.
 #'
-#' @return
-#' @export
+#' @return Dataframe containing the results for different sources of heterogeneity within one dataset.
 #'
-#' @examples
 InfluenceTumorHeterogeneity <- function(metaDataRef,
                                         predictionsMM,
                                         predictionsMMSubtype,

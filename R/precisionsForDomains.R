@@ -1,7 +1,29 @@
+#' Compare results between samples from different domains
+#'
+#' @param nSeeds How many seeds was the cross-validation setup run with?
+#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Column in the metadata file that contains the domain labels.
+#' @param crossValidation Specify whether the results are from the cross-validation setup or not.
+#' @param minorityDir Directory in which the minority model(s) are stored.
+#' @param majorityDir Directory in which the majority model(s) are stored.
+#' @param nModels How many models were created for the majority voting system?
+#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
+#' @param throwOut Are there samples you would like to remove from the test set due to poor data quality? If so, add their rownames here.
+#' @param metaDataTest Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.
+#' @param probabilityThreshold What is the probability score threshold you would like to use to call a classification 'confident' for M&M?
+#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
+#'
+#' @return Dataframe containing the mean accuracy ($meanAccuracy),
+#' precision ($meanPrecision), and recall ($meanRecall),
+#' together with their standard deviations ($sdAccuracy,
+#' $sdPrecision, $sdRecall), and the total number of samples associated to the domain group ($nSamples)
+#' @export
+#'
 precisionsForDomains <- function( nSeeds,
           classColumn,
           higherClassColumn,
-          domainCol = "Domain",
+          domainColumn,
           crossValidation,
           minorityDir,
           majorityDir,
@@ -9,6 +31,7 @@ precisionsForDomains <- function( nSeeds,
           subtype,
           throwOut,
           metaDataTest,
+          probabilityThreshold,
           metaDataRef) {
 
 
@@ -45,17 +68,7 @@ precisionsForDomains <- function( nSeeds,
       }
     }
 
-
-
-
-
-    if (subtype == T) {
-      probabilityThreshold <- 0.7
-    } else {
-      probabilityThreshold <- 0.8
-
-    }
-    ourDomains <- unique(metaDataRef[,domainCol])
+    ourDomains <- unique(metaDataRef[,domainColumn])
 
     if (crossValidation == F) {
       metaData <- metaDataTest

@@ -1,3 +1,14 @@
+#' Calculate per tumor (sub)type performance
+#'
+#' @param predictionsMM Predictions for samples by M&M,
+#' @param metaDataRef  Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
+#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param probabilityThreshold What is the probability score threshold you would like to use to call a classification 'confident' for M&M?
+#' @param filterOrNot Do you want to filter the 'confident' classifications only for your calculation?
+#'
+#' @return Dataframe containing the tumor (sub)type with its associated precision ($Precision), F1 score ($F1), sensitivity ($Sensitivity) and recall ($Recall),
+#' and which population frequency bin it belongs to.
+#'
 extractIndividualValuesF1 <- function(predictionsMM,
                                       metaDataRef,
                                       classColumn,
