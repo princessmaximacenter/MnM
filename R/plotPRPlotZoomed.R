@@ -26,7 +26,8 @@ dataPRFiltered <- dataPR %>% filter(trainOrTest == "Train",
     # scale_color_manual(values = c("M&M" = "#606ca5",
     #                               "Other" =  "#a4b3f0")) +
 
-    scale_color_manual(values = c("#606ca5","#a4b3f0")) +
+    scale_color_manual(values = c("#606ca5","#bdc6e5")) +
+                                  #"#a4b3f0")) +
     theme_classic() +
     theme(
           axis.text.x = element_text(size = 13),
