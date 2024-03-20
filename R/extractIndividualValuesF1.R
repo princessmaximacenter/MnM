@@ -1,6 +1,6 @@
 #' Calculate per tumor (sub)type performance
 #'
-#' @param predictionsMM Predictions for samples by M&M,
+#' @param predictionsMM Predictions for samples by M&M, coming from the function integrateMM.
 #' @param metaDataRef  Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
 #' @param probabilityThreshold What is the probability score threshold you would like to use to call a classification 'confident' for M&M?

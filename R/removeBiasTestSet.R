@@ -12,7 +12,6 @@
 #' from the test set that do not have a corresponding label?
 #' @return The test set without samples belonging to patients from the reference cohort.
 
-#' @export
 #'
 removeBiasTestSet <- function(metaDataRef,
                                     metaDataTest,

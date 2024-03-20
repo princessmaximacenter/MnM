@@ -44,10 +44,7 @@ plotCohortTumorType <- function(dataUMAP,
 
 
   abbreviations %<>% dplyr::filter(!!sym(classColumn) %in% umapDomain$subclass)
-  domainTumorTypes <- abbreviations %>% filter(Domain == domain) %>% dplyr::select(abbreviation) %>% tibble::deframe()
-
-
-  dataLogUMAPlabels <- umapDomain %>% filter(!(duplicated(abbreviation)))
+  domainTumorTypes <- abbreviations %>% dplyr::filter(Domain == domain) %>% dplyr::select(abbreviation) %>% tibble::deframe()
 
   #dataLogUMAPlabels %<>% arrange(subclass)
   #dataLogUMAPlabels$abbreviation <- factor(dataLogUMAPlabels$abbreviation, levels = unique(dataLogUMAPlabels$abbreviation))
