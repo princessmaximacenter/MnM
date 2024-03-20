@@ -8,6 +8,7 @@
 #'
 #' @return Precision-recall curve for train and test dataset of M&M and other classifier, with a shadow for cross-validation.
 #' This function shows a close-up of the high precision range.
+#' @export
 plotPRPlotZoomed <- function(dataPR,
                              otherClassifierName,
                              removeLegend = T) {

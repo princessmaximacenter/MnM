@@ -11,7 +11,6 @@
 #' @param n Specification of the minimum number of samples that should be present for each tumor (sub)type.
 #'
 #' @return The new reference cohort containing only the tumor (sub)types with more than _n_ entries within the dataset.
-#' @export
 #'
 #'@import tidyverse dplyr magrittr
 #'

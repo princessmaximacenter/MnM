@@ -22,6 +22,7 @@
 #' and averaged F1 scores for the average of all tumor entities within the frequency range ($meanF1).
 #' Please note that the precision, F1 and recall are calculated for the confident sample classifications only.
 #'The total amount of samples within each frequency range ($meanSamples) is also specified.
+#' @export
 calculateMeanAndSDAccuracy <- function(classColumn,
                                        higherClassColumn,
                                        minorityDir,

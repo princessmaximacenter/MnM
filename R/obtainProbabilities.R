@@ -8,7 +8,6 @@
 #' @param nModels How many models were used to obtain a final prediction?
 #'
 #' @return List of all the samples containing the probabilities for the different sample predictions from the _nModels_ generated models.
-#' @export
 #'
 obtainProbabilities <- function(classifierResults,
                                    crossValidation,

@@ -8,6 +8,7 @@
 #'
 #' @return Precision-recall curve for train and test dataset of M&M and other classifier, with a shadow for cross-validation.
 #' This function shows the full range from 0-1 for the precision values.
+#' @export
 #'
 plotPRPlotGlobal <- function(dataPR,
                              otherClassifierName) {

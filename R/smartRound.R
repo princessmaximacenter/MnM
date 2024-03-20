@@ -7,7 +7,6 @@
 #' @param digits number of decimals the vector needs to be rounded to.
 #'
 #' @return vector with rounded doubles with _digits_ decimals.
-#' @export
 #'
 smartRound <- function(x, digits = 0) {
   up <- 10 ^ digits

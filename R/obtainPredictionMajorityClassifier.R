@@ -15,7 +15,6 @@
 #'
 #' @return Dataframe containing the predictions for the _nModels_ different generated models, with the different folds
 #' in the columns and the different samples to be predicted in the rows.
-#' @export
 #' @import magrittr
 #'
 obtainPredictionMajorityClassifier <- function(rotationsAndScalingsList,

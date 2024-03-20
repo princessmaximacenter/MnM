@@ -9,7 +9,6 @@
 #'
 #' @return A list with the specified number of different training data subsets from the reference cohort,
 #' all with the specified maximum samples per tumor (sub)type.
-#' @export
 #'
 obtainTrainData <- function(metaDataRef, classColumn, maxSamplesPerType = 50, nModels = 100) {
 

@@ -4,7 +4,7 @@
 #' with their accompanying probability scores ($probability{1,2,3} and the original diagnosis label ($originalCall).
 #' @return Dataframe containing the macro-F1 score for the unfiltered (macroF1) and filtered dataset (macroF1FilteredWithNA, macroF1Filtered), median F1 score
 #' for the unfiltered (medianF1) and filtered dataset (medianF1Filtered).
-#'
+#' @export
 getF1ScoreMetrics <- function(predictionsMM) {
 
   tumorConfusionMatrix <- confusionMatrix(factor(predictionsMM$predict,

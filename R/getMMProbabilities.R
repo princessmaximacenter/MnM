@@ -8,7 +8,6 @@
 #' @param minorityProbability List of all samples containing the probabilities for the different sample predictions from the Minority classifier.
 #'
 #' @return List of all the samples containing the probabilities for the different sample predictions from the integrated M&M classifier.
-#' @export
 #'
 getMMProbabilities <- function(majorityProbability,
                                minorityProbability) {

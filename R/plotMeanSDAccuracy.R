@@ -1,11 +1,11 @@
 #' Plot the results per frequency range of tumor entities
 #'
 #' Note: This function has been replaced with the more
-#' @param meanAndSDPlotTrain Dataframe resulting from function calculateMeanAndSDAccuracy, for training data
+#' @param meanAndSDPlotTrain Dataframe resulting from function calculateMeanAndSDAccuracy, for reference cohort data
 #' @param meanAndSDPlotTest Dataframe resulting from function calculateMeanAndSDAccuracy, for test data
 #'
 #' @return Plot showing the accuracy for train and test set for the different frequencies
-#'
+#' @export
 plotMeanSDAccuracy <- function(meanAndSDPlotTrain,
                                meanAndSDPlotTest = NA
                                ) {
