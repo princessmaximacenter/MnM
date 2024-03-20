@@ -62,14 +62,10 @@ plotComparisonBetweenClassifiers <- function(comparisonDF, subsampling) {
     ) +
     geom_col(
       position = position_dodge(0.9),
-      #position = "dodge",
-      # stat = "identity"
       color = "black"
     ) +
     scale_fill_manual(values = c("M&M" = "#606ca5",
-                                 "Other" =  "#a4b3f0")) +
-    #scale_color_manual(values = c("train" = "black",
-    #                               "test" = "black")) +
+                                 "Other" = "#bdc6e5")) +
     facet_grid(measurementType  ~ Subset) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05)),
                        limits = c(0,1.05)) +
@@ -80,7 +76,9 @@ plotComparisonBetweenClassifiers <- function(comparisonDF, subsampling) {
     ) +
     theme(axis.title.y = element_blank(),
           axis.title.x = element_blank(),
-          axis.text = element_text(size = 13),
+          #axis.text = element_text(size = 13),
+          axis.text.x = element_text(size = 15,  hjust=1, vjust = 0.05),
+          axis.text.y = element_text(size = 15),
           legend.position = "none",
           strip.text = element_text(
             size = 15)

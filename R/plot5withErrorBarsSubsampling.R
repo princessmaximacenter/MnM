@@ -198,10 +198,6 @@ plot5withErrorBarsSubsampling <- function(classColumn,
       }
     }
 
-    #tTestDFTotal$recallDiff <- tTestDFTotal$recallMnM - tTestDFTotal$recallOther
-    #tTestDFTotal$accuracyDiff <- tTestDFTotal$accuracyMnM - tTestDFTotal$accuracyOther
-    #tTestDFTotal$precisionDiff <- tTestDFTotal$precisionMnM - tTestDFTotal$precisionOther
-
     if (i == 1) {
       tTestDFCombined <- tTestDFTotal
 
