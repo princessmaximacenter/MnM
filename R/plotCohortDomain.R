@@ -10,8 +10,13 @@
 #' color coded by the domain.
 #' @export
 #'
-plotCohortDomain <- function(dataUMAP) {
+plotCohortDomain <- function(dataUMAP, useLabels) {
 
+  dataUMAP$Domain <- gsub("Neuro", "Neurological tumors", dataUMAP$Domain)
+  dataUMAP$Domain <- gsub("Hemato", "Hematological tumors", dataUMAP$Domain)
+  dataUMAP$Domain <- gsub("Solid", "Solid tumors", dataUMAP$Domain)
+
+  dataLogUMAPlabels <- dataUMAP %>% filter(!(duplicated(Domain)))
   umapCohortDomain <- dataUMAP %>%
     ggplot(aes(x = UMAP1,
                y = UMAP2
@@ -34,10 +39,27 @@ plotCohortDomain <- function(dataUMAP) {
           legend.position = "none",
           plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")) +
 
-    scale_color_manual(values = c("Hemato" = "#880808",
-                                  "Solid" =  "#D1944A",
-                                  "Neuro" = "#012695"),
+    scale_color_manual(values = c("Hematological tumors" = "#880808",
+                                  "Solid tumors" =  "#D1944A",
+                                  "Neurological tumors" = "#012695"),
                        labels = c("Blood tumors", 'Neurological tumors', "Solid tumors"))
+
+  if (useLabels == T) {
+    umapCohortDomain <- umapCohortDomain +
+      ggrepel::geom_label_repel(data = dataLogUMAPlabels,
+                                aes(color = Domain,
+                                    label = Domain),
+                                max.overlaps = 40,
+                                size=4,
+                                seed = 1,
+                                label.size = 1,
+                                show.legend = F,
+                                fill = NA,
+                                #       nudge_x = c(0.9, 3, -0.5, -3, 0.5, rep(0, times = length(unique(bloodTsne_df2$subclass))-5)),
+                                #     nudge_y = c(0, -1, -2.5, rep(0, times = length(unique(bloodTsne_df2$subclass)) - 3)),
+                                segment.alpha = 0
+      )
+  }
 
   return(umapCohortDomain)
 }
