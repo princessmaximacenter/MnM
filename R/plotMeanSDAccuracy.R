@@ -30,7 +30,7 @@ plotMeanSDAccuracy <- function(meanAndSDPlotTrain,
              alpha = type
          )) +
     theme_classic() +
-    ylab("Fraction correct samples") +
+    ylab("Precision") +
     geom_bar(
       width = 1,
       stat = "identity",
