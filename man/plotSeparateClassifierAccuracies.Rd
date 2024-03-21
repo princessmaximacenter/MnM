@@ -48,8 +48,9 @@ classification 'confident' for a Minority Classifier prediction?}
 \item{returnPlot}{Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?}
 }
 \value{
-plot with the separate classifier accuracy (Minority Classifier,
+If returnPlot = T: Plot with the separate classifier accuracy (Minority Classifier,
 Majority Classifier and M&M) stratified on population frequency.
+If returnPlot = F: Dataframe containing the fraction correct labels within the top1, top2 and top3 classification labels.
 }
 \description{
 Get results for separate classifiers as compared to M&M

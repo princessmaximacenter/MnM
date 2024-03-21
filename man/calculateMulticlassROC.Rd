@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculateMulticlassROC.R
 \name{calculateMulticlassROC}
 \alias{calculateMulticlassROC}
-\title{Title}
+\title{Calculate per tumor entity AUC curve}
 \usage{
 calculateMulticlassROC(
   predictionsMMFinal,
@@ -27,8 +27,8 @@ calculateMulticlassROC(
 \item{probabilityThreshold}{What is the threshold you would like to use to call a classification 'confident'?}
 }
 \value{
-No idea.
+Dataframe containing the per-sample probability scores for each tumor entity.
 }
 \description{
-Title
+Calculate per tumor entity AUC curve
 }

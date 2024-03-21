@@ -13,7 +13,7 @@ extractIndividualValuesF1(
 )
 }
 \arguments{
-\item{predictionsMM}{Predictions for samples by M&M,}
+\item{predictionsMM}{Predictions for samples by M&M, coming from the function integrateMM.}
 
 \item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.}
 

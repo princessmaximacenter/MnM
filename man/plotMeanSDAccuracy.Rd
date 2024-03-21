@@ -7,7 +7,7 @@
 plotMeanSDAccuracy(meanAndSDPlotTrain, meanAndSDPlotTest = NA)
 }
 \arguments{
-\item{meanAndSDPlotTrain}{Dataframe resulting from function calculateMeanAndSDAccuracy, for training data}
+\item{meanAndSDPlotTrain}{Dataframe resulting from function calculateMeanAndSDAccuracy, for reference cohort data}
 
 \item{meanAndSDPlotTest}{Dataframe resulting from function calculateMeanAndSDAccuracy, for test data}
 }

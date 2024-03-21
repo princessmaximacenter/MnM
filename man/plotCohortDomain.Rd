@@ -4,7 +4,7 @@
 \alias{plotCohortDomain}
 \title{Plot UMAP Domains}
 \usage{
-plotCohortDomain(dataUMAP)
+plotCohortDomain(dataUMAP, useLabels)
 }
 \arguments{
 \item{dataUMAP}{Dataframe containing the UMAP coordinates, the tumor type ($subclass),
