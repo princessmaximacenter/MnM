@@ -2,7 +2,7 @@
 % Please edit documentation in R/PRPlotComparison.R
 \name{PRPlotComparison}
 \alias{PRPlotComparison}
-\title{Title}
+\title{Calculate measures for PR-plot generation}
 \usage{
 PRPlotComparison(
   predictionsMM,
@@ -26,6 +26,9 @@ PRPlotComparison(
 
 \item{scoreName}{Column within otherClassifierResults containing the probability score.}
 }
+\value{
+Dataframe containing the sensitivity, specificity, precision and recall for both M&M and other classifier.
+}
 \description{
-Title
+Calculate measures for PR-plot generation
 }

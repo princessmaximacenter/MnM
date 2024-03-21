@@ -48,7 +48,8 @@ calculateMeanAndSDOverall(
 \item{probabilityThreshold}{What is the threshold you would like to use to call a classification 'confident'?}
 }
 \value{
-Dataframe to be used for
+Dataframe with performance for all samples within the dataset combined,
+instead of with stratification by tumor (sub)type frequency within reference cohort.
 }
 \description{
 Calculate mean and standard deviation for whole dataset

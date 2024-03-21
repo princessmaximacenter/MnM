@@ -7,7 +7,7 @@
 plotAccuraciesPerTumorTypeSize(fractionsCorrect)
 }
 \arguments{
-\item{fractionsCorrect}{Dataframe containing the results per tumor type size block.}
+\item{fractionsCorrect}{Dataframe containing the results per tumor type size block obtained from function 'getAccuraciesPerTumorTypeSize'.}
 }
 \value{
 ggplot object that contains the barplot with the accuracies for the
