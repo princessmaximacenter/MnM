@@ -16,8 +16,9 @@
 #' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
 #' @param returnPlot Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?
 #'
-#' @return plot with the separate classifier accuracy (Minority Classifier,
+#' @return If returnPlot = T: Plot with the separate classifier accuracy (Minority Classifier,
 #' Majority Classifier and M&M) stratified on population frequency.
+#' If returnPlot = F: Dataframe containing the fraction correct labels within the top1, top2 and top3 classification labels.
 #'
 plotSeparateClassifierAccuracies <- function(minorityDir,
                                              majorityDir,
@@ -36,37 +37,6 @@ plotSeparateClassifierAccuracies <- function(minorityDir,
   if (require("ungeviz") == F) {
     devtools::install_github("fwallis/ungeviz")
   }
-  # This was V1
-  # fractionsCorrectTotal %>%
-  #     ggplot(aes(
-  #     x = nCases,
-  #     y = fractionCorrect,
-  #     col = classifier,
-  #     #fill = classifier
-  #   )) +
-  #   #geom_point(shape = 15) +
-  #   geom_hpline(stat = "identity", size = 1) +
-  #   #geom_point() +
-  #   # geom_bar(stat = "identity",
-  #   #         position = "dodge",
-  #   #         color = "black",
-  #   #         width = 0.6
-  #   #         ) +
-  #   theme_classic() +
-  #   ylim(0, 1) +
-  #   theme(axis.text.x = element_text(angle = 90, vjust = 0.05, hjust=1)) +
-  #   labs(x = "Number of patients per tumor type (n)",
-  #        y = "Accuracy") +
-  #   theme(legend.title = element_blank()) +
-  #   theme(#axis.text.x = element_text(hjust = -0.2),
-  #     axis.title.x = element_text(vjust = -1.8),
-  #     axis.title.y = element_text(vjust = 2),
-  #     #legend.position = "none",
-  #     plot.margin = unit(c(0.2, 0.6, 0.5, 0.5), "lines")) +
-  #   scale_color_manual(values = c("Minority Classifier" = "#f8766d",
-  #                                 "Majority Classifier" =  "#00bfc4"))
-# e78784
-  # 7daff9
 
   for (i in seq(1:nSeeds)) {
       minorityDoc <- paste0(minorityDir, "seed",i, "/crossValidationMinorityResults.rds")
@@ -151,23 +121,14 @@ plotSeparateClassifierAccuracies <- function(minorityDir,
       x = whichTop,
       y = accuracy,
       col = classifier,
-      #fill = classifier,
       group = classifier
     )) +
-    #geom_point(shape = 15) +
-    #ungeviz::geom_hpline(aes(y = fractionCorrectFiltered),
-    #                     stat = "identity",
-    #                     position = position_dodge(width = 0.9),
-    #                     size = 1) +
-    geom_hpline(#x = 0.5,
+    geom_hpline(
       stat = "identity",
-      #position = position_dodge(width = 0.9),
-      #color = "grey",
       size = 1) +
 
     theme_classic() +
     ylim(0, 1) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.05, hjust=1)) +
     labs(x = "Number of patients per tumor type (n)",
          y = "Accuracy") +
 
@@ -177,17 +138,15 @@ plotSeparateClassifierAccuracies <- function(minorityDir,
     )) +
 
     theme(legend.title = element_blank()) +
-    theme(#axis.text.x = element_text(hjust = -0.2),
-      axis.title.x = element_text(vjust = -1.8, size = 15),
-      axis.title.y = element_text(vjust = 2, size = 15),
+    theme(
+      axis.title.x = element_text(vjust = -1, size = 20),
+      axis.title.y = element_text(vjust = 2, size = 20),
 
-      axis.text.x = element_text(size = 10),
-      axis.text.y = element_text(size = 10),
-
-      #axis.text.x = element_blank(),
-      #axis.ticks.x = element_blank(),
+      axis.text.x = element_text(size = 15,  hjust=1, vjust = 0.05, angle = 90),
+      axis.text.y = element_text(size = 15),
+      strip.text = element_text(size = 8),
       legend.position = "none",
-      plot.margin = unit(c(0.2, 0.6, 0.5, 0.5), "lines")) +
+      plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "lines")) +
     facet_grid( ~ nCases) +
     geom_vline(xintercept = 2.6, linetype = 2)
 if (subtype == T) {
