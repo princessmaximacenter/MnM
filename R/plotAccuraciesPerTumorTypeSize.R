@@ -1,6 +1,6 @@
 #' Plot the accuracies of the filtered different tumor type predictions per size block
 #'
-#' @param fractionsCorrect Dataframe containing the results per tumor type size block.
+#' @param fractionsCorrect Dataframe containing the results per tumor type size block obtained from function 'getAccuraciesPerTumorTypeSize'.
 #'
 #' @return ggplot object that contains the barplot with the accuracies for the
 #' tumor types of different sample bins (e.g. only 3 available samples per tumor type is a bin).
@@ -30,14 +30,6 @@ plotAccuraciesPerTumorTypeSize <- function(fractionsCorrect) {
 
   fractionsCorrect$fractionCorrectPercent <- paste0("(",fractionsCorrect$fractionCorrectFiltered * 100, "%)")
   fractionsCorrect$fractionCorrectPercentUnfiltered <- paste0("(", fractionsCorrect$fractionCorrect * 100, "%)")
-  # Create grob
-  #label <- "N = Number of\n samples per bin"
-  #textgrob <- textGrob(label, gp = gpar(cex = .75), )
-  #width <- unit(1, "grobwidth",textgrob) + unit(10, "points")
-  #height <- unit(1, "grobheight", textgrob)+ unit(10, "points")
-  #rectgrob <- rectGrob(gp=gpar(colour = "black", fill = NA), height = height, width = width)
-  #labelGrob <- gTree("labelGrob", children = gList(rectgrob, textgrob))
-
   # Create plot
   myPlot <-  ggplot2::ggplot(figureDF,
                     aes(x = nCases,

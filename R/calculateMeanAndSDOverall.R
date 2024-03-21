@@ -14,7 +14,8 @@
 #' @param subset Do you want to only include a subset of the data for the performance measure calculations? If so, add their rownames here.
 #' @param probabilityThreshold What is the threshold you would like to use to call a classification 'confident'?
 #'
-#' @return Dataframe to be used for
+#' @return Dataframe with performance for all samples within the dataset combined,
+#' instead of with stratification by tumor (sub)type frequency within reference cohort.
 #'
 calculateMeanAndSDOverall <- function(classColumn,
                                       higherClassColumn,

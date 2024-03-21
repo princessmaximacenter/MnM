@@ -1,3 +1,10 @@
+#' Obtain probabilities per sample per class
+#'
+#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
+#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param MMProbabilityList List with the probability scores for all classification labels that were assigned to samples.
+#'
+#' @return Dataframe containing the probabilities per class
 getMulticlassROCObject <- function(metaDataRef,
          classColumn,
          MMProbabilityList

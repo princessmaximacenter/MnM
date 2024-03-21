@@ -1,3 +1,14 @@
+#' Calculate measures for PR-plot generation
+#'
+#' @param predictionsMM Predictions for samples by M&M, coming from the function integrateMM.
+#' @param otherClassifierName What is the name of the other classifier?
+#' @param otherClassifierResults Dataframe containing the clsasifications by the other classifier, together with their probability score.
+#' @param originalCallColumnOtherClassifier Column within otherClassifierResults containing the original diagnosis label
+#' @param otherClassifierPredictionColumn Column within otherClassifierReults containing the prediction
+#' @param scoreName Column within otherClassifierResults containing the probability score.
+#'
+#' @return Dataframe containing the sensitivity, specificity, precision and recall for both M&M and other classifier.
+#'
 PRPlotComparison <- function(predictionsMM, otherClassifierName,
                              otherClassifierResults,
                              originalCallColumnOtherClassifier,
@@ -15,7 +26,6 @@ for (cutoff in seq(from = 0, to = 1.01, by = 0.01)) {
                                 !!sym(originalCallColumnOtherClassifier) != !!sym(otherClassifierPredictionColumn)) %>% nrow()
   FN <- otherClassifierResults %>% filter(!!sym(scoreName) < cutoff,
                                 !!sym(originalCallColumnOtherClassifier) == !!sym(otherClassifierPredictionColumn)) %>% nrow()
-  #recall <- nrow(predictionsFiltered) / nrow(otherClassifierResults)
   binaryScoreDF <- data.frame(cutoff = cutoff,
                               TP = TP,
                               FP = FP,
@@ -49,30 +59,6 @@ totalDF <- rbind(totalbinaryScoreDF,
 colnames(totalDF)[6:10] <- c("Sensitivity", "Specificity",
                              "Precision", "Recall", "type")
 
-#newlineMnM <- data.frame(cutoff = NA,
-#                          TP = NA,
-#                          FP = NA,
-#                          TN = NA,
-#                          FN = NA,
-#                          Sensitivity = NA,
-#                          Specificity = NA,
-#                          Precision = 0,
-#                          Recall = 1,
-#                          type = "M&M")
-#
-# newlineOther <- data.frame(cutoff = NA,
-#                          TP = NA,
-#                          FP = NA,
-#                          TN = NA,
-#                          FN = NA,
-#                          Sensitivity = NA,
-#                          Specificity = NA,
-#                          Precision = 0,
-#                          Recall = 1,
-#                          type = otherClassifierName)
-#totalDF <- rbind(newlineOther,
-#      newlineMnM,
-#      totalDF)
 
 return(totalDF)
 }

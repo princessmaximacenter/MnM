@@ -1,4 +1,24 @@
-precisionRecallPlotData <- function(#predictionsMMTrain,
+#' Generate data for PR-plot comparison M&M v.s. others
+#'
+#' @param minorityDir Directory in which the minority model(s) are stored for the cross-validation setup.
+#' @param majorityDir Directory in which the majority model(s) are stored for the cross-validation setup.
+#' @param predictionsMMTest Classifications of M&M algorithm on the test set, obtained from the function integrateMM.
+#' @param otherClassifierResultsTrain Results for other classifier within the reference cohort.
+#' @param otherClassifierResultsTest Results for other classifier within the test set.
+#' @param otherClassifierName What is the name of the other classifier?
+#' @param originalCallColumnOtherClassifier What column in the results for the other classifier contains the original diagnoses for the samples?
+#' @param otherClassifierPredictionColumn What column in the results for the other classifier contains the classifications?
+#' @param scoreName What column in the results for the other classifier contains the probability scores?
+#' @param nSeeds How many seeds was the cross-validation setup run with?
+#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
+#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
+#' @param nModels How many models should be created for the majority voting system?
+#' @param classColumn  Column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn  Column in the metadata file that contains the tumor type labels.
+#'
+#' @return Dataframe containing the necessary data points to generate PR-plots for M&M versus other classifiers.
+#' @export
+precisionRecallPlotData <- function(
                                     minorityDir,
                                     majorityDir,
          predictionsMMTest,
@@ -72,8 +92,6 @@ precisionRecallPlotData <- function(#predictionsMMTrain,
               meanSpecificity = mean(Specificity),
               meanPrecision = mean(Precision),
               meanRecall = mean(Recall),
-              # minSensitivity = min(Sensitivity),
-              #maxSensitivity = max(Sensitivity),
               minPrecision = min(Precision),
               maxPrecision = max(Precision),
 

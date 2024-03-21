@@ -1,4 +1,4 @@
-#' Title
+#' Calculate per tumor entity AUC curve
 #'
 #' @param predictionsMMFinal Dataframe containing the final classification ($predict) and original diagnosis label ($originalCall).
 #' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
@@ -7,7 +7,7 @@
 #' @param filtering Do you want to use filtered classifications only?
 #' @param probabilityThreshold What is the threshold you would like to use to call a classification 'confident'?
 #'
-#' @return No idea.
+#' @return Dataframe containing the per-sample probability scores for each tumor entity.
 #'
 calculateMulticlassROC <- function(predictionsMMFinal,
                                    metaDataRef,
