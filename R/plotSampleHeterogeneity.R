@@ -85,7 +85,7 @@ plotSampleHeterogeneity <- function(tumorHeterogeneityTrain,
     ) +
     geom_text(position = position_dodge(0.9),
               aes(y = 0.5, label = valuePercent),
-              size = 2.5,
+              size = 4,
               color = "white",
 
     ) +

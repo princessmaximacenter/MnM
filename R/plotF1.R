@@ -14,7 +14,7 @@ plotF1 <- function(dataMeanF1,
           y = meanF1
       )) +
     theme_classic() +
-    ylab("Mean F1 score") +
+    ylab("Mean F1-score") +
     geom_rect(aes(
       xmin = 0,
       xmax = 2,
@@ -34,7 +34,7 @@ plotF1 <- function(dataMeanF1,
       position = "stack") +
     geom_text(#data = dataMeanF1,
               aes(label = meanF1Percent,
-                                     y =  meanF1 - sdF1 - 0.04), size = 4) +
+                                     y =  meanF1 - sdF1 - 0.04), size = 5) +
 
     geom_jitter(data = separateMeanF1, aes(y = meanF1),
                 shape = 19, alpha = 0.7) +
@@ -63,16 +63,14 @@ plotF1 <- function(dataMeanF1,
       legend.title = element_blank(),
       panel.border = element_blank(), panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
-      axis.line = element_line(colour = "black"),
-      panel.spacing = unit(1.2,"lines"),
-      legend.position = "none",
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      axis.title.x = element_text(vjust = -1.8),
-      axis.text = element_text(size = 13),
-      axis.title.y = element_text(vjust = 2),
-      axis.title = element_text(size = 15),
-      plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")) +
+          axis.title.x = element_text(vjust = -1, size = 20),
+          axis.title.y = element_text(vjust = 2, size = 20),
+
+          axis.text.x = element_text(size = 15,  hjust=1, vjust = 0.05, angle = 90),
+          axis.text.y = element_text(size = 15),
+          strip.text = element_text(size = 11),
+          legend.position = "none",
+          plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "lines")) +
 
     scale_y_continuous(expand = expansion(mult = c(0.01, 0.02))) +
     scale_x_discrete(expand = expansion(mult = c(0.1, 0)))

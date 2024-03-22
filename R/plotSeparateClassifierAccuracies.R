@@ -115,7 +115,6 @@ plotSeparateClassifierAccuracies <- function(minorityDir,
 
 
   plotSeparateScores <- fractionCorrectTotalPivoted %>%
-    # filter(whichFraction == "fractionCorrectFiltered") %>%
 
     ggplot(aes(
       x = whichTop,
@@ -144,7 +143,7 @@ plotSeparateClassifierAccuracies <- function(minorityDir,
 
       axis.text.x = element_text(size = 15,  hjust=1, vjust = 0.05, angle = 90),
       axis.text.y = element_text(size = 15),
-      strip.text = element_text(size = 8),
+      strip.text = element_text(size = 11),
       legend.position = "none",
       plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "lines")) +
     facet_grid( ~ nCases) +

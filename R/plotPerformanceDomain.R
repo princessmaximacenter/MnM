@@ -69,7 +69,7 @@ plotPerformanceDomain <- function(precisionDomainTrain,
     facet_grid(measurementType~Domain) +
     geom_text(position = position_dodge(0.9),
               aes(y = 0.5),
-              size = 2.8,
+              size = 4,
               color = "white",
               alpha= 1
     ) +
@@ -87,7 +87,7 @@ plotPerformanceDomain <- function(precisionDomainTrain,
     geom_text(data = (precisionDomainsTotalLongerFiltered %>% filter(measurementType == "Accuracy",
                                                            whichSD == "Accuracy") ),
               aes(label = paste0("N = ", nSamples), y = 1),
-              size = 2.5,
+              size = 3.5,
               color = "black",
               alpha = 1
     )
