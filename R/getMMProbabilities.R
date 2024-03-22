@@ -12,6 +12,7 @@
 getMMProbabilities <- function(majorityProbability,
                                minorityProbability) {
 
+  `%notin%` <- Negate(`%in%`)
   MMProbabilityList <- majorityProbability
   for (i in seq(1:length(minorityProbability))) {
 

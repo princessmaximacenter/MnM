@@ -23,6 +23,7 @@
 #' Please note that the precision, F1 and recall are calculated for the confident sample classifications only.
 #'The total amount of samples within each frequency range ($meanSamples) is also specified.
 #' @export
+#' @import magrittr dplyr
 calculateMeanAndSDAccuracy <- function(classColumn,
                                        higherClassColumn,
                                        minorityDir,
@@ -38,6 +39,7 @@ calculateMeanAndSDAccuracy <- function(classColumn,
          probabilityThreshold
          ) {
 
+  `%notin%` <- Negate(`%in%`)
   for (i in seq(1:nSeeds)) {
     if (crossValidation == T & nSeeds > 1) {
       minorityDoc <- paste0(minorityDir, "seed",i, "/crossValidationMinorityResults.rds")

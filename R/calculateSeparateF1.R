@@ -36,7 +36,7 @@ calculateSeparateF1 <- function(
 
 
 
-
+  `%notin%` <- Negate(`%in%`)
   for (i in seq(1:nSeeds)) {
     if (crossValidation == T) {
       minorityDoc <- paste0(minorityDir, "seed",i, "/crossValidationMinorityResults.rds")
