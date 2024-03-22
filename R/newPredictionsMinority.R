@@ -38,6 +38,7 @@ newPredictionsMinority <- function(createdModelsMinority, countDataNew,
     colnames(randomVector) <- colnames(result)
     result1 <- rbind(result, randomVector)
     probability <-  apply(result1, 1, table)
+    probability <- probability[1]
   } else {
     # Find out how often a certain tumor type prediction is made for a specific sample
     probability <- apply(result, 1, table)
