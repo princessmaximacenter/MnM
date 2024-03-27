@@ -33,7 +33,7 @@ integrateMM <- function(minority,
                         subtype,
                         classColumn,
                         higherClassColumn,
-                        crossValidation = T,
+                        crossValidation,
                         integrate = T
 
 
