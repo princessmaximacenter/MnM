@@ -12,7 +12,7 @@ integrateMM(
   subtype,
   classColumn,
   higherClassColumn,
-  crossValidation = T,
+  crossValidation,
   integrate = T
 )
 }

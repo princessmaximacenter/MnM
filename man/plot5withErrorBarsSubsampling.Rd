@@ -15,6 +15,7 @@ plot5withErrorBarsSubsampling(
   metaDataTest = NA,
   otherDataSets,
   subsamplePercentage,
+  numberSubsamples = 100,
   nModels,
   nSeeds,
   returnPlot = F
@@ -44,6 +45,8 @@ whether we're looking at cross-validation or test set results ($TrainOrTest, sho
 and what is the name that you would like to attach to the subset of the data ($subsetName).}
 
 \item{subsamplePercentage}{Which percentage of samples would you want to subsample each time?}
+
+\item{numberSubsamples}{How often do you want to subsample?}
 
 \item{nModels}{How many models were created for the majority voting system?}
 
