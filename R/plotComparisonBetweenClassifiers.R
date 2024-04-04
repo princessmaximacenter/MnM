@@ -41,7 +41,7 @@ plotComparisonBetweenClassifiers <- function(comparisonDF, subsampling) {
 
   comparisonDFLonger$TrainOrTest <- factor(comparisonDFLonger$TrainOrTest,
                                                levels = c("Train", "Test"))
-  comparisonDFLonger$valuePercent <- paste0(round(comparisonDFLonger$value *100, digits = 1), "%")
+  comparisonDFLonger$valuePercent <- paste0(round(comparisonDFLonger$value *100, digits = 0), "%")
 
   comparisonDFLonger <- comparisonDFLonger %>% filter(whichSD == measurementType)
 
