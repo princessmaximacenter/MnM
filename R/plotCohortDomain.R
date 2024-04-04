@@ -6,12 +6,14 @@
 #'
 #' @param dataUMAP Dataframe containing the UMAP coordinates, the tumor type ($subclass),
 #' the domain ($Domain) and the desired abbreviation for the tumor type ($abbreviation)
+#' @param useLabels Do you want to use labels within your plot (= TRUE) or only show
+#' the different domains with different colors (= FALSE)? Default = TRUE.
 #' @return ggplot with all datapoints from the reference cohort,
 #' color coded by the domain.
 #' @export
 #' @import umap
 #'
-plotCohortDomain <- function(dataUMAP, useLabels) {
+plotCohortDomain <- function(dataUMAP, useLabels = T) {
 
   if (require("ggrepel") == F) {
     remotes::install_github("fwallis/ggrepel")

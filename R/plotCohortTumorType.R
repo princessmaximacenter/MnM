@@ -12,8 +12,10 @@
 #' @param useLabels Do you want to supply labels within the plot?
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
 #' @param subtype Do you want to visualize the subtypes of one tumor type?
-#' #' @param tumorType If subtype == T, which tumor type would you want to visualize?
+#' #' @param tumorType If subtype = T, which tumor type would you want to visualize?
 #' @param useManualColors Do you want to supply the colors to be used within the UMAP for the labels?
+#' @param tumorType If you show a tumor subtype instead of a tumor type (subtype = T),
+#' please specify here which tumor types you would like to visualize (for example: "B-ALL")
 #'
 #' @return ggplot with only the datapoints of the selected domain,
 #' color coded by the tumor type.

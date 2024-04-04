@@ -26,6 +26,8 @@
 #' @param abbreviationTumorType Dataframe containing the links between the tumor type,
 #' the abbreviation required in the plot, and the domain.
 #' @param plotColors Which colors do you want to use to color your plot?
+#' @param includeNumbers  Do you want to show the numbers for the pie chart on the outer edge?
+#' Default is includeNumbers = TRUE.
 #'
 #' @return Piechart of how many samples are present within the dataset belonging to a
 #' certain tumor type, and to a certain tumor subtype.

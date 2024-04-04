@@ -15,7 +15,8 @@
 #' @param plotColors Which colors do you want to use to color your plot?
 #' @param saveImage Do you want to save your image? Boolean (T/F) input.
 #' @param storeLocation Where do you want to save the image?
-#'
+#' @param includeNumbers Do you want to show the numbers for the pie chart on the outer edge?
+#' Default is includeNumbers = TRUE.
 #' @return Piechart of how many samples are present within the dataset belonging to a
 #' certain tumor type, and to a certain tumor subtype.
 #' The piechart is generated for one domain, as there are many different tumor types and subtypes
