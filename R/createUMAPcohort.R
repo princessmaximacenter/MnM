@@ -8,12 +8,16 @@
 #' different genes in the rows.
 #' @param metaDataRef Metadata file containing the links between the patients and
 #' the tumor (sub)type diagnosis within the reference cohort.
-#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #' @param domainColumn Column in the metadata file that contains the tumor domain labels.
 #' @param abbreviations Dataframe containing the links between the tumor (sub)type,
 #' the abbreviation required in the plot, and the domain.
 #' @param proteinFile In which directory can we find the file specifying the names of protein-coding genes within our dataset?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
+#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param correctRibo Do you want to perform a correction for the ribodepletion protocol on your dataset?
+#' @param subtype Do you want to both get the tumor type and subtype labels within your UMAP object?
+#' Default = FALSE, giving only the tumor type labels with the associated abbreviations.
 #'
 #' @return List containing the UMAP-transformed datapoints ($dataUMAP), and the ribodepletion correction model ($riboModelList).
 #' @export
@@ -43,10 +47,16 @@ createUMAPcohort <- function(countDataRef,
   }
   # Log-transform data
   dataLogRef <- log(countDataRef +1) %>% t() %>% as.data.frame()
-
+  if (subtype == T) {
   abbreviations %<>% filter(!!sym(classColumn) %in% unique(metaDataRef[, classColumn]))
 
   metaDataJoined <- left_join(metaDataRef, abbreviations[,c(classColumn, "abbreviation")])
+  } else {
+    abbreviations %<>% filter(!!sym(higherClassColumn) %in% unique(metaDataRef[, higherClassColumn]))
+
+    metaDataJoined <- left_join(metaDataRef, abbreviations[,c(higherClassColumn, "abbreviation")])
+
+  }
   rownames(metaDataJoined) <- rownames(metaDataRef)
   metaDataRef <- metaDataJoined
 
