@@ -25,12 +25,19 @@ different genes in the rows.}
 \item{metaDataRef}{Metadata file containing the links between the patients and
 the tumor (sub)type diagnosis within the reference cohort.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+
+\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
 
 \item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
+\item{correctRibo}{Do you want to perform a correction for the ribodepletion protocol on your dataset?}
+
 \item{abbreviations}{Dataframe containing the links between the tumor (sub)type,
 the abbreviation required in the plot, and the domain.}
+
+\item{subtype}{Do you want to both get the tumor type and subtype labels within your UMAP object?
+Default = FALSE, giving only the tumor type labels with the associated abbreviations.}
 
 \item{proteinFile}{In which directory can we find the file specifying the names of protein-coding genes within our dataset?}
 

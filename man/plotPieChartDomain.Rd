@@ -15,7 +15,8 @@ plotPieChartDomain(
   freqSameTumorType,
   plotColors,
   saveImage = T,
-  storeLocation
+  storeLocation,
+  includeNumbers = T
 )
 }
 \arguments{
@@ -42,6 +43,9 @@ Domain column of the domainColumn of the metadata.}
 \item{saveImage}{Do you want to save your image? Boolean (T/F) input.}
 
 \item{storeLocation}{Where do you want to save the image?}
+
+\item{includeNumbers}{Do you want to show the numbers for the pie chart on the outer edge?
+Default is includeNumbers = TRUE.}
 }
 \value{
 Piechart of how many samples are present within the dataset belonging to a

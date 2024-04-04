@@ -16,7 +16,8 @@ createPieChartImage(
   saveImage = F,
   textSizeClass = 0.5,
   textSizeSubspec = 0.5,
-  plotColors
+  plotColors,
+  includeNumbers = T
 )
 }
 \arguments{
@@ -46,6 +47,9 @@ Domain column of the domainColumn of the metadata.}
 \item{textSizeSubspec}{What size should the letters have for the tumor subtype?}
 
 \item{plotColors}{Which colors do you want to use to color your plot?}
+
+\item{includeNumbers}{Do you want to show the numbers for the pie chart on the outer edge?
+Default is includeNumbers = TRUE.}
 }
 \value{
 Piechart of how many samples are present within the dataset belonging to a

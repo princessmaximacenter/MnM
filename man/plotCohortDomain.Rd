@@ -4,11 +4,14 @@
 \alias{plotCohortDomain}
 \title{Plot UMAP Domains}
 \usage{
-plotCohortDomain(dataUMAP, useLabels)
+plotCohortDomain(dataUMAP, useLabels = T)
 }
 \arguments{
 \item{dataUMAP}{Dataframe containing the UMAP coordinates, the tumor type ($subclass),
 the domain ($Domain) and the desired abbreviation for the tumor type ($abbreviation)}
+
+\item{useLabels}{Do you want to use labels within your plot (= TRUE) or only show
+the different domains with different colors (= FALSE)? Default = TRUE.}
 }
 \value{
 ggplot with all datapoints from the reference cohort,

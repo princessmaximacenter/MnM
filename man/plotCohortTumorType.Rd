@@ -22,12 +22,15 @@ the domain ($Domain) and the desired abbreviation for the tumor type ($abbreviat
 
 \item{domain}{Which domain do you want to plot the tumor types for?}
 
+\item{tumorType}{If you show a tumor subtype instead of a tumor type (subtype = T),
+please specify here which tumor types you would like to visualize (for example: "B-ALL")}
+
 \item{plotColors}{Which colors do you want to use for the tumor types?}
 
 \item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
 
 \item{subtype}{Do you want to visualize the subtypes of one tumor type?
-#' @param tumorType If subtype == T, which tumor type would you want to visualize?}
+#' @param tumorType If subtype = T, which tumor type would you want to visualize?}
 
 \item{abbreviations}{Abbreviations to be used in the plot for the tumor (sub)types.}
 
