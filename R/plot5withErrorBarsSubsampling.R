@@ -20,7 +20,7 @@
 #' @param nModels  How many models were created for the majority voting system?
 #' @param nSeeds How many seeds was the cross-validation setup run with?
 #' @param returnPlot Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?
-#'
+#' @param numberSubsamples How often do you want to subsample?
 #' @return  If returnPlot == F, a dataframe containing the accuracy ($meanAccuracy), precision ($meanPrecision),
 #' recall ($meanRecall), and their standard deviations for M&M and other classifirs on a subset of the data ($Subset)
 #' with a specific number of samples ($numberSamples), either within the training data or test set ($TrainOrTest) will be returned.
@@ -37,6 +37,7 @@ plot5withErrorBarsSubsampling <- function(classColumn,
                                           metaDataTest = NA,
                                           otherDataSets,
                                           subsamplePercentage,
+                                          numberSubsamples = 100,
                                           #   otherDataSetsTest,
                                           nModels,
                                           nSeeds,
@@ -108,14 +109,19 @@ plot5withErrorBarsSubsampling <- function(classColumn,
     subsetName <- otherDataSets[[i]]$subsetName
     trainOrTest <- otherDataSets[[i]]$TrainOrTest
     subsampleNumber <- round(subsamplePercentage * nrow(otherDataSet))
-    if (trainOrTest == "Train") {
-      crossValidation <- T
-      if (subtype == T) {
+    #if (trainOrTest == "Train") {
+     # crossValidation <- T
+      if (subtype == T & trainOrTest == "Train") {
         predictionsMM <- predictionsMMAverageSubtype
-      } else {
+      } else if (subtype == T & trainOrTest == "Test") {
+        predictionsMM <- predictionsMMSubtypeTest
+      } else if (subtype == F & trainOrTest == "Train") {
         predictionsMM <- predictionsMMAverage
+      } else if (subtype == F & trainOrTest == "Test") {
+        predictionsMM <- predictionsMMTest
       }
-      for (subsampleSelection in seq(1:100)) {
+      #}
+      for (subsampleSelection in seq(1:numberSubsamples)) {
         if (subsampleSelection == 1) {
           set.seed(subsampleSelection)
         }
@@ -132,16 +138,16 @@ plot5withErrorBarsSubsampling <- function(classColumn,
       }
 
 
-    } else {
-      crossValidation <- F
-      totalSelectedSamplesList <- list(rownames(otherDataSet))
-      if (subtype == T) {
-        predictionsMM <- predictionsMMSubtypeTest
-      } else {
-        predictionsMM <- predictionsMMTest
-      }
+    #} else {
+     # crossValidation <- F
+      #totalSelectedSamplesList <- list(rownames(otherDataSet))
+      #if (subtype == T) {
+      #  predictionsMM <- predictionsMMSubtypeTest
+      #} else {
+      #  predictionsMM <- predictionsMMTest
+      #}
 
-    }
+    #}
 
     for (subsampleSelection in seq(1:length(totalSelectedSamplesList))) {
 
