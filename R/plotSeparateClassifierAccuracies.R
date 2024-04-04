@@ -35,7 +35,7 @@ plotSeparateClassifierAccuracies <- function(minorityDir,
                                              ) {
 
   if (require("ungeviz") == F) {
-    devtools::install_github("fwallis/ungeviz")
+    remotes::install_github("fwallis/ungeviz")
   }
 
   for (i in seq(1:nSeeds)) {
