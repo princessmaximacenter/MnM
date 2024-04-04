@@ -45,7 +45,8 @@ createPieChartImage <- function(metaDataRef,
          saveImage = F,
          textSizeClass = 0.5,
          textSizeSubspec = 0.5,
-         plotColors) {
+         plotColors,
+         includeNumbers = T) {
 
   pieDF <- getPieDF(metaDataRef = metaDataRef,
                     abbreviationSubtype = abbreviationSubtype,
@@ -75,6 +76,7 @@ plotPieChartDomain(data = pieChartDF,
                      freq = freqSameTumorType,
                    plotColors = plotColors,
                      saveImage = saveImage,
-                    storeLocation = storeLocation
+                    storeLocation = storeLocation,
+                   includeNumbers
 )
 }

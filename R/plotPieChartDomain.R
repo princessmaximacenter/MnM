@@ -31,7 +31,8 @@ plotPieChartDomain <- function(data,
                                freqSameTumorType,
                                plotColors,
                                saveImage = T,
-                               storeLocation) {
+                               storeLocation,
+                               includeNumbers = T) {
 
 
   n <- length(table(data[,higherClassColumn]))
@@ -50,6 +51,7 @@ plotPieChartDomain <- function(data,
   if (saveImage == T) {
     pdf(file = filename ) }
   par(mar=c(0,0,0,0))
+  if (includeNumbers == T) {
   tumorTypeSubtypePie(sapply(unique(data[,classColumn]), function(x) sum(data$counts[data[,classColumn] == x])),
        init.angle = 0,
        labels = data$counts,
@@ -57,7 +59,7 @@ plotPieChartDomain <- function(data,
        radius=0.9,
        cex=0.5,
        col=NULL)
-  par(new=T)
+  par(new=T)}
 
   tumorTypeSubtypePie(sapply(unique(data[,classColumn]),
               function(x) sum(data$counts[data[,classColumn] == x])),
@@ -76,12 +78,14 @@ plotPieChartDomain <- function(data,
        cex=textSizeSubspec,
        col=NULL)
   par(new=T)
+
   tumorTypeSubtypePie(sapply(unique(data[,higherClassColumn]), function(x) sum(data$counts[data[,higherClassColumn] == x])), # White border around subclass
        init.angle = 0,
        labels = rep("",length(unique(data[,higherClassColumn]))),
        border = "white",radius=0.38,
        col=plotColors)
   par(new=T)
+
   tumorTypeSubtypePie(sapply(unique(data[,higherClassColumn]),
               function(x) sum(data$counts[data[,higherClassColumn] == x])),
        init.angle = 0,
@@ -90,6 +94,7 @@ plotPieChartDomain <- function(data,
        cex=textSizeClass,
        col=NULL) # 4
   par(new=T)
+
   tumorTypeSubtypePie(sapply(unique(data[,domainColumn]),
               function(x) sum(data$counts[data[,domainColumn] == x])),
        init.angle = 0,
