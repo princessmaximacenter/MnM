@@ -2,13 +2,17 @@
 % Please edit documentation in R/plotF1Recall.R
 \name{plotF1Recall}
 \alias{plotF1Recall}
-\title{Title}
+\title{Plot F1-score and recall for separate tumors}
 \usage{
-plotF1Recall(meanNumbersTrain)
+plotF1Recall(separateMeanF1)
 }
 \arguments{
-\item{meanNumbersTrain}{}
+\item{separateMeanF1}{Dataframe obtained from function 'calculateSeparateF1' .}
+}
+\value{
+Plot showing the F1 score and recall per tumor (sub)type together,
+stratified based on the tumor's population frequency.
 }
 \description{
-Title
+Plot F1-score and recall for separate tumors
 }
