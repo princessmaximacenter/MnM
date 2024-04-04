@@ -1,14 +1,15 @@
-#' Title
+#' Plot F1-score and recall for separate tumors
 #'
-#' @param meanNumbersTrain
+#' @param separateMeanF1 Dataframe obtained from function 'calculateSeparateF1' .
 #'
-#' @return
+#' @return Plot showing the F1 score and recall per tumor (sub)type together,
+#' stratified based on the tumor's population frequency.
 #' @export
 #'
-plotF1Recall <- function(meanNumbersTrain) {
+plotF1Recall <- function(separateMeanF1) {
 
 
-  meanNumbersTrain2 <- meanNumbersTrain %>% arrange(nCases, meanF1, meanRecall)
+  meanNumbersTrain2 <- separateMeanF1 %>% arrange(nCases, meanF1, meanRecall)
   meanNumbersTrain2$tumorType <- factor(meanNumbersTrain2$tumorType,
                                         levels = unique(meanNumbersTrain2$tumorType))
 

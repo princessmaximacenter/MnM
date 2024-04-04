@@ -1,3 +1,14 @@
+#' Plot F1-scores for tumors from different population frequencies
+#'
+#' @param dataMeanF1 Dataframe obtained from function 'calculateMeanAndSDAccuracy'.
+#' @param separateMeanF1 Dataframe obtained from function 'calculateSeparateF1' .
+#' @param subtype Do you want to visualize the tumor subtype (TRUE) or tumor type (FALSE)?
+#' dataMeanF1 and separateMeanF1 should have been generated on the same level,
+#' being either subtype or tumor type.
+#'
+#' @return Plot showing the average F1 values for tumors stratified by population frequency,
+#' and separate F1 values for the separate tumors within the population frequency blocks.
+#' @export
 plotF1 <- function(dataMeanF1,
                    separateMeanF1,
                    subtype
