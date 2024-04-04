@@ -17,8 +17,8 @@
 #'
 #' @return ggplot with only the datapoints of the selected domain,
 #' color coded by the tumor type.
-#' @import ggrepel
 #' @export
+#' @import umap
 #'
 plotCohortTumorType <- function(dataUMAP,
                                 domain,
@@ -30,6 +30,10 @@ plotCohortTumorType <- function(dataUMAP,
                                 useLabels = T,
                                 useManualColors = F
                                 ) {
+
+  if (require("ggrepel") == F) {
+    remotes::install_github("fwallis/ggrepel")
+  }
 
 
   if (subtype == F) {

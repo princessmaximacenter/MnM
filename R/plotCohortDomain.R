@@ -9,9 +9,13 @@
 #' @return ggplot with all datapoints from the reference cohort,
 #' color coded by the domain.
 #' @export
+#' @import umap
 #'
 plotCohortDomain <- function(dataUMAP, useLabels) {
 
+  if (require("ggrepel") == F) {
+    remotes::install_github("fwallis/ggrepel")
+  }
   dataUMAP$Domain <- gsub("Neuro", "Neurological tumors", dataUMAP$Domain)
   dataUMAP$Domain <- gsub("Hemato", "Hematological tumors", dataUMAP$Domain)
   dataUMAP$Domain <- gsub("Solid", "Solid tumors", dataUMAP$Domain)
