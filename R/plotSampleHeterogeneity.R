@@ -17,7 +17,7 @@ plotSampleHeterogeneity <- function(tumorHeterogeneityTrain,
   getPalette <- colorRampPalette(RColorBrewer::brewer.pal(10, "Spectral"))
 
   totalHeterogeneityDF <- rbind(tumorHeterogeneityTrain,
-                                tumorHeterogeneityTest,
+                                tumorHeterogeneityTest
                                 )
 
   totalHeterogeneityDF$labelType <- as.character(totalHeterogeneityDF$labelType)
