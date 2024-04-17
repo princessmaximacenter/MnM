@@ -13,15 +13,15 @@
 #' @export
 #' @import umap
 #'
-plotCohortDomain <- function(dataUMAP, useLabels = T) {
+plotCohortDomain <- function(dataUMAPList, useLabels = T) {
 
   if (require("ggrepel") == F) {
     remotes::install_github("fwallis/ggrepel")
   }
-  dataUMAP$Domain <- gsub("Neuro", "Neurological tumors", dataUMAP$Domain)
-  dataUMAP$Domain <- gsub("Hemato", "Hematological tumors", dataUMAP$Domain)
-  dataUMAP$Domain <- gsub("Solid", "Solid tumors", dataUMAP$Domain)
-
+ # dataUMAP$Domain <- gsub("Neuro", "Neurological tumors", dataUMAP$Domain)
+  #dataUMAP$Domain <- gsub("Hemato", "Hematological tumors", dataUMAP$Domain)
+  #dataUMAP$Domain <- gsub("Solid", "Solid tumors", dataUMAP$Domain)
+dataUMAP <- dataUMAPList$dataUMAP
   dataLogUMAPlabels <- dataUMAP %>% filter(!(duplicated(Domain)))
   umapCohortDomain <- dataUMAP %>%
     ggplot(aes(x = UMAP1,
@@ -43,12 +43,7 @@ plotCohortDomain <- function(dataUMAP, useLabels = T) {
           axis.title.x = element_text(vjust = -1.8),
           axis.title.y = element_text(vjust = 2),
           legend.position = "none",
-          plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")) +
-
-    scale_color_manual(values = c("Hematological tumors" = "#880808",
-                                  "Solid tumors" =  "#D1944A",
-                                  "Neurological tumors" = "#012695"),
-                       labels = c("Blood tumors", 'Neurological tumors', "Solid tumors"))
+          plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm"))
 
   if (useLabels == T) {
     umapCohortDomain <- umapCohortDomain +

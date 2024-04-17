@@ -36,7 +36,7 @@ plotPieChartDomain <- function(data,
                                includeNumbers = T) {
 
 
-  n <- length(table(data[,higherClassColumn]))
+  #n <- length(table(data[,higherClassColumn]))
 
   for (i in seq(1:length(freqSameTumorType))) {
     extraCols <- rep(plotColors[i], freqSameTumorType[i])
@@ -53,7 +53,7 @@ plotPieChartDomain <- function(data,
     pdf(file = filename ) }
   par(mar=c(0,0,0,0))
   if (includeNumbers == T) {
-  tumorTypeSubtypePie(sapply(unique(data[,classColumn]), function(x) sum(data$counts[data[,classColumn] == x])),
+  tumorTypeSubtypePie(data %>% group_by(!!sym(classColumn)) %>% select(counts) %>% deframe(),#sapply(unique(data[,classColumn]), function(x) sum(data$counts[data[,classColumn] == x])),
        init.angle = 0,
        labels = data$counts,
        border = F,
@@ -62,17 +62,16 @@ plotPieChartDomain <- function(data,
        col=NULL)
   par(new=T)}
 
-  tumorTypeSubtypePie(sapply(unique(data[,classColumn]),
-              function(x) sum(data$counts[data[,classColumn] == x])),
+  tumorTypeSubtypePie(data %>% group_by(!!sym(classColumn)) %>% select(counts) %>% deframe(),
        init.angle = 0,
-       labels = rep("",length(unique(data[,classColumn]))),
+       labels = rep("",length(data[,classColumn])),
        radius=0.95,
        col=myColours,
        border = "white")
 
   par(new=T)
 
-  tumorTypeSubtypePie(sapply(unique(data[,classColumn]), function(x) sum(data$counts[data[,classColumn] == x])), # 2
+  tumorTypeSubtypePie(data %>% group_by(!!sym(classColumn)) %>% select(counts) %>% deframe(), # 2
        init.angle = 0,
        radius=0.38,
        border = F,

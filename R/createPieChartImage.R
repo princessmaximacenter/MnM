@@ -21,10 +21,10 @@
 #' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param domainColumn Column in the metadata file that contains the domain labels.
-#' @param abbreviationSubtype Dataframe containing the links between the tumor subtype,
-#' the abbreviation required in the plot, the tumor type and the domain.
-#' @param abbreviationTumorType Dataframe containing the links between the tumor type,
-#' the abbreviation required in the plot, and the domain.
+#' @param abbreviations Dataframe containing the different tumor subtype labels with their appropriate abbreviations ($abbreviationSubtype),
+#' and tumor type labels with their appropriate abbreviations (abbreviationTumorType).
+#' Please make sure that the higherClassColumn name is used as column name within abbreviations for the tumor type labels,
+#' and classColumn name for the tumor subtype labels.
 #' @param plotColors Which colors do you want to use to color your plot?
 #' @param includeNumbers  Do you want to show the numbers for the pie chart on the outer edge?
 #' Default is includeNumbers = TRUE.
@@ -34,15 +34,14 @@
 #' The piechart is generated for one domain, as there are many different tumor types and subtypes
 #' within each domain.
 #' @export
-#' @import tibble
+#' @import magrittr
 #'
 createPieChartImage <- function(metaDataRef,
          classColumn,
          higherClassColumn,
-         domainColumn,
-         abbreviationSubtype,
-         abbreviationTumorType,
-         whichDomain,
+         domainColumn = NA,
+         abbreviations = NA,
+         whichDomain = NA,
          storeLocation = ".",
          saveImage = F,
          textSizeClass = 0.5,
@@ -50,20 +49,52 @@ createPieChartImage <- function(metaDataRef,
          plotColors,
          includeNumbers = T) {
 
+
+  if (is.na(abbreviations)[1] & !is.na(domainColumn)[1]) {
+
+      abbreviations <- metaDataRef[, c(domainColumn, classColumn, higherClassColumn)] %>% unique()
+      abbreviations$abbreviationSubtype <- abbreviations[,classColumn]
+      abbreviations$abbreviationTumorType <- abbreviations[,higherClassColumn]
+
+      print("You have not supplied any abbreviations (abbreviations). If you would like to use abbreviations,
+          please generate a dataframe with the following columns and abbreviations within abbreviationSubtype and abbreviationTumorType:")
+      print(abbreviations[1:4,])
+  } else if (is.na(abbreviations)[1] ) {
+    abbreviations <- metaDataRef[, c(classColumn, higherClassColumn)] %>% unique()
+    abbreviations$domainColumn <- " "
+    abbreviations$abbreviationSubtype <- abbreviations[,classColumn]
+    abbreviations$abbreviationTumorType <- abbreviations[,higherClassColumn]
+
+    print("You have not supplied any abbreviations (abbreviations). If you would like to use abbreviations,
+          please generate a dataframe with the following columns and abbreviations within abbreviationSubtype and abbreviationTumorType:")
+    print(abbreviations[1:4,])
+  }
+
+
+  if (is.na(domainColumn)[1]) {
+    domainColumn <- "domainColumn"
+    whichDomain <- " "
+    metaDataRef$domainColumn <- whichDomain
+    }
+
+
+
   pieDF <- getPieDF(metaDataRef = metaDataRef,
-                    abbreviationSubtype = abbreviationSubtype,
-                    abbreviationTumorType = abbreviationTumorType,
+                    abbreviations = abbreviations,
                     classColumn = classColumn,
                     higherClassColumn = higherClassColumn
   )
 
 
-namesDomain <- abbreviationTumorType %>% filter(!!sym(domainColumn) == whichDomain) %>%
-  select(abbreviation) %>%
-  deframe()
+ # if(!is.na(domainColumn)[1]) {
+ #   abbreviationCombi %<>% dplyr::filter(!!dplyr::sym(domainColumn) == whichDomain)
+#  }
+namesDomain <- abbreviations %>% dplyr::filter(!!dplyr::sym(domainColumn) == whichDomain) %>%
+  dplyr::select(abbreviationTumorType) %>% unique() %>%
+  tibble::deframe()
 
 pieChartDF <- pieDF[pieDF[,domainColumn] == whichDomain,]
-pieChartDF <- pieChartDF %>% slice(order(factor(!!sym(higherClassColumn), levels = namesDomain)))
+pieChartDF <- pieChartDF %>% dplyr::slice(order(factor(!!dplyr::sym(higherClassColumn), levels = namesDomain)))
 
 freqSameTumorType <- pieChartDF[,higherClassColumn] %>% table
 freqSameTumorType <- freqSameTumorType[match(namesDomain, names(freqSameTumorType))]
@@ -75,10 +106,10 @@ plotPieChartDomain(data = pieChartDF,
                    domainColumn = domainColumn,
                      textSizeClass = textSizeClass,
                      textSizeSubspec = textSizeSubspec,
-                     freq = freqSameTumorType,
+                   freqSameTumorType = freqSameTumorType,
                    plotColors = plotColors,
                      saveImage = saveImage,
-                    storeLocation = storeLocation,
-                   includeNumbers
+                    storeLocation = storeLocation
+
 )
 }

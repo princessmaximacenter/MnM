@@ -22,35 +22,40 @@
 #' @export
 #' @import umap
 #'
-plotCohortTumorType <- function(dataUMAP,
+plotCohortTumorType <- function(dataUMAPList,
                                 domain,
-                                tumorType,
-                                plotColors,
-                                classColumn,
+                                tumorType = NA,
+                                plotColors = NA,
+                                #classColumn,
                                 subtype = F,
-                                abbreviations,
-                                useLabels = T,
-                                useManualColors = F
+                               # abbreviations,
+                                useLabels = T
                                 ) {
 
   if (require("ggrepel") == F) {
     remotes::install_github("fwallis/ggrepel")
   }
 
+  dataUMAP <- dataUMAPList$dataUMAP
+
+  umapDomain <- dataUMAP %>% dplyr::filter(Domain == domain)
+  abbreviations <- dataUMAPList$abbreviations %>% dplyr::filter(abbreviationSubtype %in% unique(umapDomain$abbreviationSubtype))
 
   if (subtype == F) {
-  umapDomain <- dataUMAP %>% dplyr::filter(Domain == domain)
+  umapDomain$abbreviation <- umapDomain$abbreviationTumorType
+  domainTumorTypes <- abbreviations %>% dplyr::filter(Domain == domain) %>% dplyr::select(abbreviationTumorType) %>% unique() %>% tibble::deframe()
   } else {
-    umapDomain <- dataUMAP %>% dplyr::filter(subclass == tumorType)
+    umapDomain$abbreviation <- umapDomain$abbreviationSubtype
+    if (!is.na(tumorType)[1]) {
+      umapDomain <- umapDomain %>% dplyr::filter(subclass == tumorType)
+    }
+    domainTumorTypes <- abbreviations %>% dplyr::filter(Domain == domain) %>% dplyr::select(abbreviationSubtype) %>% unique() %>% tibble::deframe()
+
   }
   dataLogUMAPlabels <- umapDomain %>% dplyr::filter(!(duplicated(abbreviation)))
 
   dataLogUMAPlabels %<>% dplyr::arrange(subclass)
   dataLogUMAPlabels$abbreviation <- factor(dataLogUMAPlabels$abbreviation, levels = unique(dataLogUMAPlabels$abbreviation))
-
-
-  abbreviations %<>% dplyr::filter(!!sym(classColumn) %in% umapDomain$subclass)
-  domainTumorTypes <- abbreviations %>% dplyr::filter(Domain == domain) %>% dplyr::select(abbreviation) %>% tibble::deframe()
 
   #dataLogUMAPlabels %<>% arrange(subclass)
   #dataLogUMAPlabels$abbreviation <- factor(dataLogUMAPlabels$abbreviation, levels = unique(dataLogUMAPlabels$abbreviation))
@@ -95,7 +100,7 @@ plotCohortTumorType <- function(dataUMAP,
       )
   }
 
-  if (useManualColors == T) {
+  if (!is.na(plotColors)[1]) {
     umapCohortTumorType <- umapCohortTumorType +
       scale_color_manual(values = plotColors,
                          breaks = domainTumorTypes)
