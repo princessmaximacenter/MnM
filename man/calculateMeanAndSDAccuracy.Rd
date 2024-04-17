@@ -15,7 +15,6 @@ calculateMeanAndSDAccuracy(
   subtype = F,
   crossValidation = T,
   nModels,
-  nSeeds,
   rounding,
   probabilityThreshold
 )
@@ -41,11 +40,11 @@ calculateMeanAndSDAccuracy(
 
 \item{nModels}{How many models were created for the majority voting system?}
 
-\item{nSeeds}{How many seeds was the cross-validation setup run with?}
-
 \item{rounding}{Do you want rounded numbers for the performance scores?}
 
 \item{probabilityThreshold}{What is the probability score threshold you would like to use to call a classification 'confident'?}
+
+\item{nSeeds}{How many seeds was the cross-validation setup run with?}
 }
 \value{
 Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases).

@@ -17,8 +17,8 @@ plot5withErrorBarsSubsampling(
   subsamplePercentage,
   numberSubsamples = 100,
   nModels,
-  nSeeds,
-  returnPlot = F
+  returnPlot = F,
+  probabilityScoreMinimum = 0.3
 )
 }
 \arguments{
@@ -50,9 +50,9 @@ and what is the name that you would like to attach to the subset of the data ($s
 
 \item{nModels}{How many models were created for the majority voting system?}
 
-\item{nSeeds}{How many seeds was the cross-validation setup run with?}
-
 \item{returnPlot}{Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?}
+
+\item{probabilityScoreMinimum}{Do you want to say that}
 }
 \value{
 If returnPlot == F, a dataframe containing the accuracy ($meanAccuracy), precision ($meanPrecision),

@@ -7,21 +7,17 @@
 getSeparateClassifierAccuracies(
   minority,
   majority,
-  crossValidation,
   classColumn,
   higherClassColumn,
   subtype = F,
   probabilityThresholdMajority,
-  probabilityThresholdMinority,
-  nModels
+  probabilityThresholdMinority
 )
 }
 \arguments{
 \item{minority}{R-object that contains the results from the Minority classifier}
 
-\item{majority}{R-object that contains the results from the Majority classifier}
-
-\item{crossValidation}{Specify whether the results are from the cross-validation setup or not.
+\item{majority}{R-object that contains the results from the Majority classifier
 This is important, as for the cross-validation setup there is a ground truth ($originalCall), while for new predictions there is not.}
 
 \item{classColumn}{Column name within metadata-file that contains the cancer subtype-labels.}
@@ -29,8 +25,6 @@ This is important, as for the cross-validation setup there is a ground truth ($o
 \item{higherClassColumn}{Column name within metadata-file that contains the cancer type labels.}
 
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
-
-\item{nModels}{How many models were used to obtain a final prediction?}
 
 \item{probabilityThreshold}{What is the probability score threshold that needs to be used to filter confident sample classifications with?}
 }

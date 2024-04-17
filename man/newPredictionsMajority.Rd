@@ -13,7 +13,7 @@ newPredictionsMajority(
   nComps = 100,
   maxNeighbours = 25,
   outputDir = "./",
-  saveModel = F
+  saveModel = T
 )
 }
 \arguments{

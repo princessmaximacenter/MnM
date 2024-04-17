@@ -4,15 +4,11 @@
 \alias{obtainProbabilities}
 \title{Obtain probabilities for classifier predictions}
 \usage{
-obtainProbabilities(classifierResults, crossValidation, nModels)
+obtainProbabilities(classifierResults)
 }
 \arguments{
 \item{classifierResults}{R-object containing the results from the minority or majority classifier.
 The object should contain a list with the probabilities for each prediction.}
-
-\item{crossValidation}{A boolean factor specifying whether the R-object was generated within a cross-validation setup.}
-
-\item{nModels}{How many models were used to obtain a final prediction?}
 }
 \value{
 List of all the samples containing the probabilities for the different sample predictions from the \emph{nModels} generated models.

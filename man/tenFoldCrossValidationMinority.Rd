@@ -16,7 +16,7 @@ tenFoldCrossValidationMinority(
   ntree = 500,
   howManyFeatures = 300,
   whichSeed = 1,
-  outputDir = "./",
+  outputDir = ".",
   proteinDir =
     "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/"
 )

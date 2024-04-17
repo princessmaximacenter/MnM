@@ -5,28 +5,19 @@
 \title{Combine the results of different cross-validation runs}
 \usage{
 combineSeedPredictions(
-  nSeeds,
-  nModels,
   minorityDir,
   majorityDir,
   subtype = F,
-  metaDataRef,
   higherClassColumn,
   classColumn
 )
 }
 \arguments{
-\item{nSeeds}{How many seeds was the cross-validation setup run with?}
-
-\item{nModels}{How many models were created for the majority voting system?}
-
 \item{minorityDir}{Directory in which the minority model(s) are stored.}
 
 \item{majorityDir}{Directory in which the majority model(s) are stored.}
 
 \item{subtype}{Do you want to combine the classifications on the subtype level?}
-
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
 
 \item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
 

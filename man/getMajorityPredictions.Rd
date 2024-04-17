@@ -8,7 +8,6 @@ getMajorityPredictions(
   minority,
   MMProbabilityList,
   higherClassColumn,
-  crossValidation,
   metaDataRef,
   subtype
 )
@@ -20,12 +19,12 @@ getMajorityPredictions(
 
 \item{higherClassColumn}{Column name within metadata-file that contains the cancer type labels.}
 
-\item{crossValidation}{Specify whether the results are from the cross-validation setup or not.}
-
 \item{metaDataRef}{Metadata-file for the reference cohort.}
 
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?
 If so, use \emph{subtype = T}. If you want to obtain tumor type predictions instead, use \emph{subtype = F}.}
+
+\item{crossValidation}{Specify whether the results are from the cross-validation setup or not.}
 }
 \value{
 Dataframe showing the top 3 predictions for the tumor (sub)type, together with their probability scores.

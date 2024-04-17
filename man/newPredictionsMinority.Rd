@@ -8,7 +8,7 @@ newPredictionsMinority(
   createdModelsMinority,
   countDataNew,
   outputDir,
-  saveModel = F
+  saveModel = T
 )
 }
 \arguments{

@@ -15,9 +15,8 @@ tenFoldCrossValidationMajority(
   nComps = 100,
   maxNeighbours = 25,
   whichSeed = 1,
-  outputDir = "./",
-  proteinDir =
-    "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/"
+  outputDir = ".",
+  proteinDir = "./input/"
 )
 }
 \arguments{

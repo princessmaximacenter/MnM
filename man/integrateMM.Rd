@@ -7,12 +7,9 @@
 integrateMM(
   minority,
   majority,
-  metaDataRef,
-  nModels,
   subtype,
   classColumn,
   higherClassColumn,
-  crossValidation,
   integrate = T
 )
 }
@@ -21,19 +18,12 @@ integrateMM(
 
 \item{majority}{R-object that contains the results from the Majority classifier}
 
-\item{metaDataRef}{Metadata file containing the links between the patients and
-the tumor (sub)type diagnosis within the reference cohort.}
-
-\item{nModels}{How many models were used to obtain a final prediction?}
-
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?
 If so, use \emph{subtype = T}. If you want to obtain tumor type predictions instead, use \emph{subtype = F}.}
 
 \item{classColumn}{Column name within metadata-file that contains the cancer subtype-labels.}
 
-\item{higherClassColumn}{Column name within metadata-file that contains the cancer type labels.}
-
-\item{crossValidation}{Specify whether the results are from the cross-validation setup or not.
+\item{higherClassColumn}{Column name within metadata-file that contains the cancer type labels.
 This is important, as for the cross-validation setup there is a ground truth ($originalCall), while for new predictions there is not.}
 
 \item{substituteNames}{Do you want to substitute some names?}
