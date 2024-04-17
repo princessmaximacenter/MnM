@@ -4,7 +4,7 @@ Version: 1.0.0
 Authors@R: 
     person("Fleur", "Wallis", , "f.s.a.wallis-3@prinsesmaximacentrum.nl", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0001-6889-3429"))
-Description: This package contains all functions produced for the M&M classifier paper. 
+Description: M&M functions for pediatric tumor classification. 
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
