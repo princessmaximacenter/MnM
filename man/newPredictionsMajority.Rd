@@ -5,7 +5,7 @@
 \title{Predict tumor (sub)type for new samples with Majority Classifier}
 \usage{
 newPredictionsMajority(
-  createdModelsMajority = createdModelsMajority,
+  createdModelsMajority,
   countDataRef,
   countDataNew,
   classColumn,

@@ -9,7 +9,7 @@ combineSeparateClassifierAccuracies(
   majorityDir,
   classColumn,
   higherClassColumn,
-  probabilityThreshold = 0.72,
+  probabilityThreshold = 0.8,
   probabilityThresholdMajority = 0.9,
   probabilityThresholdMinority = 0.73,
   subtype,

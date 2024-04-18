@@ -11,7 +11,7 @@ createUMAPcohort(
   higherClassColumn,
   domainColumn,
   correctRibo = T,
-  abbreviations,
+  abbreviations = NA,
   subtype = F,
   proteinFile =
     "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/20230320_proteinCodingGenes_gencode31.csv",
@@ -50,4 +50,7 @@ List containing the UMAP-transformed datapoints ($dataUMAP), and the ribodepleti
 Function to create the data required for plotting an UMAP of the reference cohort,
 and paving the way for transforming new samples into the same sample space by
 saving the transformation-model and ribo-depletion correction model.
+}
+\details{
+Please note that the tumor domain, type and subtype all need to be specified within the metadata.
 }

@@ -4,13 +4,7 @@
 \alias{getMajorityPredictions}
 \title{Obtain M&M majority predictions}
 \usage{
-getMajorityPredictions(
-  minority,
-  MMProbabilityList,
-  higherClassColumn,
-  metaDataRef,
-  subtype
-)
+getMajorityPredictions(minority, MMProbabilityList, higherClassColumn, subtype)
 }
 \arguments{
 \item{minority}{R-object that contains the results from the Minority classifier.}
@@ -18,8 +12,6 @@ getMajorityPredictions(
 \item{MMProbabilityList}{List of all the samples containing the probabilities for the different sample predictions from the integrated M&M classifier.}
 
 \item{higherClassColumn}{Column name within metadata-file that contains the cancer type labels.}
-
-\item{metaDataRef}{Metadata-file for the reference cohort.}
 
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?
 If so, use \emph{subtype = T}. If you want to obtain tumor type predictions instead, use \emph{subtype = F}.}

@@ -5,21 +5,15 @@
 \title{Plot UMAP tumor types}
 \usage{
 plotCohortTumorType(
-  dataUMAP,
+  dataUMAPList,
   domain,
-  tumorType,
-  plotColors,
-  classColumn,
+  tumorType = NA,
+  plotColors = NA,
   subtype = F,
-  abbreviations,
-  useLabels = T,
-  useManualColors = F
+  useLabels = T
 )
 }
 \arguments{
-\item{dataUMAP}{Dataframe containing the UMAP coordinates, the tumor type ($subclass),
-the domain ($Domain) and the desired abbreviation for the tumor type ($abbreviation)}
-
 \item{domain}{Which domain do you want to plot the tumor types for?}
 
 \item{tumorType}{If you show a tumor subtype instead of a tumor type (subtype = T),
@@ -27,14 +21,17 @@ please specify here which tumor types you would like to visualize (for example: 
 
 \item{plotColors}{Which colors do you want to use for the tumor types?}
 
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
-
 \item{subtype}{Do you want to visualize the subtypes of one tumor type?
 #' @param tumorType If subtype = T, which tumor type would you want to visualize?}
 
+\item{useLabels}{Do you want to supply labels within the plot?}
+
+\item{dataUMAP}{Dataframe containing the UMAP coordinates, the tumor type ($subclass),
+the domain ($Domain) and the desired abbreviation for the tumor type ($abbreviation)}
+
 \item{abbreviations}{Abbreviations to be used in the plot for the tumor (sub)types.}
 
-\item{useLabels}{Do you want to supply labels within the plot?}
+\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
 
 \item{useManualColors}{Do you want to supply the colors to be used within the UMAP for the labels?}
 }

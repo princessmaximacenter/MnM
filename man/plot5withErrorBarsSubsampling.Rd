@@ -18,7 +18,7 @@ plot5withErrorBarsSubsampling(
   numberSubsamples = 100,
   nModels,
   returnPlot = F,
-  probabilityScoreMinimum = 0.3
+  probabilityScoreMinimum = 0
 )
 }
 \arguments{
@@ -52,7 +52,8 @@ and what is the name that you would like to attach to the subset of the data ($s
 
 \item{returnPlot}{Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?}
 
-\item{probabilityScoreMinimum}{Do you want to say that}
+\item{probabilityScoreMinimum}{Do you want to say that classifications with a very low probability score should be called 'wrong classifications'?
+If yes, please specify the probability score this should happen at. This will be used within the results for the methylation classifiers.}
 }
 \value{
 If returnPlot == F, a dataframe containing the accuracy ($meanAccuracy), precision ($meanPrecision),

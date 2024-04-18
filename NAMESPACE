@@ -3,6 +3,7 @@
 export(calculateMeanAndSDAccuracy)
 export(calculateMeanAndSDInfluenceTumorHeterogeneity)
 export(calculateSeparateF1)
+export(combineSeparateClassifierAccuracies)
 export(createModelsMinority)
 export(createPieChartImage)
 export(createScalingsMajority)

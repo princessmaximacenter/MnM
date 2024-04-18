@@ -2,35 +2,26 @@
 % Please edit documentation in R/getPieDF.R
 \name{getPieDF}
 \alias{getPieDF}
-\title{Title}
+\title{Convert metadata into frequency dataframe}
 \usage{
-getPieDF(
-  metaDataRef,
-  abbreviationSubtype,
-  abbreviationTumorType,
-  highestClassColumn = "Disease_main_class",
-  higherClassColumn,
-  classColumn
-)
+getPieDF(metaDataRef, abbreviations, higherClassColumn, classColumn)
 }
 \arguments{
 \item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
 
-\item{abbreviationSubtype}{Dataframe containing the link between the
-tumor subtype label and tumor subtype abbreviation.}
-
-\item{abbreviationTumorType}{Dataframe containing the link between the
+\item{abbreviations}{Dataframe containing the different tumor subtype labels with their appropriate abbreviations ($abbreviationSubtype),
+and tumor type labels with their appropriate abbreviations (abbreviationTumorType).
+Please make sure that the higherClassColumn name is used as column name within abbreviationsCombi for the tumor type labels,
+and classColumn name for the tumor subtype labels.
 tumor type label and tumor type abbreviation.}
-
-\item{highestClassColumn}{Potentially not needed.}
 
 \item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
 
 \item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 }
 \value{
-Dataframe containing ...
+Dataframe containing the different labels within our dataset with their frequencies.
 }
 \description{
-Title
+Convert metadata into frequency dataframe
 }

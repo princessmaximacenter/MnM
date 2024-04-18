@@ -8,10 +8,9 @@ createPieChartImage(
   metaDataRef,
   classColumn,
   higherClassColumn,
-  domainColumn,
-  abbreviationSubtype,
-  abbreviationTumorType,
-  whichDomain,
+  domainColumn = NA,
+  abbreviations = NA,
+  whichDomain = NA,
   storeLocation = ".",
   saveImage = F,
   textSizeClass = 0.5,
@@ -29,11 +28,10 @@ createPieChartImage(
 
 \item{domainColumn}{Column in the metadata file that contains the domain labels.}
 
-\item{abbreviationSubtype}{Dataframe containing the links between the tumor subtype,
-the abbreviation required in the plot, the tumor type and the domain.}
-
-\item{abbreviationTumorType}{Dataframe containing the links between the tumor type,
-the abbreviation required in the plot, and the domain.}
+\item{abbreviations}{Dataframe containing the different tumor subtype labels with their appropriate abbreviations ($abbreviationSubtype),
+and tumor type labels with their appropriate abbreviations (abbreviationTumorType).
+Please make sure that the higherClassColumn name is used as column name within abbreviations for the tumor type labels,
+and classColumn name for the tumor subtype labels.}
 
 \item{whichDomain}{Which domain do you want to plot? This name should be present in the
 Domain column of the domainColumn of the metadata.}
