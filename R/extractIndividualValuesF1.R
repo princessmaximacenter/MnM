@@ -53,6 +53,7 @@ extractIndividualValuesF1 <- function(predictionsMM,
 
     tumorConfusionMatrixSelection$F1[is.na(tumorConfusionMatrixSelection$F1)] <- 0
     tumorConfusionMatrixSelection$Precision[is.na(tumorConfusionMatrixSelection$Precision)] <- 0
+    filteredResultTest[,"originalCall"] <- factor(filteredResultTest[,"originalCall"], levels = selectionMoreThanNCases)
     recall <- table(filteredResultTest[,"originalCall"]) / patientsPerTumor[names(patientsPerTumor) %in% names(table(filteredResultTest[,"originalCall"]))]
 
 
