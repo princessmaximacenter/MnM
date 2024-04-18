@@ -11,9 +11,9 @@
 #' @export
 #' @import ggplot2
 #'
-plotConfusionMatrix <- function(confusionPlotDF,
-                                nonAvailableTiles) {
-
+plotConfusionMatrix <- function(confusionPlotInfo) {
+  confusionPlotDF <- confusionPlotInfo$confusionPlotDF
+  nonAvailableTiles <- confusionPlotInfo$nonAvailableTiles
   confusionPlot <- ggplot(confusionPlotDF, aes(y = Prediction,
                                                x = Reference, fill= Domain, label = Freq)) +
     geom_tile(color = "black") + coord_equal() +
@@ -28,11 +28,7 @@ plotConfusionMatrix <- function(confusionPlotDF,
           axis.text.y = element_text(size = 14),
           axis.title = element_text(size = 24),
           plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")
-          ) +
-    scale_fill_manual(values = c("Hemato" = "#880808",
-                                 "Solid" =  "#D1944A",
-                                 "Neuro" = "#012695"),
-                      labels = c("Blood tumors", 'Neurological tumors', "Solid tumors")) +
+          )  +
     scale_y_discrete(drop=FALSE) + scale_x_discrete(drop = FALSE) +
     geom_tile(data = nonAvailableTiles, fill = "white", color = "lightgrey") +
     labs(y = "Classification")
