@@ -65,8 +65,7 @@ calculateMeanAndSDInfluenceTumorHeterogeneity <- function(
                                           subtype = F,
                                           metaDataRef = metaDataRef,
                                           classColumn = classColumn,
-                                          higherClassColumn = higherClassColumn,
-                                          crossValidation = crossValidation
+                                          higherClassColumn = higherClassColumn
     )
 
     predictionsMM <- predictionsMMFinalList$predictionsMMFinal
@@ -76,12 +75,9 @@ calculateMeanAndSDInfluenceTumorHeterogeneity <- function(
 
     predictionsMMFinalList <- integrateMM(minority = minority,
                                           majority = majority,
-                                          nModels = nModels,
                                           subtype = T,
-                                          metaDataRef = metaDataRef,
                                           classColumn = classColumn,
-                                          higherClassColumn = higherClassColumn,
-                                          crossValidation = crossValidation
+                                          higherClassColumn = higherClassColumn
     )
 
     predictionsMMSubtype <- predictionsMMFinalList$predictionsMMFinal

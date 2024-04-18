@@ -49,12 +49,9 @@ precisionsForDomains <- function( nSeeds,
 
     predictionsMMFinalList <- integrateMM(minority = minority,
                                           majority = majority,
-                                          nModels = nModels,
                                           subtype = subtype,
-                                          metaDataRef = metaDataRef,
                                           classColumn = classColumn,
-                                          higherClassColumn = higherClassColumn,
-                                          crossValidation = crossValidation
+                                          higherClassColumn = higherClassColumn
     )
 
     predictionsMMFinal <- predictionsMMFinalList$predictionsMMFinal

@@ -2,12 +2,10 @@
 #'
 #' @param minority R-object that contains the results from the Minority classifier
 #' @param majority R-object that contains the results from the Majority classifier
-#' @param crossValidation  Specify whether the results are from the cross-validation setup or not.
 #' This is important, as for the cross-validation setup there is a ground truth ($originalCall), while for new predictions there is not.
 #' @param classColumn Column name within metadata-file that contains the cancer subtype-labels.
 #' @param higherClassColumn Column name within metadata-file that contains the cancer type labels.
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
-#' @param nModels How many models were used to obtain a final prediction?
 #' @param probabilityThreshold What is the probability score threshold that needs to be used to filter confident sample classifications with?
 #' @return Dataframe containing the total amount of samples ($nSamples), how many samples pass the the probability score threshold ($nSamplesFiltered),
 #' what is the fraction non-classified samples ($notClassified),
@@ -19,22 +17,18 @@
 #'
 getSeparateClassifierAccuracies <- function(minority,
                                              majority,
-                                             crossValidation,
                                              classColumn,
                                              higherClassColumn,
                                              subtype = F,
                                             probabilityThresholdMajority,
-                                            probabilityThresholdMinority,
-                                             nModels) {
+                                            probabilityThresholdMinority
+                                             ) {
 
   predictionsList <- integrateMM(minority = minority,
               majority = majority,
-              metaDataRef = metaDataRef,
-              nModels = nModels,
               subtype = subtype,
               classColumn = classColumn,
               higherClassColumn = higherClassColumn,
-              crossValidation = crossValidation,
               integrate = F)
 
   predictionsMajority <- predictionsList$predictionsMajority
@@ -43,22 +37,22 @@ getSeparateClassifierAccuracies <- function(minority,
   if (subtype == F) {
 
     minorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = predictionsMinority,
-                                                        metaDataRef = minority$metaData,
+                                                        metaDataRef = minority$metaDataRef,
                                                         classColumn = higherClassColumn,
                                                         probabilityThreshold = probabilityThresholdMinority)
 
     majorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = predictionsMajority,
-                                                        metaDataRef = majority$metaData,
+                                                        metaDataRef = majority$metaDataRef,
                                                         classColumn = higherClassColumn,
                                                         probabilityThreshold = probabilityThresholdMajority)
   } else {
     minorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = predictionsMinority,
-                                                        metaDataRef = minority$metaData,
+                                                        metaDataRef = minority$metaDataRef,
                                                         classColumn = classColumn,
                                                         probabilityThreshold = probabilityThresholdMinority)
 
     majorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = predictionsMajority,
-                                                        metaDataRef = majority$metaData,
+                                                        metaDataRef = majority$metaDataRef,
                                                         classColumn = classColumn,
                                                         probabilityThreshold = probabilityThresholdMajority)
 
