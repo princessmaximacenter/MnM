@@ -34,7 +34,7 @@ plotSampleHeterogeneity <- function(tumorHeterogeneityTrain,
 
   tumorHeterogeneityLonger <- totalHeterogeneityDF %>% pivot_longer(cols = c("meanAccuracy", "meanPrecision", "meanRecall"),
                                                                     names_to = "measurementType")
-  tumorHeterogeneityLonger$valuePercent <- paste0(round(tumorHeterogeneityLonger$value * 100,1), "%")
+  tumorHeterogeneityLonger$valuePercent <- paste0(round(tumorHeterogeneityLonger$value * 100,0), "%")
 
   tumorHeterogeneityLonger2 <- tumorHeterogeneityLonger %>% pivot_longer(cols = c("sdAccuracy", "sdPrecision", "sdRecall"),
                                                                          names_to = "whichSD",
