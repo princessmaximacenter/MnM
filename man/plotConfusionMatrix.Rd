@@ -4,7 +4,7 @@
 \alias{plotConfusionMatrix}
 \title{Create confusion matrix plot with the three domains.}
 \usage{
-plotConfusionMatrix(confusionPlotDF, nonAvailableTiles)
+plotConfusionMatrix(confusionPlotInfo)
 }
 \arguments{
 \item{confusionPlotDF}{Dataframe specifying how often certain reference-prediction

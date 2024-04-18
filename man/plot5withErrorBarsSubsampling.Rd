@@ -11,12 +11,10 @@ plot5withErrorBarsSubsampling(
   majorityDir,
   minorityDirTest,
   majorityDirTest,
-  metaDataRef,
   metaDataTest = NA,
   otherDataSets,
   subsamplePercentage,
   numberSubsamples = 100,
-  nModels,
   returnPlot = F,
   probabilityScoreMinimum = 0
 )
@@ -34,8 +32,6 @@ plot5withErrorBarsSubsampling(
 
 \item{majorityDirTest}{Directory in which the majority model(s) are store for the test setup.}
 
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.}
-
 \item{metaDataTest}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.}
 
 \item{otherDataSets}{List containing a description of the other datasets, with their actual data ($data),
@@ -47,8 +43,6 @@ and what is the name that you would like to attach to the subset of the data ($s
 \item{subsamplePercentage}{Which percentage of samples would you want to subsample each time?}
 
 \item{numberSubsamples}{How often do you want to subsample?}
-
-\item{nModels}{How many models were created for the majority voting system?}
 
 \item{returnPlot}{Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?}
 

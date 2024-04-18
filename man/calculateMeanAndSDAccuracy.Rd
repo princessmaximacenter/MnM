@@ -9,42 +9,28 @@ calculateMeanAndSDAccuracy(
   higherClassColumn,
   minorityDir,
   majorityDir,
-  metaDataRef,
-  metaDataTest,
-  throwOut,
+  metaDataTest = NA,
   subtype = F,
-  crossValidation = T,
-  nModels,
-  rounding,
+  rounding = F,
   probabilityThreshold
 )
 }
 \arguments{
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+\item{classColumn}{Column in the original metadata file that contains the tumor subtype labels.}
 
-\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
+\item{higherClassColumn}{Column in the original metadata file that contains the tumor type labels.}
 
 \item{minorityDir}{Directory in which the minority model(s) are stored.}
 
 \item{majorityDir}{Directory in which the majority model(s) are stored.}
 
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.}
-
 \item{metaDataTest}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.}
 
-\item{throwOut}{Are there samples you would like to remove from the test set due to poor data quality? If so, add their rownames here.}
-
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
-
-\item{crossValidation}{Specify whether the results are from the cross-validation setup or not.}
-
-\item{nModels}{How many models were created for the majority voting system?}
 
 \item{rounding}{Do you want rounded numbers for the performance scores?}
 
 \item{probabilityThreshold}{What is the probability score threshold you would like to use to call a classification 'confident'?}
-
-\item{nSeeds}{How many seeds was the cross-validation setup run with?}
 }
 \value{
 Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases).

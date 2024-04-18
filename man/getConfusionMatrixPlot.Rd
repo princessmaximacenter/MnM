@@ -7,9 +7,11 @@
 getConfusionMatrixPlot(
   predictionsMM,
   metaDataRef,
-  abbreviations,
+  abbreviations = NA,
   classColumn,
+  higherClassColumn,
   domainColumn,
+  subtype,
   defineTumorWithColor = F,
   probabilityScore = 0.8
 )

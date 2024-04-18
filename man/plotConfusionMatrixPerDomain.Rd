@@ -6,9 +6,7 @@
 \usage{
 plotConfusionMatrixPerDomain(
   domain,
-  confusionPlotDFSubtype,
-  abbreviationSubtype,
-  nonAvailableTiles,
+  confusionPlotInfo,
   domainColor,
   colorTiles = "#012695"
 )
@@ -16,14 +14,6 @@ plotConfusionMatrixPerDomain(
 \arguments{
 \item{domain}{Which domain do you want to plot? This name should be present in the
 domainColorumn of the metadata.}
-
-\item{confusionPlotDFSubtype}{Dataframe specifying how often certain reference-prediction
-combinations for the tumor subtypes are present.}
-
-\item{abbreviationSubtype}{Dataframe containing the links between the tumor subtype,
-the abbreviation required in the plot, the tumor type and the domain.}
-
-\item{nonAvailableTiles}{A dataframe containing the empty tiles for a confusion matrix plot.}
 
 \item{domainColor}{Which colors should we use for each designated tumor type?}
 
@@ -37,7 +27,7 @@ Function to plot the confusion matrix plot for a single domain,
 showing the reference-prediction combinations for the tumor subtypes.
 Using a color coding, it is shown which tumor subtypes belong to the same overheading tumor type.
 IMPORTANT: The order of the colors will be applied to the tumor types in the order of the
-tumors within the abbreviationSubtype dataframe. Make sure you specify the
-order of the tumor types well within the abbreviationSubtype, not only concerning the domains,
+tumors within the abbreviations dataframe. Make sure you specify the
+order of the tumor types well within the abbreviations, not only concerning the domains,
 but also the subsequent tumor types order and tumor subtypes order.
 }

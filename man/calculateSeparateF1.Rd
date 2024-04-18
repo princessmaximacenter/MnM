@@ -5,43 +5,28 @@
 \title{Calculate performance measures for separate tumor (sub)types}
 \usage{
 calculateSeparateF1(
-  nSeeds,
   classColumn,
   higherClassColumn,
-  crossValidation,
   minorityDir,
   majorityDir,
-  nModels,
   subtype,
-  throwOut,
-  metaDataTest,
-  metaDataRef,
-  filterOrNot,
+  metaDataTest = NA,
+  filterOrNot = T,
   probabilityThreshold
 )
 }
 \arguments{
-\item{nSeeds}{How many seeds was the cross-validation setup run with?}
+\item{classColumn}{Column in the original metadata file that contains the tumor subtype labels.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
-
-\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
-
-\item{crossValidation}{Specify whether the results are from the cross-validation setup or not.}
+\item{higherClassColumn}{Column in the original metadata file that contains the tumor type labels.}
 
 \item{minorityDir}{Directory in which the minority model(s) are stored.}
 
 \item{majorityDir}{Directory in which the majority model(s) are stored.}
 
-\item{nModels}{How many models were created for the majority voting system?}
-
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
 
-\item{throwOut}{Are there samples you would like to remove from the test set due to poor data quality? If so, add their rownames here.}
-
-\item{metaDataTest}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.}
-
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.}
+\item{metaDataTest}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set}
 
 \item{filterOrNot}{Do you want to analyse the confident classifications only?}
 

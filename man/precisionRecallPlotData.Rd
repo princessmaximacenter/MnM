@@ -14,10 +14,7 @@ precisionRecallPlotData(
   originalCallColumnOtherClassifier,
   otherClassifierPredictionColumn,
   scoreName,
-  nSeeds = 10,
   subtype,
-  metaDataRef,
-  nModels,
   classColumn,
   higherClassColumn
 )
@@ -41,13 +38,7 @@ precisionRecallPlotData(
 
 \item{scoreName}{What column in the results for the other classifier contains the probability scores?}
 
-\item{nSeeds}{How many seeds was the cross-validation setup run with?}
-
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
-
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.}
-
-\item{nModels}{How many models should be created for the majority voting system?}
 
 \item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 
