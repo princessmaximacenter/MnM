@@ -9,7 +9,6 @@
 #' @param majorityDir Directory in which the majority model(s) are stored for the cross-validation setup.
 #' @param minorityDirTest Directory in which the minority model(s) are store for the test setup.
 #' @param majorityDirTest Directory in which the majority model(s) are store for the test setup.
-#' @param metaDataRef  Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
 #' @param metaDataTest  Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.
 #' @param otherDataSets List containing a description of the other datasets, with their actual data ($data),
 #'  whether we're looking at the tumor type of subtype ($subtype),
@@ -17,7 +16,6 @@
 #'  whether we're looking at cross-validation or test set results ($TrainOrTest, should be "Train" or "Test"),
 #'  and what is the name that you would like to attach to the subset of the data ($subsetName).
 #' @param subsamplePercentage Which percentage of samples would you want to subsample each time?
-#' @param nModels  How many models were created for the majority voting system?
 #' @param returnPlot Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?
 #' @param numberSubsamples How often do you want to subsample?
 #' @param probabilityScoreMinimum Do you want to say that classifications with a very low probability score should be called 'wrong classifications'?
@@ -34,13 +32,10 @@ plot5withErrorBarsSubsampling <- function(classColumn,
                                           majorityDir,
                                           minorityDirTest,
                                           majorityDirTest,
-                                          metaDataRef,
                                           metaDataTest = NA,
                                           otherDataSets,
                                           subsamplePercentage,
                                           numberSubsamples = 100,
-                                          #   otherDataSetsTest,
-                                          nModels,
                                           returnPlot = F,
                                           probabilityScoreMinimum = 0.0
 ) {

@@ -1,16 +1,11 @@
 #' Calculate performance of M&M on total train and test set
 #'
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param classColumn Column in the original metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Column in the original metadata file that contains the tumor type labels.
 #' @param minorityDir Directory in which the minority model(s) are stored.
 #' @param majorityDir Directory in which the majority model(s) are stored.
-#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
 #' @param metaDataTest Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.
-#' @param throwOut Are there samples you would like to remove from the test set due to poor data quality? If so, add their rownames here.
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
-#' @param crossValidation Specify whether the results are from the cross-validation setup or not.
-#' @param nModels  How many models were created for the majority voting system?
-#' @param nSeeds How many seeds was the cross-validation setup run with?
 #' @param rounding Do you want rounded numbers for the performance scores?
 #' @param probabilityThreshold What is the probability score threshold you would like to use to call a classification 'confident'?
 #'
@@ -28,19 +23,15 @@ calculateMeanAndSDAccuracy <- function(classColumn,
                                        higherClassColumn,
                                        minorityDir,
                                        majorityDir,
-                                       metaDataRef,
-                                       metaDataTest,
-                                       throwOut,
+                                       metaDataTest = NA,
          subtype = F,
-         crossValidation = T,
-         nModels,
-         #nSeeds,
-         rounding,
+         rounding = F,
          probabilityThreshold
          ) {
 
   `%notin%` <- Negate(`%in%`)
-  if (crossValidation == T) {
+  if ("minorityClassifierResult.rds" %notin% list.files(minorityDir)) {
+    crossValidation <- T
   allDirsMinority <- list.dirs(minorityDir, recursive = F)
   allDirsMajority <- list.dirs(majorityDir, recursive = F)
   selectedDirsMinority <- allDirsMinority[grep("seed", allDirsMinority)]
@@ -58,6 +49,7 @@ calculateMeanAndSDAccuracy <- function(classColumn,
   }
   } else {
     selectedDirsMajority <- majorityDir
+    crossValidation <- F
   }
 
   for (i in seq(1:length(selectedDirsMajority))) {
@@ -70,18 +62,6 @@ calculateMeanAndSDAccuracy <- function(classColumn,
     }
     minority <- readRDS(minorityDoc)
     majority <- readRDS(majorityDoc)
-  #}
-  # for (i in seq(1:nSeeds)) {
-  #   if (crossValidation == T & nSeeds > 1) {
-  #     minorityDoc <- paste0(minorityDir, "seed",i, "/crossValidationMinorityResults.rds")
-  #     majorityDoc <- paste0(majorityDir, "seed",i, "/crossValidationMajorityResults.rds")
-  #   } else {
-  #     minorityDoc <- minorityDir
-  #     majorityDoc <- majorityDir
-  #   }
-  #
-  #   minority <- readRDS(minorityDoc)
-  #   majority <- readRDS(majorityDoc)
 
     predictionsMMFinalList <- integrateMM(minority = minority,
                                       majority = majority,
@@ -99,13 +79,13 @@ calculateMeanAndSDAccuracy <- function(classColumn,
 
     if (subtype == T) {
       fractionsCorrect <- getAccuraciesPerTumorTypeSize(predictionsMMFinal,
-                                                        metaDataRef = metaDataRef,
+                                                        metaDataRef = minority$metaDataRef,
                                                         classColumn = classColumn,
                                                         rounding = rounding,
                                                         probabilityThreshold = probabilityThreshold)
     } else {
       fractionsCorrect <- getAccuraciesPerTumorTypeSize(predictionsMMFinal,
-                                                        metaDataRef = metaDataRef,
+                                                        metaDataRef = minority$metaDataRef,
                                                         classColumn = higherClassColumn,
                                                         rounding = rounding,
                                                         probabilityThreshold = probabilityThreshold)

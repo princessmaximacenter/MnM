@@ -9,10 +9,7 @@
 #' @param originalCallColumnOtherClassifier What column in the results for the other classifier contains the original diagnoses for the samples?
 #' @param otherClassifierPredictionColumn What column in the results for the other classifier contains the classifications?
 #' @param scoreName What column in the results for the other classifier contains the probability scores?
-#' @param nSeeds How many seeds was the cross-validation setup run with?
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
-#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
-#' @param nModels How many models should be created for the majority voting system?
 #' @param classColumn  Column in the metadata file that contains the tumor subtype labels.
 #' @param higherClassColumn  Column in the metadata file that contains the tumor type labels.
 #'
@@ -28,18 +25,27 @@ precisionRecallPlotData <- function(
          originalCallColumnOtherClassifier,
     otherClassifierPredictionColumn,
     scoreName,
-    nSeeds = 10,
     subtype,
-    metaDataRef,
-    nModels,
     classColumn,
     higherClassColumn
          ) {
 
-  for (i in seq(1:nSeeds)) {
-      minorityDoc <- paste0(minorityDir, "seed",i, "/crossValidationMinorityResults.rds")
-      majorityDoc <- paste0(majorityDir, "seed",i, "/crossValidationMajorityResults.rds")
+  allDirsMinority <- list.dirs(minorityDir, recursive = F)
+  allDirsMajority <- list.dirs(majorityDir, recursive = F)
+  selectedDirsMinority <- allDirsMinority[grep("seed", allDirsMinority)]
+  selectedDirsMajority <- allDirsMajority[grep("seed", allDirsMajority)]
 
+  if (length(selectedDirsMinority) != length(selectedDirsMajority)) {
+    stop("The number of models for the minority and majority classifier are not the same.
+         Please check your models within the minorityDir and majorityDir")
+  } else if (!identical(sub(majorityDir, "", selectedDirsMajority), sub(minorityDir, "", selectedDirsMinority)) ) {
+    stop(paste("It seems that classifications from the minority and majority classifier have not been run using the same seed.",
+               "\nPlease make sure you run the crossvalidation with the same seed for complementary classifications."))
+  }
+
+  for (i in seq(1:length(selectedDirsMajority))) {
+    minorityDoc <- paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
+    majorityDoc <- paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
     minority <- readRDS(minorityDoc)
     majority <- readRDS(majorityDoc)
 
@@ -47,8 +53,7 @@ precisionRecallPlotData <- function(
                                           majority = majority,
                                           subtype = subtype,
                                           classColumn = classColumn,
-                                          higherClassColumn = higherClassColumn,
-                                          crossValidation = T
+                                          higherClassColumn = higherClassColumn
     )
 
     predictionsMMFinal <- predictionsMMFinalList$predictionsMMFinal

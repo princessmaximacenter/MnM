@@ -82,13 +82,11 @@ if (subtype == T) {
 predictionsMMFinal <- getMajorityPredictions(minority = minority,
                                              MMProbabilityList = MMProbabilityListFinalFinal,
                                              higherClassColumn = classColumn,
-                                             metaDataRef = minority$metaDataRef,
                                              subtype = subtype)
 } else {
   predictionsMMFinal <- getMajorityPredictions(minority = minority,
                                                MMProbabilityList = MMProbabilityListFinalFinal,
                                                higherClassColumn = higherClassColumn,
-                                               metaDataRef = minority$metaDataRef,
                                                subtype = subtype)
 
 }
