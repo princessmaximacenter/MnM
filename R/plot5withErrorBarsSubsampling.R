@@ -18,9 +18,10 @@
 #'  and what is the name that you would like to attach to the subset of the data ($subsetName).
 #' @param subsamplePercentage Which percentage of samples would you want to subsample each time?
 #' @param nModels  How many models were created for the majority voting system?
-#' @param nSeeds How many seeds was the cross-validation setup run with?
 #' @param returnPlot Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?
 #' @param numberSubsamples How often do you want to subsample?
+#' @param probabilityScoreMinimum Do you want to say that classifications with a very low probability score should be called 'wrong classifications'?
+#' If yes, please specify the probability score this should happen at. This will be used within the results for the methylation classifiers.
 #' @return  If returnPlot == F, a dataframe containing the accuracy ($meanAccuracy), precision ($meanPrecision),
 #' recall ($meanRecall), and their standard deviations for M&M and other classifirs on a subset of the data ($Subset)
 #' with a specific number of samples ($numberSamples), either within the training data or test set ($TrainOrTest) will be returned.
@@ -40,47 +41,38 @@ plot5withErrorBarsSubsampling <- function(classColumn,
                                           numberSubsamples = 100,
                                           #   otherDataSetsTest,
                                           nModels,
-                                          nSeeds,
-                                          returnPlot = F
+                                          returnPlot = F,
+                                          probabilityScoreMinimum = 0.0
 ) {
 
-  predictionsMMAverageList <- combineSeedPredictions(nSeeds = nSeeds,
+  predictionsMMAverageList <- combineSeedPredictions(
                                                      minorityDir = minorityDir,
                                                      majorityDir = majorityDir,
                                                      subtype = F,
                                                      classColumn = classColumn,
-                                                     higherClassColumn = higherClassColumn,
-                                                     metaDataRef = metaDataRef,
-                                                     nModels = nModels
-  )
+                                                     higherClassColumn = higherClassColumn)
+
   predictionsMMAverage <- predictionsMMAverageList$predictionsMMFinal
 
-  predictionsMMAverageSubtypeList <- combineSeedPredictions(nSeeds = nSeeds,
+  predictionsMMAverageSubtypeList <- combineSeedPredictions(
                                                             minorityDir = minorityDir,
                                                             majorityDir = majorityDir,
                                                             subtype = T,
                                                             classColumn = classColumn,
-                                                            higherClassColumn = higherClassColumn,
-                                                            metaDataRef = metaDataRef,
-                                                            nModels = nModels
-  )
+                                                            higherClassColumn = higherClassColumn)
 
   predictionsMMAverageSubtype <- predictionsMMAverageSubtypeList$predictionsMMFinal
 
 
 
-  minority <- readRDS(minorityDirTest)
-  majority <- readRDS(majorityDirTest)
+  minority <- readRDS(paste0(minorityDirTest, "/minorityClassifierResult.rds"))
+  majority <- readRDS(paste0(majorityDirTest, "/majorityClassifierResult.rds"))
 
   predictionsMMSubtypeTestList <- integrateMM(minority = minority,
                                               majority = majority,
-                                              metaDataRef = metaDataRef,
                                               classColumn = classColumn,
                                               higherClassColumn = higherClassColumn,
-                                              nModels = nModels,
-                                              subtype = T,
-                                              crossValidation = F
-                                              )
+                                              subtype = T)
 
   predictionsMMSubtypeTest <- predictionsMMSubtypeTestList$predictionsMMFinal
 
@@ -88,12 +80,9 @@ plot5withErrorBarsSubsampling <- function(classColumn,
 
   predictionsMMTestList <- integrateMM(minority = minority,
                                        majority = majority,
-                                       metaDataRef = metaDataRef,
                                        classColumn = classColumn,
                                        higherClassColumn = higherClassColumn,
-                                       nModels = nModels,
-                                       subtype = F,
-                                       crossValidation = F)
+                                       subtype = F)
 
   predictionsMMTest <- predictionsMMTestList$predictionsMMFinal
 
@@ -163,7 +152,7 @@ plot5withErrorBarsSubsampling <- function(classColumn,
         correctFiltered <- filteredOther %>% filter(originalCall == Prediction)
       } else {
 
-        errorsMnM <- predictionsMnM %>% filter((predict != originalCall | probability1 < 0.3)) %>% nrow()
+        errorsMnM <- predictionsMnM %>% filter((predict != originalCall | probability1 < probabilityScoreMinimum)) %>% nrow()
 
         predictionsOther <- otherDataSet %>% filter(rownames(.) %in% totalSelectedSamplesList[[subsampleSelection]])
 
