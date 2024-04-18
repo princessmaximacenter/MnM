@@ -66,7 +66,6 @@ precisionsForDomains <- function(
     minority <- readRDS(minorityDoc)
     majority <- readRDS(majorityDoc)
 
-    metaData <- minority$metaDataRef
     predictionsMMFinalList <- integrateMM(minority = minority,
                                           majority = majority,
                                           subtype = subtype,
