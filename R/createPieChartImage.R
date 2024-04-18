@@ -89,6 +89,7 @@ createPieChartImage <- function(metaDataRef,
  # if(!is.na(domainColumn)[1]) {
  #   abbreviationCombi %<>% dplyr::filter(!!dplyr::sym(domainColumn) == whichDomain)
 #  }
+
 namesDomain <- abbreviations %>% dplyr::filter(!!dplyr::sym(domainColumn) == whichDomain) %>%
   dplyr::select(abbreviationTumorType) %>% unique() %>%
   tibble::deframe()

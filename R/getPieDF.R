@@ -1,25 +1,28 @@
-#' Title
+#' Convert metadata into frequency dataframe
 #'
 #' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
-#' @param abbreviationSubtype Dataframe containing the link between the
-#' tumor subtype label and tumor subtype abbreviation.
-#' @param abbreviationTumorType Dataframe containing the link between the
+#' @param abbreviations Dataframe containing the different tumor subtype labels with their appropriate abbreviations ($abbreviationSubtype),
+#' and tumor type labels with their appropriate abbreviations (abbreviationTumorType).
+#' Please make sure that the higherClassColumn name is used as column name within abbreviationsCombi for the tumor type labels,
+#' and classColumn name for the tumor subtype labels.
 #' tumor type label and tumor type abbreviation.
-#' @param highestClassColumn Potentially not needed.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #'
-#' @return Dataframe containing ...
+#' @return Dataframe containing the different labels within our dataset with their frequencies.
 #'
 getPieDF <- function(metaDataRef,
-                     abbreviationSubtype,
-                     abbreviationTumorType,
-                     highestClassColumn = "Disease_main_class",
+                     abbreviations,
                      higherClassColumn,
                      classColumn
                      ) {
-  pieDF <- metaDataRef[!duplicated(metaDataRef[, classColumn]),]
-  pieDF$counts <- table(metaDataRef[, classColumn])[pieDF[, classColumn]]
+  pieDF <- metaDataRef[!duplicated(metaDataRef[, c(classColumn,higherClassColumn)]),]
+  #pieDF$counts <- table(metaDataRef[, classColumn])[pieDF[, classColumn]]
+  pieDF$counts <- NA
+  for (sth in unique(metaDataRef[,higherClassColumn])) {
+    pieDF[pieDF[,higherClassColumn] == sth,"counts"] <- table(metaDataRef[metaDataRef[,higherClassColumn] == sth, classColumn])[pieDF[pieDF[,higherClassColumn] == sth, classColumn]]
+
+  }
   pieDF$fraction <- pieDF$counts/sum(pieDF$counts)
 
   #pieDF <- pieDF[order(pieDF$Domain,pieDF[,highestClassColumn],pieDF[,higherClassColumn],pieDF[, classColumn]),]
@@ -31,8 +34,9 @@ getPieDF <- function(metaDataRef,
 
   #pieDF$abbreviation <- NA
   for (i in seq(1:nrow(pieDF))) {
-    pieDF[,higherClassColumn][i] <- abbreviationTumorType[abbreviationTumorType[,higherClassColumn] == pieDF[,higherClassColumn][i],"abbreviation"]
-    pieDF[,classColumn][i] <- abbreviationSubtype[abbreviationSubtype[,classColumn] == pieDF[,classColumn][i],"abbreviation"]
+    pieDF[,classColumn][i] <- abbreviations[(abbreviations[,classColumn] == pieDF[,classColumn][i]) & (abbreviations[,higherClassColumn] == pieDF[,higherClassColumn][i]),"abbreviationSubtype"]
+    pieDF[,higherClassColumn][i] <- abbreviations[abbreviations[,higherClassColumn] == pieDF[,higherClassColumn][i],"abbreviationTumorType"] %>% unique()
+
   }
 
   return(pieDF)
