@@ -31,25 +31,41 @@ calculateMeanAndSDOverall <- function(classColumn,
                                       subset = F,
                                       probabilityThreshold
 ) {
-  for (i in seq(1:nSeeds)) {
-    if (crossValidation == T & nSeeds > 1) {
-      minorityDoc <- paste0(minorityDir, "seed",i, "/crossValidationMinorityResults.rds")
-      majorityDoc <- paste0(majorityDir, "seed",i, "/crossValidationMajorityResults.rds")
+
+  if (crossValidation == T) {
+    allDirsMinority <- list.dirs(minorityDir, recursive = F)
+    allDirsMajority <- list.dirs(majorityDir, recursive = F)
+    selectedDirsMinority <- allDirsMinority[grep("seed", allDirsMinority)]
+    selectedDirsMajority <- allDirsMajority[grep("seed", allDirsMajority)]
+
+    if (length(selectedDirsMinority) != length(selectedDirsMajority)) {
+      stop("The number of models for the minority and majority classifier are not the same.
+         Please check your models within the minorityDir and majorityDir that the
+         same seeds have been used for the generation of a minority and a majority classifier.")
+    } else if (!all.equal(selectedDirsMajority, selectedDirsMinority) ) {
+      stop("Please make sure you run the crossvalidation with the same seed for complementary classifications,
+         and store them in the same directory.")
+    }
+  } else {
+    selectedDirsMajority <- majorityDir
+  }
+
+  for (i in seq(1:length(selectedDirsMajority))) {
+    if (crossValidation == T) {
+      minorityDoc <- paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
+      majorityDoc <- paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
     } else {
-      minorityDoc <- minorityDir
-      majorityDoc <- majorityDir
+      minorityDoc <- paste0(minorityDir, "/minorityClassifierResult.rds")
+      majorityDoc <- paste0(majorityDir, "/majorityClassifierResult.rds")
     }
     minority <- readRDS(minorityDoc)
     majority <- readRDS(majorityDoc)
+
     predictionsMMFinalList <- integrateMM(minority = minority,
                                           majority = majority,
-                                          nModels = nModels,
                                           subtype = subtype,
-                                          metaDataRef = metaDataRef,
                                           classColumn = classColumn,
-                                          higherClassColumn = higherClassColumn,
-                                          crossValidation = crossValidation
-    )
+                                          higherClassColumn = higherClassColumn)
     predictionsMMFinal <- predictionsMMFinalList$predictionsMMFinal
     if (crossValidation == F) {
       predictionsMMFinal %<>% filter(rownames(.) %notin% throwOut)

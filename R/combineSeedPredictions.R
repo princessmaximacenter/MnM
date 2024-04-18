@@ -4,14 +4,11 @@
 #' to see whether results remain similar. This function combines the results of different runs into one,
 #' coming with a final prediction for each sample used during the cross-validation setup.
 #'
-#' @param nSeeds How many seeds was the cross-validation setup run with?
 #' @param minorityDir Directory in which the minority model(s) are stored.
 #' @param majorityDir Directory in which the majority model(s) are stored.
 #' @param subtype Do you want to combine the classifications on the subtype level?
-#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param classColumn Column in the metadata file that contains the tumor subtype labels.
-#' @param nModels How many models were created for the majority voting system?
 #'
 #' @return List containing the a dataframe with the final predictions (predictionsMMFinal),
 #' and a list with the probability scores for all classification labels that were assigned to samples (MMProbabilityList).
@@ -21,30 +18,37 @@
 #' ($probability{1,2,3} and the original diagnosis label ($originalCall).
 #'
 #'
-combineSeedPredictions <- function(nSeeds,
-                                   nModels,
+combineSeedPredictions <- function(
          minorityDir,
          majorityDir,
          subtype = F,
-         metaDataRef,
          higherClassColumn,
          classColumn) {
-for (i in seq(1:nSeeds)) {
-  minorityDoc <- paste0(minorityDir, "seed",i, "/crossValidationMinorityResults.rds")
-  majorityDoc <- paste0(majorityDir, "seed",i, "/crossValidationMajorityResults.rds")
+
+  allDirsMinority <- list.dirs(minorityDir, recursive = F)
+  allDirsMajority <- list.dirs(majorityDir, recursive = F)
+  selectedDirsMinority <- allDirsMinority[grep("seed", allDirsMinority)]
+  selectedDirsMajority <- allDirsMajority[grep("seed", allDirsMajority)]
+
+  if (length(selectedDirsMinority) != length(selectedDirsMajority)) {
+    stop("The number of models for the minority and majority classifier are not the same.
+         Please check your models within the minorityDir and majorityDir")
+  } else if (!identical(sub(majorityDir, "", selectedDirsMajority), sub(minorityDir, "", selectedDirsMinority)) ) {
+    stop(paste("It seems that classifications from the minority and majority classifier have not been run using the same seed.",
+        "\nPlease make sure you run the crossvalidation with the same seed for complementary classifications."))
+  }
+
+for (i in seq(1:length(selectedDirsMajority))) {
+  minorityDoc <- paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
+  majorityDoc <- paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
   minority <- readRDS(minorityDoc)
   majority <- readRDS(majorityDoc)
 
-  probabilitiesMinority <- obtainProbabilities(minority,
-                                               crossValidation = T,
-                                               nModels = nModels
-  )
-  probabilitiesMajority <- obtainProbabilities(majority,
-                                               crossValidation = T,
-                                               nModels = nModels)
+  probabilitiesMinority <- obtainProbabilities(minority)
+  probabilitiesMajority <- obtainProbabilities(majority)
 
   if (subtype == F) {
-  linkClassAndHigherClass <- minority$metaData[ , c(classColumn, higherClassColumn)] %>% unique
+  linkClassAndHigherClass <- minority$metaDataRef[ , c(classColumn, higherClassColumn)] %>% unique
 
   probabilitiesMinority <- changeSubtypeNameToType(probabilitiesMinority,
                                                    linkClassAndHigherClass = linkClassAndHigherClass,
@@ -72,21 +76,19 @@ for (i in seq(1:length(MMProbabilityListFinal))) {
   MMProbabilityListFinalFinal[[i]] <- tapply(MMProbabilityListFinal[[i]], names(MMProbabilityListFinal[[i]]), sum)
 }
 
-MMProbabilityListFinalFinal <- lapply(MMProbabilityListFinalFinal, function(x) x / nSeeds)
+MMProbabilityListFinalFinal <- lapply(MMProbabilityListFinalFinal, function(x) x / length(selectedDirsMinority))
 
 if (subtype == T) {
 predictionsMMFinal <- getMajorityPredictions(minority = minority,
                                              MMProbabilityList = MMProbabilityListFinalFinal,
                                              higherClassColumn = classColumn,
-                                             crossValidation = T,
-                                             metaDataRef = metaDataRef,
+                                             metaDataRef = minority$metaDataRef,
                                              subtype = subtype)
 } else {
   predictionsMMFinal <- getMajorityPredictions(minority = minority,
                                                MMProbabilityList = MMProbabilityListFinalFinal,
                                                higherClassColumn = higherClassColumn,
-                                               crossValidation = T,
-                                               metaDataRef = metaDataRef,
+                                               metaDataRef = minority$metaDataRef,
                                                subtype = subtype)
 
 }
