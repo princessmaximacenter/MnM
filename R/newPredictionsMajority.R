@@ -34,7 +34,7 @@ newPredictionsMajority <- function(createdModelsMajority = createdModelsMajority
                                    nComps = 100,
                                    maxNeighbours = 25,
                                    outputDir = "./",
-                                   saveModel = F
+                                   saveModel = T
 ) {
   # Make sure you have CPM counts
   countDataNew <- apply(countDataNew,2,function(x) (x/sum(x))*1E6)
@@ -64,12 +64,12 @@ newPredictionsMajority <- function(createdModelsMajority = createdModelsMajority
                                      maxNeighbours = maxNeighbours
   )
 
-  if (nrow(result) == 1) {
+  if (nrow(result) == 1 || typeof(apply(result, 1, table)) == 'integer') {
     randomVector <- paste0("fake", 1:ncol(result)) %>% as.data.frame() %>% t() %>% as.data.frame()
     colnames(randomVector) <- colnames(result)
     result1 <- rbind(result, randomVector)
     probability <-  apply(result1, 1, table)
-    probability <- probability[1]
+    probability <- probability[-length(probability)]
   } else {
   # Find out how often a certain tumor type prediction is made for a specific sample
   probability <- apply(result, 1, table)
@@ -103,14 +103,14 @@ if (nrow(result) == 1) {
   rownames(classifications) <- rownames(result)
 
   classificationList <- list(classifications = classifications,
-                             probability = probability)
+                             probabilityList = probability)
 if (saveModel == T) {
-  directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"))
-  if (!dir.exists(directory)) {
-    dir.create(directory) }
+  #directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"))
+  if (!dir.exists(outputDir)) {
+    dir.create(outputDir) }
 
-  filename <- paste0(directory, "/majorityClassifierResult.rds")
-  write_rds(classificationList, file = filename)
+  filename <- paste0(outputDir, "/majorityClassifierResult.rds")
+  saveRDS(classificationList, file = filename)
 }
   return(classificationList)
 }
