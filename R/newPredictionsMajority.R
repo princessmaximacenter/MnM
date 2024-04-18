@@ -26,7 +26,7 @@
 #' and the probabilities associated to the different classifications ($probability).
 #' @export
 #'
-newPredictionsMajority <- function(createdModelsMajority = createdModelsMajority,
+newPredictionsMajority <- function(createdModelsMajority,
                                    countDataRef,
                                    countDataNew,
                                    classColumn,
@@ -103,7 +103,9 @@ if (nrow(result) == 1) {
   rownames(classifications) <- rownames(result)
 
   classificationList <- list(classifications = classifications,
-                             probabilityList = probability)
+                             probabilityList = probability,
+                             metaDataRef = createdModelsMajority$metaDataRef
+                             )
 if (saveModel == T) {
   #directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"))
   if (!dir.exists(outputDir)) {

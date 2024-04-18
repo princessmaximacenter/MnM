@@ -35,7 +35,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                             ntree = 500,
                                             howManyFeatures = 300,
                                             whichSeed = 1,
-                                            outputDir = "./",
+                                            outputDir = ".",
                                             proteinDir = "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/"
 
 ) {
@@ -69,12 +69,19 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
   # Make sure you have CPM counts
   countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
 
-  directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"), "/")
+  if (!dir.exists(outputDir)) {
+    dir.create(outputDir)}
+  directory <- outputDir#paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"), "/")
+  modelDirectory <- paste0(directory, "/seed", whichSeed)
   if (!dir.exists(directory)) {
-    dir.create(directory) }
+    dir.create(directory)
+    dir.create(modelDirectory)
+  } else if (!dir.exists(modelDirectory)){
+    dir.create(modelDirectory)
+    }
 
   # Correct for ribosomal protein contamination
-    riboCountFile <- paste0(directory, "modelListRiboCounts.rds")
+    riboCountFile <- paste0(modelDirectory, "/modelListRiboCounts.rds")
     if (!file.exists(riboCountFile)) {
 
       proteinCodingGenes <- read.table(paste0(proteinDir,"20230320_proteinCodingGenes_gencode31.csv"), sep = "\t") %>%
@@ -82,7 +89,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
       set.seed(whichSeed)
       riboModelList <- riboCorrectCounts(data = countDataRef,
                                          proteinCodingGenes = proteinCodingGenes,
-                                         outputDir = directory,
+                                         outputDir = modelDirectory,
                                          saveRiboModels = F
       )
 
@@ -259,11 +266,11 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                          wrongClassifications = wrongClassifications,
                                          probabilityList = probabilityList,
                                          reducedFeaturesList = reducedFeaturesList,
-                                         metaData = metaDataRef,
+                                         metaDataRef = metaDataRef,
                                          metaDataRun = metaDataRun)
 
   print("We have finished the classification process. Please find your results in the generated object.")
-  filename <- paste0(directory, "/crossValidationMinorityResults.rds")
-  write_rds(crossValidationMinorityResults, file = filename)
+  filename <- paste0(modelDirectory, "/crossValidationMinorityResults.rds")
+  saveRDS(crossValidationMinorityResults, file = filename)
   return(crossValidationMinorityResults)
 }

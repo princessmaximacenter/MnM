@@ -137,7 +137,7 @@ createScalingsMajority <-  function(countDataRef,
                                 riboModelList = riboModelList,
                                 samplesTrainDefList = samplesTrainDefList,
                                 nonZeroGenes = nonZeroGenes,
-                                metaData = metaDataRef,
+                                metaDataRef = metaDataRef,
                                 metaDataRun = metaDataRun)
 
   if (saveModel == T) {

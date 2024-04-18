@@ -17,7 +17,7 @@
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
 #' @param proteinDir In which directory can we find the file specifying the names of protein-coding genes within our dataset?
 #' @param patientColumn Column in the metadata file that contains the patient labels.
-#' @param saveModel Do you want to save your generated RF-models in an R-object?
+#'
 #'
 #' @return R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),
 #'  the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
@@ -39,8 +39,8 @@ createModelsMinority <-  function(countDataRef,
                                   howManyFeatures = 300,
                                   whichSeed = 1,
                                   outputDir = "./",
-                                  proteinDir,
-                                  saveModel = T
+                                  proteinDir
+                                  #saveModel = T
 
 ) {
 
@@ -159,14 +159,14 @@ createModelsMinority <-  function(countDataRef,
   createdModelsMinority <- list(modelList = modelList,
                                 riboModelList = riboModelList,
                                 reducedFeatures = reducedFeatures,
-                                metaData = metaDataRef,
+                                metaDataRef = metaDataRef,
                                 metaDataRun = metaDataRun)
 
-  if (saveModel == T) {
+  #if (saveModel == T) {
   filename <- paste0(directory, "/createdModelsMinority.rds")
   if (!dir.exists(directory)) {
     dir.create(directory) }
   saveRDS(createdModelsMinority, file = filename)
-  }
+  #}
   return(createdModelsMinority)
 }

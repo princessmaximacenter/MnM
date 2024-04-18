@@ -15,7 +15,7 @@
 
 newPredictionsMinority <- function(createdModelsMinority, countDataNew,
                                    outputDir,
-                                   saveModel = F) {
+                                   saveModel = T) {
   # Find the predictions for the test data
   # PREPARE DATA
   countDataNew <- apply(countDataNew,2,function(x) (x/sum(x))*1E6)
@@ -33,12 +33,12 @@ newPredictionsMinority <- function(createdModelsMinority, countDataNew,
   print("Finished with predicting results")
 
 
-  if (nrow(result) == 1) {
+  if (nrow(result) == 1 || typeof(apply(result, 1, table)) == 'integer') {
     randomVector <- paste0("fake", 1:ncol(result)) %>% as.data.frame() %>% t() %>% as.data.frame()
     colnames(randomVector) <- colnames(result)
     result1 <- rbind(result, randomVector)
     probability <-  apply(result1, 1, table)
-    probability <- probability[1]
+    probability <- probability[-length(probability)]
   } else {
     # Find out how often a certain tumor type prediction is made for a specific sample
     probability <- apply(result, 1, table)
@@ -73,13 +73,14 @@ newPredictionsMinority <- function(createdModelsMinority, countDataNew,
   # Make sure that the classifications still have their accompanying biomaterial_id
   rownames(classifications) <- rownames(result)
   classificationList <- list(classifications = classifications,
-                             probability = probability)
+                             probabilityList = probability,
+                             metaDataRef = createdModelsMinority$metaDataRef)
   if (saveModel == T) {
-    directory <- paste0(outputDir,format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"))
-    filename <- paste0(directory, "/minorityClassifierResult.rds")
-    if (!dir.exists(directory)) {
-      dir.create(directory) }
-  write_rds(classificationList, file = filename)
+    #directory <- outputDir
+    filename <- paste0(outputDir, "/minorityClassifierResult.rds")
+    if (!dir.exists(outputDir)) {
+      dir.create(outputDir) }
+  saveRDS(classificationList, file = filename)
   }
   return(classificationList)
 }
