@@ -164,41 +164,14 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   for (i in seq(1:length(featuresAndModels))) {
     result <- featuresAndModels[[i]][["result"]]
 
-    # Find out how often a certain tumor type prediction is made for a specific sample
-    probability <- apply(result, 1, table)
 
-    # Store the resulting probabilities in a list
-    probabilityList[[i]] <- probability
+    #FUNCTION TO GET THE ultimatePredictions"
+    classificationResults <- convertResultToClassification(result = result,
+                                                           metaDataRef = metaDataRef,
+                                                           addOriginalCall = T)
 
-    # Locate the position of the highest probability
-    positions <- lapply(probability, which.max)
-    positions <- unlist(positions)
-
-    bestFit <- data.frame(predict = rep(NA, times = length(result$fold1)))
-    probabilityScores <- vector()
-
-    # Extract the different calls being made for each sample
-    mostAppearingNames <- lapply(probability, names)
-
-    # Store the one with the highest probability score into the bestFit dataframe
-    for (j in seq(1:length(mostAppearingNames))) {
-      numberPositions <- as.numeric(positions[j])
-      probabilityScores[j] <- probability[[j]][numberPositions]
-      bestFit[j,] <- mostAppearingNames[[j]][numberPositions]
-    }
-
-    # Look at the original calls for each test sample
-    originalCall <- metaDataRef[rownames(result),classColumn]
-
-    # Store the bestFit, the Originalcall and the accompanying probability score within the final dataframe.
-    ultimatePredictions <- cbind(bestFit,
-                                 originalCall = originalCall,
-                                 probability = probabilityScores)
-
-
-    # Make sure that the ultimatePredictions still have their accompanying biomaterial_id
-    rownames(ultimatePredictions) <- rownames(result)
-
+    probabilityList[[i]] <- classificationResults$probabilityList
+    ultimatePredictions <- classificationResults$classifications
     # Add each fold to a dataframe that combines all results
     if (i == 1) {
       wrongClassifications <- ultimatePredictions[ultimatePredictions$predict != ultimatePredictions$originalCall,]
@@ -212,6 +185,10 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   # Check the accuracy of the current run
   accuracy <- sum(classifications$predict == classifications$originalCall) / length(classifications$originalCall)
   print(accuracy)
+
+
+
+
 
   # Store the settings of the classifier run within the resulting object
   metaDataRun <- data.frame(nModels = nModels,
