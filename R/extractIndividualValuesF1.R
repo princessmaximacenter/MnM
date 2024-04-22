@@ -12,7 +12,7 @@
 extractIndividualValuesF1 <- function(predictionsMM,
                                       metaDataRef,
                                       classColumn,
-                                      probabilityThreshold ,
+                                      probabilityThreshold,
                                       filterOrNot
                                       ) {
 

@@ -11,10 +11,13 @@
 #' @export
 plotF1 <- function(dataMeanF1,
                    separateMeanF1,
-                   subtype
+                   subtype,
+                   whichSeed =1
                    ) {
 
-  set.seed(1)
+  set.seed(whichSeed)
+  separateMeanF1 %<>% filter(!is.na(meanF1))
+
   dataMeanF1$meanF1Percent <- paste0(round(dataMeanF1$meanF1,3) * 100, "%")
   dataMeanF1$sdF1[is.na(dataMeanF1$sdF1)] <- 0
   ourPlot <- dataMeanF1 %>%

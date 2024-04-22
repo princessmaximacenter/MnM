@@ -1,3 +1,11 @@
+#' Title
+#'
+#' @param fractionCorrectTotalPivoted
+#'
+#' @return
+#' @export
+#'
+#' @examples
 plotSeparateClassifierAccuracies <- function(fractionCorrectTotalPivoted) {
 
 
@@ -18,8 +26,6 @@ plotSeparateClassifierAccuracies <- function(fractionCorrectTotalPivoted) {
     ylim(0, 1) +
     labs(x = "Number of patients per tumor type (n)",
          y = "Accuracy") +
-      scale_color_manual(values = c("Minority Classifier" = "#f8766d",
-                                    "Majority Classifier" =  "#00bfc4")) +
 
     theme(legend.title = element_blank()) +
     theme(
@@ -39,6 +45,11 @@ plotSeparateClassifierAccuracies <- function(fractionCorrectTotalPivoted) {
       scale_color_manual(values = c("M&M" = "#606ca5",
                                     "Minority Classifier" = "#f8766d",
                                     "Majority Classifier" =  "#00bfc4"))
+  } else {
+    plotSeparateScores <- plotSeparateScores +
+      scale_color_manual(values = c("Minority Classifier" = "#f8766d",
+                                    "Majority Classifier" =  "#00bfc4"))
+
   }
 
     return(plotSeparateScores)
