@@ -12,7 +12,6 @@ createUMAPcohort(
   domainColumn,
   correctRibo = T,
   abbreviations = NA,
-  subtype = F,
   proteinFile =
     "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/20230320_proteinCodingGenes_gencode31.csv",
   whichSeed = 1
@@ -31,13 +30,11 @@ the tumor (sub)type diagnosis within the reference cohort.}
 
 \item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
-\item{correctRibo}{Do you want to perform a correction for the ribodepletion protocol on your dataset?}
+\item{correctRibo}{Do you want to perform a correction for the ribodepletion protocol on your dataset?
+Default = FALSE, giving only the tumor type labels with the associated abbreviations.}
 
 \item{abbreviations}{Dataframe containing the links between the tumor (sub)type,
 the abbreviation required in the plot, and the domain.}
-
-\item{subtype}{Do you want to both get the tumor type and subtype labels within your UMAP object?
-Default = FALSE, giving only the tumor type labels with the associated abbreviations.}
 
 \item{proteinFile}{In which directory can we find the file specifying the names of protein-coding genes within our dataset?}
 

@@ -4,14 +4,7 @@
 \alias{integrateMM}
 \title{Integrate results Minority & Majority classifier}
 \usage{
-integrateMM(
-  minority,
-  majority,
-  subtype,
-  classColumn,
-  higherClassColumn,
-  integrate = T
-)
+integrateMM(minority, majority, subtype, integrate = T)
 }
 \arguments{
 \item{minority}{R-object that contains the results from the Minority classifier}
@@ -19,11 +12,7 @@ integrateMM(
 \item{majority}{R-object that contains the results from the Majority classifier}
 
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?
-If so, use \emph{subtype = T}. If you want to obtain tumor type predictions instead, use \emph{subtype = F}.}
-
-\item{classColumn}{Column name within metadata-file that contains the cancer subtype-labels.}
-
-\item{higherClassColumn}{Column name within metadata-file that contains the cancer type labels.
+If so, use \emph{subtype = T}. If you want to obtain tumor type predictions instead, use \emph{subtype = F}.
 This is important, as for the cross-validation setup there is a ground truth ($originalCall), while for new predictions there is not.}
 
 \item{substituteNames}{Do you want to substitute some names?}

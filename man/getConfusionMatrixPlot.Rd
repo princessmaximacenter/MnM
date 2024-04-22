@@ -5,35 +5,25 @@
 \title{Get confusion matrix information}
 \usage{
 getConfusionMatrixPlot(
-  predictionsMM,
-  metaDataRef,
+  minorityDir,
+  majorityDir,
   abbreviations = NA,
-  classColumn,
-  higherClassColumn,
-  domainColumn,
   subtype,
   defineTumorWithColor = F,
   probabilityScore = 0.8
 )
 }
 \arguments{
-\item{predictionsMM}{Dataframe showing the top 3 predictions for the tumor (sub)type, together with their probability scores.}
-
-\item{metaDataRef}{Metadata file containing the links between the patients and
-the tumor (sub)type diagnosis within the reference cohort.}
-
 \item{abbreviations}{Dataframe containing the links between the tumor (sub)type,
 the abbreviation required in the plot, and the domain.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
-
-\item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
+\item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?
+for being classified or non-classified?}
 
 \item{defineTumorWithColor}{Do you want to have an extra column where the tumors can
 be specified with a color?}
 
-\item{probabilityScore}{Which probability score do you want to use as a cutoff
-for being classified or non-classified?}
+\item{probabilityScore}{Which probability score do you want to use as a cutoff}
 }
 \value{
 Dataframe specifying how often certain reference-prediction

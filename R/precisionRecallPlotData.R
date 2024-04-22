@@ -10,24 +10,23 @@
 #' @param otherClassifierPredictionColumn What column in the results for the other classifier contains the classifications?
 #' @param scoreName What column in the results for the other classifier contains the probability scores?
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
-#' @param classColumn  Column in the metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn  Column in the metadata file that contains the tumor type labels.
 #'
 #' @return Dataframe containing the necessary data points to generate PR-plots for M&M versus other classifiers.
 #' @export
 precisionRecallPlotData <- function(
                                     minorityDir,
                                     majorityDir,
-         predictionsMMTest,
+                                    minorityDirTest,
+                                    majorityDirTest,
+                                    metaDataTest,
+         #predictionsMMTest,
     otherClassifierResultsTrain,
     otherClassifierResultsTest,
          otherClassifierName,
          originalCallColumnOtherClassifier,
     otherClassifierPredictionColumn,
     scoreName,
-    subtype,
-    classColumn,
-    higherClassColumn
+    subtype
          ) {
 
   allDirsMinority <- list.dirs(minorityDir, recursive = F)
@@ -51,9 +50,7 @@ precisionRecallPlotData <- function(
 
     predictionsMMFinalList <- integrateMM(minority = minority,
                                           majority = majority,
-                                          subtype = subtype,
-                                          classColumn = classColumn,
-                                          higherClassColumn = higherClassColumn
+                                          subtype = subtype
     )
 
     predictionsMMFinal <- predictionsMMFinalList$predictionsMMFinal
@@ -62,7 +59,7 @@ precisionRecallPlotData <- function(
                                    "Sarcoma classifier"
     )) {
       predictionsMMFinal[predictionsMMFinal$probability1 < 0.3,"predict"] <- "Geen classificatie"
-      predictionsMMTest[predictionsMMTest$probability1 < 0.3, "predict"] <- "Geen classificatie"
+
     }
     if (i == 1) {
 
@@ -91,16 +88,43 @@ precisionRecallPlotData <- function(
   }
 
   ourDFTrain <- ourDFTrainTotal %>% group_by(cutoff, type) %>%
-    summarise(meanSensitivity = mean(Sensitivity),
-              meanSpecificity = mean(Specificity),
-              meanPrecision = mean(Precision),
-              meanRecall = mean(Recall),
+    summarise(Sensitivity = mean(Sensitivity),
+              Specificity = mean(Specificity),
+              Precision = mean(Precision),
+              Recall = mean(Recall),
               minPrecision = min(Precision),
               maxPrecision = max(Precision),
 
     )
   ourDFTrain$trainOrTest <- "Train"
-  colnames(ourDFTrain) <- gsub("mean", "", colnames(ourDFTrain))
+  #colnames(ourDFTrain) <- gsub("mean", "", colnames(ourDFTrain))
+  minorityDoc <- paste0(minorityDirTest, "/minorityClassifierResult.rds")
+  majorityDoc <- paste0(majorityDirTest, "/majorityClassifierResult.rds")
+
+  minorityTest <- readRDS(minorityDoc)
+  majorityTest <- readRDS(majorityDoc)
+
+  classColumn <- minorityTest$metaDataRun$classColumn
+  higherClassColumn <- minorityTest$metaDataRun$higherClassColumn
+  predictionsMMTestList <- integrateMM(minority = minorityTest,
+               majority = majorityTest,
+               subtype = subtype)
+
+
+  predictionsMMTest <- predictionsMMTestList$predictionsMMFinal
+
+  if (subtype == T) {
+    predictionsMMTest$originalCall <- metaDataTest[rownames(predictionsMMTest),classColumn]
+  } else {
+    predictionsMMTest$originalCall <- metaDataTest[rownames(predictionsMMTest),higherClassColumn]
+  }
+
+  if (otherClassifierName %in% c("CNS methylation classifier",
+                                 "Sarcoma classifier"
+  )) {
+    predictionsMMTest[predictionsMMTest$probability1 < 0.3, "predict"] <- "Geen classificatie"
+      }
+
   ourDFTest <- PRPlotComparison(predictionsMM = predictionsMMTest,
                                 otherClassifierResults = otherClassifierResultsTest,
                                 otherClassifierName = otherClassifierName,

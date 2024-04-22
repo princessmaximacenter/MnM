@@ -7,24 +7,22 @@
 precisionRecallPlotData(
   minorityDir,
   majorityDir,
-  predictionsMMTest,
+  minorityDirTest,
+  majorityDirTest,
+  metaDataTest,
   otherClassifierResultsTrain,
   otherClassifierResultsTest,
   otherClassifierName,
   originalCallColumnOtherClassifier,
   otherClassifierPredictionColumn,
   scoreName,
-  subtype,
-  classColumn,
-  higherClassColumn
+  subtype
 )
 }
 \arguments{
 \item{minorityDir}{Directory in which the minority model(s) are stored for the cross-validation setup.}
 
 \item{majorityDir}{Directory in which the majority model(s) are stored for the cross-validation setup.}
-
-\item{predictionsMMTest}{Classifications of M&M algorithm on the test set, obtained from the function integrateMM.}
 
 \item{otherClassifierResultsTrain}{Results for other classifier within the reference cohort.}
 
@@ -40,9 +38,7 @@ precisionRecallPlotData(
 
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
 
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
-
-\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
+\item{predictionsMMTest}{Classifications of M&M algorithm on the test set, obtained from the function integrateMM.}
 }
 \value{
 Dataframe containing the necessary data points to generate PR-plots for M&M versus other classifiers.

@@ -3,34 +3,42 @@
 #' This function is designed to extract which tiles of the confusion matrix
 #' do contain reference-prediction information.
 #'
-#' @param predictionsMM Dataframe showing the top 3 predictions for the tumor (sub)type, together with their probability scores.
-#' @param metaDataRef Metadata file containing the links between the patients and
-#' the tumor (sub)type diagnosis within the reference cohort.
+#' @param minorityDir
+#' @param majorityDir
 #' @param abbreviations Dataframe containing the links between the tumor (sub)type,
 #' the abbreviation required in the plot, and the domain.
-#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
-#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
 #' @param defineTumorWithColor Do you want to have an extra column where the tumors can
 #' be specified with a color?
 #' @param probabilityScore Which probability score do you want to use as a cutoff
+#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
 #' for being classified or non-classified?
 #' @import tidyverse dplyr magrittr
 #' @return Dataframe specifying how often certain reference-prediction
 #' combinations are present.
 #' @export
 #'
-getConfusionMatrixPlot <- function(predictionsMM,
-         metaDataRef,
+getConfusionMatrixPlot <- function(minorityDir,
+                                   majorityDir,
          abbreviations = NA,
-         classColumn,
-         higherClassColumn,
-         domainColumn,
          subtype,
          defineTumorWithColor = F,
          probabilityScore = 0.8) {
 
   `%notin%` <- Negate(`%in%`)
 
+
+  predictionsMMAverageList <- combineSeedPredictions(
+    minorityDir = minorityDir,
+    majorityDir = majorityDir,
+    subtype = subtype
+  )
+
+  metaDataRef <- predictionsMMAverageList$metaDataRef
+  classColumn <- predictionsMMAverageList$metaDataRun$classColumn
+  higherClassColumn <- predictionsMMAverageList$metaDataRun$higherClassColumn
+  domainColumn <- predictionsMMAverageList$metaDataRun$domainColumn
+
+  predictionsMM <- predictionsMMAverageList$predictionsMMFinal
 
   if (is.na(abbreviations)[1] & !is.na(domainColumn)[1]) {
 
@@ -84,6 +92,8 @@ getConfusionMatrixPlot <- function(predictionsMM,
     abbreviations <- rbind(notClassifiedLine, abbreviations[,colnames(notClassifiedLine)])
 
   }
+
+
 
   predictionsMMFiltered <- predictionsMM %>% filter(probability1 > probabilityScore)
 

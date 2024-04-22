@@ -8,6 +8,8 @@
 #' @param meanExpression Selection criterion for the genes,
 #' specifying what the minimum mean expression of a gene should be for it to be included in the F-statistic analysis.
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
 #' @param nModels How many models should be created for the majority voting system?
 #' @param nANOVAgenes How many genes should we select using the F-statistic of ANOVA?
 #' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
@@ -15,8 +17,9 @@
 #' @param howManyFeatures How many features should we keep after determining the most important genes using the Random Forest Importance Score?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
-#' @param proteinDir In which directory can we find the file specifying the names of protein-coding genes within our dataset?
+#' @param proteinCodingGenes
 #' @param patientColumn Column in the metadata file that contains the patient labels.
+#' @param saveModel Do you want to save your generated scalings in an R-object?
 #'
 #'
 #' @return R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),
@@ -32,6 +35,8 @@ createModelsMinority <-  function(countDataRef,
                                   patientColumn,
                                   meanExpression = 5,
                                   classColumn,
+                                  higherClassColumn,
+                                  domainColumn,
                                   nModels = 100,
                                   nANOVAgenes = 1000,
                                   maxSamplesPerType = 3,
@@ -39,8 +44,8 @@ createModelsMinority <-  function(countDataRef,
                                   howManyFeatures = 300,
                                   whichSeed = 1,
                                   outputDir = "./",
-                                  proteinDir
-                                  #saveModel = T
+                                  proteinCodingGenes,
+                                  saveModel = T
 
 ) {
 
@@ -57,6 +62,20 @@ createModelsMinority <-  function(countDataRef,
     stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.")
 
   }
+
+  # Include a statement to store the classColumn, higherClassColumn and domainColumn
+  print(paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
+  print(unique(metaDataRef[,classColumn])[1:3])
+
+  print(paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
+  print(unique(metaDataRef[,higherClassColumn])[1:3])
+
+  print(paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
+  print(unique(metaDataRef[,domainColumn])[1:3])
+  print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
+
+
+
   tumorEntitiesWithTooFewSamples <- table(metaDataRef[,classColumn])[table(metaDataRef[,classColumn]) < 3] %>% names()
   if (length(tumorEntitiesWithTooFewSamples) >0) {
 
@@ -70,14 +89,12 @@ createModelsMinority <-  function(countDataRef,
   countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
 
 
-  directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"), "/")
+  directory <- outputDir
 
   # Correct for ribosomal protein contamination
   riboCountFile <- paste0(directory, "modelListRiboCounts.rds")
   if (!file.exists(riboCountFile)) {
 
-    proteinCodingGenes <- read.table(paste0(proteinDir,"20230320_proteinCodingGenes_gencode31.csv"), sep = "\t") %>%
-      select(x) %>% deframe
     set.seed(whichSeed)
     riboModelList <- riboCorrectCounts(data = countDataRef,
                                        proteinCodingGenes = proteinCodingGenes,
@@ -151,6 +168,8 @@ createModelsMinority <-  function(countDataRef,
   # Store the settings of the classifier run within the resulting object
   metaDataRun <- data.frame(nModels = nModels,
                             classColumn = classColumn,
+                            higherClassColumn = higherClassColumn,
+                            domainColumn = domainColumn,
                             maxSamplesPerType = maxSamplesPerType,
                             nANOVAgenes = nANOVAgenes,
                             howManyFeatures = howManyFeatures,
@@ -162,11 +181,11 @@ createModelsMinority <-  function(countDataRef,
                                 metaDataRef = metaDataRef,
                                 metaDataRun = metaDataRun)
 
-  #if (saveModel == T) {
+  if (saveModel == T) {
   filename <- paste0(directory, "/createdModelsMinority.rds")
   if (!dir.exists(directory)) {
     dir.create(directory) }
   saveRDS(createdModelsMinority, file = filename)
-  #}
+  }
   return(createdModelsMinority)
 }

@@ -4,7 +4,7 @@
 \alias{plotF1}
 \title{Plot F1-scores for tumors from different population frequencies}
 \usage{
-plotF1(dataMeanF1, separateMeanF1, subtype)
+plotF1(dataMeanF1, separateMeanF1, subtype, whichSeed = 1)
 }
 \arguments{
 \item{dataMeanF1}{Dataframe obtained from function 'calculateMeanAndSDAccuracy'.}

@@ -5,8 +5,6 @@
 \title{Calculate performance of M&M on total train and test set}
 \usage{
 calculateMeanAndSDAccuracy(
-  classColumn,
-  higherClassColumn,
   minorityDir,
   majorityDir,
   metaDataTest = NA,
@@ -16,10 +14,6 @@ calculateMeanAndSDAccuracy(
 )
 }
 \arguments{
-\item{classColumn}{Column in the original metadata file that contains the tumor subtype labels.}
-
-\item{higherClassColumn}{Column in the original metadata file that contains the tumor type labels.}
-
 \item{minorityDir}{Directory in which the minority model(s) are stored.}
 
 \item{majorityDir}{Directory in which the majority model(s) are stored.}
@@ -31,6 +25,10 @@ calculateMeanAndSDAccuracy(
 \item{rounding}{Do you want rounded numbers for the performance scores?}
 
 \item{probabilityThreshold}{What is the probability score threshold you would like to use to call a classification 'confident'?}
+
+\item{classColumn}{Column in the original metadata file that contains the tumor subtype labels.}
+
+\item{higherClassColumn}{Column in the original metadata file that contains the tumor type labels.}
 }
 \value{
 Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases).

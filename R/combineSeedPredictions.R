@@ -21,9 +21,10 @@
 combineSeedPredictions <- function(
          minorityDir,
          majorityDir,
-         subtype = F,
-         higherClassColumn,
-         classColumn) {
+         subtype = F
+        # higherClassColumn,
+         #classColumn
+         ) {
 
   allDirsMinority <- list.dirs(minorityDir, recursive = F)
   allDirsMajority <- list.dirs(majorityDir, recursive = F)
@@ -43,6 +44,11 @@ for (i in seq(1:length(selectedDirsMajority))) {
   majorityDoc <- paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
   minority <- readRDS(minorityDoc)
   majority <- readRDS(majorityDoc)
+
+  if (i == 1) {
+    classColumn <- minority$metaDataRun$classColumn
+    higherClassColumn <- minority$metaDataRun$higherClassColumn
+  }
 
   probabilitiesMinority <- obtainProbabilities(minority)
   probabilitiesMajority <- obtainProbabilities(majority)
@@ -91,7 +97,9 @@ predictionsMMFinal <- getMajorityPredictions(minority = minority,
 
 }
 predictionsList <- list(predictionsMMFinal = predictionsMMFinal,
-                        MMProbabilityList = MMProbabilityListFinalFinal)
+                        MMProbabilityList = MMProbabilityListFinalFinal,
+                        metaDataRef = minority$metaDataRef,
+                        metaDataRun = minority$metaDataRun)
 
 return(predictionsList)
 

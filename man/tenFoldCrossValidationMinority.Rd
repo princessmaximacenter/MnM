@@ -9,6 +9,8 @@ tenFoldCrossValidationMinority(
   metaDataRef,
   meanExpression = 5,
   classColumn,
+  higherClassColumn,
+  domainColumn,
   patientColumn,
   nModels = 100,
   nANOVAgenes = 1000,
@@ -17,8 +19,7 @@ tenFoldCrossValidationMinority(
   howManyFeatures = 300,
   whichSeed = 1,
   outputDir = ".",
-  proteinDir =
-    "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/"
+  proteinCodingGenes
 )
 }
 \arguments{
@@ -31,6 +32,10 @@ different genes in the rows.}
 specifying what the minimum mean expression of a gene should be for it to be included in the F-statistic analysis.}
 
 \item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+
+\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
+
+\item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
 \item{patientColumn}{Column in the metadata file that contains the patient labels.}
 
@@ -47,8 +52,6 @@ specifying what the minimum mean expression of a gene should be for it to be inc
 \item{whichSeed}{For reproducibility, the seed can be specified with this parameter.}
 
 \item{outputDir}{Directory in which you would like to store the R-object containing the results.}
-
-\item{proteinDir}{In which directory can we find the file specifying the names of protein-coding genes within our dataset?}
 }
 \value{
 R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),

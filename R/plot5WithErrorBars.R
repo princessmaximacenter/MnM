@@ -3,22 +3,16 @@
 #' With this function, the overall results will be displayed for the comparison between different classifiers.
 #' Error bars will be generated based on different cross-validation runs.
 #'
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param minorityDir Directory in which the minority model(s) are stored for the cross-validation setup.
 #' @param majorityDir Directory in which the majority model(s) are stored for the cross-validation setup.
 #' @param minorityDirTest Directory in which the minority model(s) are store for the test setup.
 #' @param majorityDirTest Directory in which the majority model(s) are store for the test setup.
-#' @param metaDataRef  Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
 #' @param metaDataTest  Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.
 #' @param otherDataSets List containing a description of the other datasets, with their actual data ($data),
 #'  whether we're looking at the tumor type of subtype ($subtype),
 #'  what is the probability score threshold that should be used for the M&M classifications ($probabilityScoreThreshold),
 #'  whether we're looking at cross-validation or test set results ($TrainOrTest, should be "Train" or "Test"),
 #'  and what is the name that you would like to attach to the subset of the data ($subsetName).
-#' @param throwOut Are there samples you would like to remove from the test set due to poor data quality? If so, add their rownames here.
-#' @param nModels  How many models were created for the majority voting system?
-#' @param nSeedsTrain How many seeds was the cross-validation setup run with?
 #' @param plotResults Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?
 #'
 #' @return If plotResults == F, a dataframe containing the accuracy ($meanAccuracy), precision ($meanPrecision),
@@ -28,55 +22,65 @@
 #' Included are error bars for the results of the 10 seeds used for the cross-valiation results.
 #'
 #'
-plot5WithErrorBars <- function(classColumn,
-                               higherClassColumn,
-                               minorityDir,
+plot5WithErrorBars <- function(minorityDir,
                                majorityDir,
                                minorityDirTest,
                                majorityDirTest,
-                               metaDataRef,
                                metaDataTest = NA,
                                otherDataSets,
-                            #   otherDataSetsTest,
-                               throwOut = NA,
-                               nModels,
-                            nSeedsTrain,
                             plotResults = F
 ) {
 
   for (i in seq(1:length(otherDataSets))) {
+
+    if (i == 1) {
+      if (!is.na(metaDataTest)[1]) {
+        print("Checking the performance for the test set based on values provided in dataframe 'metaDataTest'.")
+
+        if (classColumn %notin% colnames(metaDataTest)) {
+          print("Please note that the wanted column for the tumor subtype labels cannot be found within 'metaDataTest'.")
+          print("Either change the column with the tumor subtype labels to the name: ", classColumn)
+          stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
+        } else if (higherClassColumn %notin% colnames(metaDataTest)) {
+
+          print("Please note that the wanted column for the tumor type labels cannot be found within 'metaDataTest'.")
+          print("Either change the column with the tumor type labels to the name: ", higherClassColumn)
+          stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
+        } else {
+          print(paste0("Found columns ", classColumn, " and ", higherClassColumn, " within metaDataTest specifying the tumor subtype, and tumor type."))
+
+          print("No original call found, adding it from metaDataTest")
+        }
+
+      }
+
+    }
     dataSetName <- names(otherDataSets)[i]
-    probabilityScoreThreshold <- otherDataSets[[i]]$probabilityScoreThreshold
+    probabilityThreshold <- otherDataSets[[i]]$probabilityScoreThreshold
     subtype <- otherDataSets[[i]]$subtype
     otherDataSet <- otherDataSets[[i]]$data
     subsetName <- otherDataSets[[i]]$subsetName
     trainOrTest <- otherDataSets[[i]]$TrainOrTest
     if (trainOrTest == "Train") {
-      nSeeds <- nSeedsTrain
+
       crossValidation <- T
       minorityDirectory <- minorityDir
       majorityDirectory <- majorityDir
     } else {
-      #nSeeds <- 1
       crossValidation <- F
       minorityDirectory <- minorityDirTest
       majorityDirectory <- majorityDirTest
     }
     #subset <- rownames(otherDataSet)
 
-  meanAndSDPlotTrain <- calculateMeanAndSDOverall(classColumn,
-                                                  higherClassColumn,
+  meanAndSDPlotTrain <- calculateMeanAndSDOverall(#classColumn,
+                                                  #higherClassColumn,
                                                   minorityDir = minorityDirectory,
                                                   majorityDir = majorityDirectory,
-                                                  metaDataRef,
-                                                  metaDataTest,
-                                                  throwOut = throwOut,
+                                                  metaDataTest = metaDataTest,
                                                   subtype = subtype,
-                                                  crossValidation = crossValidation,
-                                                  nModels = nModels,
-                                                  nSeeds  = nSeeds,
                                                   subset = rownames(otherDataSet),
-                                                  probabilityThreshold = probabilityScoreThreshold
+                                                  probabilityThreshold = probabilityThreshold
                                                   )
 
   #meanAndSDPlotTrain %<>% filter(nCases == "All")

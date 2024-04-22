@@ -4,14 +4,10 @@
 \alias{getAccuracyPerClass}
 \title{Obtain accuracy per tumor (sub)type}
 \usage{
-getAccuracyPerClass(predictions, metaDataRef, classColumn)
+getAccuracyPerClass(predictions)
 }
 \arguments{
 \item{predictions}{Dataframe containing the diagnosis label ($originalCall) and the top-ranked classification label ($predict) from a classifier.}
-
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
-
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
 }
 \value{
 Dataframe containing the accuracy for the different tumor (sub)types within the dataset.

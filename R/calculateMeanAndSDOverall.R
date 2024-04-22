@@ -4,40 +4,34 @@
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param minorityDir Directory in which the minority model(s) are stored.
 #' @param majorityDir Directory in which the majority model(s) are stored.
-#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.
 #' @param metaDataTest Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.
-#' @param throwOut Are there samples you would like to remove from the test set due to poor data quality? If so, add their rownames here.
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
 #' @param crossValidation Specify whether the results are from the cross-validation setup or not.
-#' @param nModels How many models were created for the majority voting system?
-#' @param nSeeds How many seeds was the cross-validation setup run with?
 #' @param subset Do you want to only include a subset of the data for the performance measure calculations? If so, add their rownames here.
 #' @param probabilityThreshold What is the threshold you would like to use to call a classification 'confident'?
 #'
 #' @return Dataframe with performance for all samples within the dataset combined,
 #' instead of with stratification by tumor (sub)type frequency within reference cohort.
 #'
-calculateMeanAndSDOverall <- function(classColumn,
-                                      higherClassColumn,
+calculateMeanAndSDOverall <- function(#classColumn,
+                                      #higherClassColumn,
                                       minorityDir,
                                       majorityDir,
-                                      metaDataRef,
                                       metaDataTest,
-                                      throwOut = NA,
                                       subtype = F,
-                                      crossValidation = T,
-                                      nModels,
-                                      nSeeds,
                                       subset = F,
                                       probabilityThreshold
 ) {
 
-  if (crossValidation == T) {
+  if ("minorityClassifierResult.rds" %notin% list.files(minorityDir)) {
+    crossValidation <- T
     allDirsMinority <- list.dirs(minorityDir, recursive = F)
     allDirsMajority <- list.dirs(majorityDir, recursive = F)
     selectedDirsMinority <- allDirsMinority[grep("seed", allDirsMinority)]
     selectedDirsMajority <- allDirsMajority[grep("seed", allDirsMajority)]
 
+    print(paste0("Found ",length(selectedDirsMajority), " directories with different cross-validation runs.",
+                 " Calculating average performance values for all combined."))
     if (length(selectedDirsMinority) != length(selectedDirsMajority)) {
       stop("The number of models for the minority and majority classifier are not the same.
          Please check your models within the minorityDir and majorityDir that the
@@ -48,9 +42,12 @@ calculateMeanAndSDOverall <- function(classColumn,
     }
   } else {
     selectedDirsMajority <- majorityDir
+    crossValidation <- F
   }
 
   for (i in seq(1:length(selectedDirsMajority))) {
+
+
     if (crossValidation == T) {
       minorityDoc <- paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
       majorityDoc <- paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
@@ -61,14 +58,20 @@ calculateMeanAndSDOverall <- function(classColumn,
     minority <- readRDS(minorityDoc)
     majority <- readRDS(majorityDoc)
 
+
+    if (i == 1) {
+      classColumn <- minority$metaDataRun$classColumn
+      higherClassColumn <- minority$metaDataRun$higherClassColumn
+
+
+    }
+
     predictionsMMFinalList <- integrateMM(minority = minority,
                                           majority = majority,
-                                          subtype = subtype,
-                                          classColumn = classColumn,
-                                          higherClassColumn = higherClassColumn)
+                                          subtype = subtype)
     predictionsMMFinal <- predictionsMMFinalList$predictionsMMFinal
     if (crossValidation == F) {
-      predictionsMMFinal %<>% filter(rownames(.) %notin% throwOut)
+      print("Mode is for test data.")
       if (subtype == F) {
         predictionsMMFinal$originalCall <- metaDataTest[rownames(predictionsMMFinal), higherClassColumn]
       } else {

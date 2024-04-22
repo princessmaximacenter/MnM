@@ -5,8 +5,6 @@
 \title{Calculate performance measures for separate tumor (sub)types}
 \usage{
 calculateSeparateF1(
-  classColumn,
-  higherClassColumn,
   minorityDir,
   majorityDir,
   subtype,
@@ -16,10 +14,6 @@ calculateSeparateF1(
 )
 }
 \arguments{
-\item{classColumn}{Column in the original metadata file that contains the tumor subtype labels.}
-
-\item{higherClassColumn}{Column in the original metadata file that contains the tumor type labels.}
-
 \item{minorityDir}{Directory in which the minority model(s) are stored.}
 
 \item{majorityDir}{Directory in which the majority model(s) are stored.}

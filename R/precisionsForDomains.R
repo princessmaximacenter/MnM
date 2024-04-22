@@ -1,8 +1,5 @@
 #' Compare results between samples from different domains
 #'
-#' @param classColumn Column in the original metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the original metadata file that contains the tumor type labels.
-#' @param domainColumn Column in the original metadata file that contains the domain labels.
 #' @param minorityDir Directory in which the minority model(s) are stored.
 #' @param majorityDir Directory in which the majority model(s) are stored.
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
@@ -19,9 +16,6 @@
 #' @export
 #'
 precisionsForDomains <- function(
-          classColumn,
-          higherClassColumn,
-          domainColumn,
           minorityDir,
           majorityDir,
           subtype,
@@ -61,16 +55,41 @@ precisionsForDomains <- function(
       minorityDoc <- paste0(minorityDir, "/minorityClassifierResult.rds")
       majorityDoc <- paste0(majorityDir, "/majorityClassifierResult.rds")
       metaData <- metaDataTest
-      print("No original call found, adding it from metaDataTest")
     }
     minority <- readRDS(minorityDoc)
     majority <- readRDS(majorityDoc)
 
+    classColumn <- minority$metaDataRun$classColumn
+    higherClassColumn <- minority$metaDataRun$higherClassColumn
+    domainColumn <- minority$metaDataRun$domainColumn
+
+    if (!is.na(metaDataTest)[1]) {
+      print("Checking the performance for the test set based on values provided in dataframe 'metaDataTest'.")
+
+      if (classColumn %notin% colnames(metaDataTest)) {
+        print("Please note that the wanted column for the tumor subtype labels cannot be found within 'metaDataTest'.")
+        print("Either change the column with the tumor subtype labels to the name: ", classColumn)
+        stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
+      } else if (higherClassColumn %notin% colnames(metaDataTest)) {
+
+          print("Please note that the wanted column for the tumor type labels cannot be found within 'metaDataTest'.")
+          print("Either change the column with the tumor type labels to the name: ", higherClassColumn)
+          stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
+
+      } else if (domainColumn  %notin% colnames(metaDataTest)) {
+        print("Please note that the wanted column for the tumor domain labels cannot be found within 'metaDataTest'.")
+        print("Either change the column with the tumor domain labels to the name: ", domainColumn)
+        stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
+      } else {
+        print(paste0("Found columns ", classColumn, ", ", higherClassColumn, ", and ", domainColumn, " within metaDataTest specifying the tumor subtype, type and domain."))
+
+        print("No original call found, adding it from metaDataTest")
+      }
+
+    }
     predictionsMMFinalList <- integrateMM(minority = minority,
                                           majority = majority,
-                                          subtype = subtype,
-                                          classColumn = classColumn,
-                                          higherClassColumn = higherClassColumn
+                                          subtype = subtype
     )
 
     predictionsMMFinal <- predictionsMMFinalList$predictionsMMFinal

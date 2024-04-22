@@ -24,7 +24,6 @@ obtainProbabilities <- function(classifierResults) {
     }
   } else {
     nModels <- sum(probabilityList[[1]])
-    print(paste0("Converting label counts to probability scores for the ", nModels, " models."))
 
     probabilities <- lapply(classifierResults$probabilityList, function(x) x / nModels)
   }

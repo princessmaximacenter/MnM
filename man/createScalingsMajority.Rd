@@ -8,6 +8,8 @@ createScalingsMajority(
   countDataRef,
   metaDataRef,
   classColumn,
+  higherClassColumn,
+  domainColumn,
   patientColumn,
   nModels = 100,
   maxSamplesPerType = 50,
@@ -16,7 +18,7 @@ createScalingsMajority(
   maxNeighbours = 25,
   whichSeed = 1,
   outputDir = "./",
-  proteinDir,
+  proteinCodingGenes,
   saveModel = T,
   saveRiboModels = F
 )
@@ -29,6 +31,10 @@ different genes in the rows.}
 the tumor (sub)type diagnosis within the reference cohort.}
 
 \item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+
+\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
+
+\item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
 \item{patientColumn}{Column in the metadata file that contains the patient labels.}
 
@@ -46,9 +52,9 @@ the tumor (sub)type diagnosis within the reference cohort.}
 
 \item{outputDir}{Directory in which you would like to store the R-object containing the results.}
 
-\item{proteinDir}{In which directory can we find the file specifying the names of protein-coding genes within our dataset?}
+\item{saveModel}{Do you want to save your generated scalings in an R-object? Logical.}
 
-\item{saveModel}{Do you want to save your generated scalings in an R-object?}
+\item{saveRiboModels}{Do you want to save the generated model for ribodepletion correction? Logical.}
 }
 \value{
 R-object containing the rotations and scalings

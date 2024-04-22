@@ -8,6 +8,8 @@ tenFoldCrossValidationMajority(
   countDataRef,
   metaDataRef,
   classColumn,
+  higherClassColumn,
+  domainColumn,
   patientColumn,
   nModels = 100,
   maxSamplesPerType = 50,
@@ -16,7 +18,7 @@ tenFoldCrossValidationMajority(
   maxNeighbours = 25,
   whichSeed = 1,
   outputDir = ".",
-  proteinDir = "./input/"
+  proteinCodingGenes
 )
 }
 \arguments{
@@ -26,6 +28,10 @@ different genes in the rows.}
 \item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
 
 \item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+
+\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
+
+\item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
 \item{patientColumn}{Column in the metadata file that contains the patient labels.}
 
@@ -42,8 +48,6 @@ different genes in the rows.}
 \item{whichSeed}{For reproducibility, the seed can be specified with this parameter.}
 
 \item{outputDir}{Directory in which you would like to store the R-object containing the results.}
-
-\item{proteinDir}{In which directory can we find the file specifying the names of protein-coding genes within our dataset?}
 }
 \value{
 R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),

@@ -5,8 +5,6 @@
 \title{Plot comparison between classifiers on subsampled results}
 \usage{
 plot5withErrorBarsSubsampling(
-  classColumn,
-  higherClassColumn,
   minorityDir,
   majorityDir,
   minorityDirTest,
@@ -20,10 +18,6 @@ plot5withErrorBarsSubsampling(
 )
 }
 \arguments{
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
-
-\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
-
 \item{minorityDir}{Directory in which the minority model(s) are stored for the cross-validation setup.}
 
 \item{majorityDir}{Directory in which the majority model(s) are stored for the cross-validation setup.}
@@ -48,6 +42,10 @@ and what is the name that you would like to attach to the subset of the data ($s
 
 \item{probabilityScoreMinimum}{Do you want to say that classifications with a very low probability score should be called 'wrong classifications'?
 If yes, please specify the probability score this should happen at. This will be used within the results for the methylation classifiers.}
+
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+
+\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
 }
 \value{
 If returnPlot == F, a dataframe containing the accuracy ($meanAccuracy), precision ($meanPrecision),

@@ -37,6 +37,7 @@ newPredictionsMinority <- function(createdModelsMinority, countDataNew,
                                                          metaDataRef = createdModelsMinority$metaDataRef,
                                                          addOriginalCall = F)
 
+  classificationList$metaDataRun <- createdModelsMinority$metaDataRun
   if (saveModel == T) {
     #directory <- outputDir
     filename <- paste0(outputDir, "/minorityClassifierResult.rds")

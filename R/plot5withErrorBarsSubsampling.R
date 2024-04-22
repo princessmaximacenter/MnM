@@ -26,9 +26,7 @@
 #' If returnPlot == T, a plot showing the accuracy, precision and recall for M&M and other classifiers for specific subsets of the dataset will be returned.
 #' Included are error bars for the results of the 10 seeds used for the cross-valiation results.
 #'
-plot5withErrorBarsSubsampling <- function(classColumn,
-                                          higherClassColumn,
-                                          minorityDir,
+plot5withErrorBarsSubsampling <- function(minorityDir,
                                           majorityDir,
                                           minorityDirTest,
                                           majorityDirTest,
@@ -43,18 +41,15 @@ plot5withErrorBarsSubsampling <- function(classColumn,
   predictionsMMAverageList <- combineSeedPredictions(
                                                      minorityDir = minorityDir,
                                                      majorityDir = majorityDir,
-                                                     subtype = F,
-                                                     classColumn = classColumn,
-                                                     higherClassColumn = higherClassColumn)
+                                                     subtype = F)
 
   predictionsMMAverage <- predictionsMMAverageList$predictionsMMFinal
+  predictionsMMAverageList$metaDataRun$class
 
   predictionsMMAverageSubtypeList <- combineSeedPredictions(
                                                             minorityDir = minorityDir,
                                                             majorityDir = majorityDir,
-                                                            subtype = T,
-                                                            classColumn = classColumn,
-                                                            higherClassColumn = higherClassColumn)
+                                                            subtype = T)
 
   predictionsMMAverageSubtype <- predictionsMMAverageSubtypeList$predictionsMMFinal
 
@@ -65,18 +60,17 @@ plot5withErrorBarsSubsampling <- function(classColumn,
 
   predictionsMMSubtypeTestList <- integrateMM(minority = minority,
                                               majority = majority,
-                                              classColumn = classColumn,
-                                              higherClassColumn = higherClassColumn,
                                               subtype = T)
 
   predictionsMMSubtypeTest <- predictionsMMSubtypeTestList$predictionsMMFinal
+  classColumn <- minority$metaDataRun$classColumn
+  higherClassColumn <- minority$metaDataRun$higherClassColumn
+
 
   predictionsMMSubtypeTest$originalCall <- metaDataTest[rownames(predictionsMMSubtypeTest),classColumn]
 
   predictionsMMTestList <- integrateMM(minority = minority,
                                        majority = majority,
-                                       classColumn = classColumn,
-                                       higherClassColumn = higherClassColumn,
                                        subtype = F)
 
   predictionsMMTest <- predictionsMMTestList$predictionsMMFinal

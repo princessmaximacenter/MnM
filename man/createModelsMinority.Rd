@@ -10,6 +10,8 @@ createModelsMinority(
   patientColumn,
   meanExpression = 5,
   classColumn,
+  higherClassColumn,
+  domainColumn,
   nModels = 100,
   nANOVAgenes = 1000,
   maxSamplesPerType = 3,
@@ -17,7 +19,8 @@ createModelsMinority(
   howManyFeatures = 300,
   whichSeed = 1,
   outputDir = "./",
-  proteinDir
+  proteinCodingGenes,
+  saveModel = T
 )
 }
 \arguments{
@@ -33,6 +36,10 @@ specifying what the minimum mean expression of a gene should be for it to be inc
 
 \item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
 
+\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
+
+\item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
+
 \item{nModels}{How many models should be created for the majority voting system?}
 
 \item{nANOVAgenes}{How many genes should we select using the F-statistic of ANOVA?}
@@ -47,7 +54,7 @@ specifying what the minimum mean expression of a gene should be for it to be inc
 
 \item{outputDir}{Directory in which you would like to store the R-object containing the results.}
 
-\item{proteinDir}{In which directory can we find the file specifying the names of protein-coding genes within our dataset?}
+\item{saveModel}{Do you want to save your generated scalings in an R-object?}
 }
 \value{
 R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),

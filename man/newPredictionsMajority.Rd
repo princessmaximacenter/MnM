@@ -9,9 +9,6 @@ newPredictionsMajority(
   countDataRef,
   countDataNew,
   classColumn,
-  nModels = 100,
-  nComps = 100,
-  maxNeighbours = 25,
   outputDir = "./",
   saveModel = T
 )
@@ -33,12 +30,6 @@ different genes in the rows.}
 Patients are in the columns, different genes in the rows.}
 
 \item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
-
-\item{nModels}{How many models should be created for the majority voting system?}
-
-\item{nComps}{How many principal components will be selected after PCA?}
-
-\item{maxNeighbours}{What is the maximum number of neigbours to be used for the weighted \emph{k}-nearest neighbor algorithm?}
 
 \item{outputDir}{Directory in which you would like to store the R-object containing the results.}
 

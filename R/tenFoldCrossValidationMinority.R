@@ -7,6 +7,8 @@
 #' @param meanExpression Selection criterion for the genes,
 #' specifying what the minimum mean expression of a gene should be for it to be included in the F-statistic analysis.
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
 #' @param nModels How many models should be created for the majority voting system?
 #' @param nANOVAgenes How many genes should we select using the F-statistic of ANOVA?
 #' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
@@ -14,7 +16,7 @@
 #' @param howManyFeatures How many features should we keep after determining the most important genes using the Random Forest Importance Score?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
-#' @param proteinDir In which directory can we find the file specifying the names of protein-coding genes within our dataset?
+#' @param proteinCodingGenes
 #' @param patientColumn Column in the metadata file that contains the patient labels.
 #'
 #' @return R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),
@@ -28,6 +30,8 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                             metaDataRef,
                                             meanExpression = 5,
                                             classColumn,
+                                            higherClassColumn,
+                                            domainColumn,
                                             patientColumn,
                                             nModels = 100,
                                             nANOVAgenes = 1000,
@@ -36,7 +40,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                             howManyFeatures = 300,
                                             whichSeed = 1,
                                             outputDir = ".",
-                                            proteinDir = "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/"
+                                            proteinCodingGenes
 
 ) {
 
@@ -55,6 +59,19 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
          Non-available measurements are not allowed.")
 
   }
+
+  # Include a statement to store the classColumn, higherClassColumn and domainColumn
+  print(paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
+  print(unique(metaDataRef[,classColumn])[1:3])
+
+  print(paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
+  print(unique(metaDataRef[,higherClassColumn])[1:3])
+
+  print(paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
+  print(unique(metaDataRef[,domainColumn])[1:3])
+  print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
+
+
 
   tumorEntitiesWithTooFewSamples <- table(metaDataRef[,classColumn])[table(metaDataRef[,classColumn]) < 3] %>% names()
   if (length(tumorEntitiesWithTooFewSamples) >0) {
@@ -84,8 +101,6 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
     riboCountFile <- paste0(modelDirectory, "/modelListRiboCounts.rds")
     if (!file.exists(riboCountFile)) {
 
-      proteinCodingGenes <- read.table(paste0(proteinDir,"20230320_proteinCodingGenes_gencode31.csv"), sep = "\t") %>%
-        select(x) %>% deframe
       set.seed(whichSeed)
       riboModelList <- riboCorrectCounts(data = countDataRef,
                                          proteinCodingGenes = proteinCodingGenes,
@@ -206,7 +221,8 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
     classificationResults <- convertResultToClassification(result = result,
                                                            metaDataRef = metaDataRef,
-                                                           addOriginalCall = T)
+                                                           addOriginalCall = T,
+                                                           classColumn = classColumn)
 
     probabilityList[[i]] <- classificationResults$probabilityList
     ultimatePredictions <- classificationResults$classifications
@@ -228,6 +244,8 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
   # Store the settings of the classifier run within the resulting object
   metaDataRun <- data.frame(nModels = nModels,
                             classColumn = classColumn,
+                            higherClassColumn = higherClassColumn,
+                            domainColumn = domainColumn,
                             maxSamplesPerType = maxSamplesPerType,
                             nANOVAgenes = nANOVAgenes,
                             howManyFeatures = howManyFeatures,

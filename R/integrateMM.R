@@ -6,8 +6,6 @@
 #' @param majority R-object that contains the results from the Majority classifier
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
 #' If so, use _subtype = T_. If you want to obtain tumor type predictions instead, use _subtype = F_.
-#' @param classColumn Column name within metadata-file that contains the cancer subtype-labels.
-#' @param higherClassColumn Column name within metadata-file that contains the cancer type labels.
 #' This is important, as for the cross-validation setup there is a ground truth ($originalCall), while for new predictions there is not.
 #' @param substituteNames Do you want to substitute some names?
 #' @param substituteBy What do you want to substitute it by?
@@ -25,13 +23,12 @@
 integrateMM <- function(minority,
                         majority,
                         subtype,
-                        classColumn,
-                        higherClassColumn,
                         integrate = T
-
 
                         ) {
 
+  classColumn <- minority$metaDataRun$classColumn
+  higherClassColumn <- minority$metaDataRun$higherClassColumn
   probabilitiesMinority <- obtainProbabilities(minority)
   probabilitiesMajority <- obtainProbabilities(majority)
 

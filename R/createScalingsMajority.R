@@ -9,6 +9,8 @@
 #' @param metaDataRef Metadata file containing the links between the patients and
 #' the tumor (sub)type diagnosis within the reference cohort.
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
 #' @param nModels How many models should be created for the majority voting system?
 #' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
 #' @param nComps How many principal components will be selected after PCA?
@@ -16,9 +18,10 @@
 #' @param maxNeighbours What is the maximum number of neigbours to be used for the weighted _k_-nearest neighbor algorithm?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
-#' @param proteinDir In which directory can we find the file specifying the names of protein-coding genes within our dataset?
+#' @param proteinCodingGenes
 #' @param patientColumn Column in the metadata file that contains the patient labels.
-#' @param saveModel Do you want to save your generated scalings in an R-object?
+#' @param saveModel Do you want to save your generated scalings in an R-object? Logical.
+#' @param saveRiboModels Do you want to save the generated model for ribodepletion correction? Logical.
 #' @return R-object containing the rotations and scalings
 #' for each reference cohort subset($rotationsAndScalingList),
 #' the model to correct for the ribodepletion efficacy ($riboModelList),
@@ -32,6 +35,8 @@
 createScalingsMajority <-  function(countDataRef,
                                     metaDataRef,
                                     classColumn,
+                                    higherClassColumn,
+                                    domainColumn,
                                     patientColumn,
                                     nModels = 100,
                                     maxSamplesPerType = 50,
@@ -40,7 +45,7 @@ createScalingsMajority <-  function(countDataRef,
                                     maxNeighbours = 25,
                                     whichSeed = 1,
                                     outputDir = "./",
-                                    proteinDir,
+                                    proteinCodingGenes,
                                     saveModel = T,
                                     saveRiboModels = F
 
@@ -60,6 +65,21 @@ createScalingsMajority <-  function(countDataRef,
     stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.")
 
   }
+
+  # Include a statement to store the classColumn, higherClassColumn and domainColumn
+  print(paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
+  print(unique(metaDataRef[,classColumn])[1:3])
+
+  print(paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
+  print(unique(metaDataRef[,higherClassColumn])[1:3])
+
+  print(paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
+  print(unique(metaDataRef[,domainColumn])[1:3])
+  print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
+
+
+
+
   tumorEntitiesWithTooFewSamples <- table(metaDataRef[,classColumn])[table(metaDataRef[,classColumn]) < 3] %>% names()
   if (length(tumorEntitiesWithTooFewSamples) >0) {
 
@@ -72,14 +92,12 @@ createScalingsMajority <-  function(countDataRef,
   # Make sure you have CPM counts
   countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
 
-  directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"), "/")
+  directory <- outputDir
 
   # Correct for ribosomal protein contamination
   riboCountFile <- paste0(directory, "modelListRiboCounts.rds")
   if (!file.exists(riboCountFile)) {
 
-    proteinCodingGenes <- read.table(paste0(proteinDir,"20230320_proteinCodingGenes_gencode31.csv"), sep = "\t") %>%
-      select(x) %>% deframe
     set.seed(whichSeed)
     riboModelList <- riboCorrectCounts(data = countDataRef,
                                        proteinCodingGenes = proteinCodingGenes,
@@ -128,6 +146,8 @@ createScalingsMajority <-  function(countDataRef,
   # Store the settings of the classifier run within the resulting object
   metaDataRun <- data.frame(nModels = nModels,
                             classColumn = classColumn,
+                            higherClassColumn = higherClassColumn,
+                            domainColumn = domainColumn,
                             maxSamplesPerType = maxSamplesPerType,
                             nFeatures = nFeatures,
                             nComps = nComps,

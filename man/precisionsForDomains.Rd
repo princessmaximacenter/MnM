@@ -5,9 +5,6 @@
 \title{Compare results between samples from different domains}
 \usage{
 precisionsForDomains(
-  classColumn,
-  higherClassColumn,
-  domainColumn,
   minorityDir,
   majorityDir,
   subtype,
@@ -17,12 +14,6 @@ precisionsForDomains(
 )
 }
 \arguments{
-\item{classColumn}{Column in the original metadata file that contains the tumor subtype labels.}
-
-\item{higherClassColumn}{Column in the original metadata file that contains the tumor type labels.}
-
-\item{domainColumn}{Column in the original metadata file that contains the domain labels.}
-
 \item{minorityDir}{Directory in which the minority model(s) are stored.}
 
 \item{majorityDir}{Directory in which the majority model(s) are stored.}

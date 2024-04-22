@@ -21,8 +21,8 @@
 #'
 combineSeparateClassifierAccuracies <- function(minorityDir,
                                              majorityDir,
-                                             classColumn,
-                                             higherClassColumn,
+                                             #classColumn,
+                                             #higherClassColumn,
                                              probabilityThreshold = 0.8,
                                              probabilityThresholdMajority = 0.9,
                                              probabilityThresholdMinority = 0.73,
@@ -34,6 +34,8 @@ combineSeparateClassifierAccuracies <- function(minorityDir,
   if (require("ungeviz") == F) {
     remotes::install_github("fwallis/ungeviz")
   }
+
+
 
   allDirsMinority <- list.dirs(minorityDir, recursive = F)
   allDirsMajority <- list.dirs(majorityDir, recursive = F)
@@ -54,12 +56,11 @@ combineSeparateClassifierAccuracies <- function(minorityDir,
     majorityDoc <- paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
     minority <- readRDS(minorityDoc)
     majority <- readRDS(majorityDoc)
-
+    classColumn <- minority$metaDataRun$classColumn
+    higherClassColumn <- minority$metaDataRun$higherClassColumn
 
   fractionsCorrectTotal <- getSeparateClassifierAccuracies(minority = minority,
                                                            majority = majority,
-                                                           classColumn = classColumn,
-                                                           higherClassColumn = higherClassColumn,
                                                            probabilityThresholdMajority = probabilityThresholdMajority,
                                                            probabilityThresholdMinority = probabilityThresholdMinority,
                                                            subtype = subtype)
@@ -68,9 +69,7 @@ combineSeparateClassifierAccuracies <- function(minorityDir,
 
   predictionsMMFinalList <- integrateMM(minority = minority,
                                         majority = majority,
-                                        subtype = subtype,
-                                        classColumn = classColumn,
-                                        higherClassColumn = higherClassColumn
+                                        subtype = subtype
   )
 
   predictionsMMFinal <- predictionsMMFinalList$predictionsMMFinal

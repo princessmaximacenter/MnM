@@ -1,6 +1,7 @@
 convertResultToClassification <- function(result,
          metaDataRef,
-         addOriginalCall) {
+         addOriginalCall,
+         classColumn = NA) {
 
   if (nrow(result) == 1 || typeof(apply(result, 1, table)) == 'integer') {
     randomVector <- paste0("fake", 1:ncol(result)) %>% as.data.frame() %>% t() %>% as.data.frame()

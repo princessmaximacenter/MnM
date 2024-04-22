@@ -17,8 +17,8 @@
 #'
 getSeparateClassifierAccuracies <- function(minority,
                                              majority,
-                                             classColumn,
-                                             higherClassColumn,
+                                             #classColumn,
+                                            # higherClassColumn,
                                              subtype = F,
                                             probabilityThresholdMajority,
                                             probabilityThresholdMinority
@@ -27,13 +27,12 @@ getSeparateClassifierAccuracies <- function(minority,
   predictionsList <- integrateMM(minority = minority,
               majority = majority,
               subtype = subtype,
-              classColumn = classColumn,
-              higherClassColumn = higherClassColumn,
               integrate = F)
 
   predictionsMajority <- predictionsList$predictionsMajority
   predictionsMinority <- predictionsList$predictionsMinority
-
+  classColumn <- minority$metaDataRun$classColumn
+  higherClassColumn <- minority$metaDataRun$higherClassColumn
   if (subtype == F) {
 
     minorityAccuracies <- getAccuraciesPerTumorTypeSize(predictionsMM = predictionsMinority,

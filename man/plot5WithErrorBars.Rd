@@ -5,26 +5,16 @@
 \title{Plot comparison between classifiers on total results}
 \usage{
 plot5WithErrorBars(
-  classColumn,
-  higherClassColumn,
   minorityDir,
   majorityDir,
   minorityDirTest,
   majorityDirTest,
-  metaDataRef,
   metaDataTest = NA,
   otherDataSets,
-  throwOut = NA,
-  nModels,
-  nSeedsTrain,
   plotResults = F
 )
 }
 \arguments{
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
-
-\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
-
 \item{minorityDir}{Directory in which the minority model(s) are stored for the cross-validation setup.}
 
 \item{majorityDir}{Directory in which the majority model(s) are stored for the cross-validation setup.}
@@ -33,8 +23,6 @@ plot5WithErrorBars(
 
 \item{majorityDirTest}{Directory in which the majority model(s) are store for the test setup.}
 
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.}
-
 \item{metaDataTest}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.}
 
 \item{otherDataSets}{List containing a description of the other datasets, with their actual data ($data),
@@ -42,12 +30,6 @@ whether we're looking at the tumor type of subtype ($subtype),
 what is the probability score threshold that should be used for the M&M classifications ($probabilityScoreThreshold),
 whether we're looking at cross-validation or test set results ($TrainOrTest, should be "Train" or "Test"),
 and what is the name that you would like to attach to the subset of the data ($subsetName).}
-
-\item{throwOut}{Are there samples you would like to remove from the test set due to poor data quality? If so, add their rownames here.}
-
-\item{nModels}{How many models were created for the majority voting system?}
-
-\item{nSeedsTrain}{How many seeds was the cross-validation setup run with?}
 
 \item{plotResults}{Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?}
 }

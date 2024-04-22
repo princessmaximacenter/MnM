@@ -61,6 +61,8 @@ newPredictionsMajority <- function(createdModelsMajority,
    classificationList <- convertResultToClassification(result = result,
                                                          metaDataRef = createdModelsMajority$metaDataRef,
                                                          addOriginalCall = F)
+
+   classificationList$metaDataRun <- createdModelsMajority$metaDataRun
 if (saveModel == T) {
   #directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"))
   if (!dir.exists(outputDir)) {

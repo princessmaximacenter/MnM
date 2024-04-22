@@ -4,13 +4,7 @@
 \alias{combineSeedPredictions}
 \title{Combine the results of different cross-validation runs}
 \usage{
-combineSeedPredictions(
-  minorityDir,
-  majorityDir,
-  subtype = F,
-  higherClassColumn,
-  classColumn
-)
+combineSeedPredictions(minorityDir, majorityDir, subtype = F)
 }
 \arguments{
 \item{minorityDir}{Directory in which the minority model(s) are stored.}
