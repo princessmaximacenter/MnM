@@ -20,7 +20,7 @@
 
 estimateProbabilityThreshold <- function(predictionsMM) {
 
-  for (cutoff in seq(from = 0.01, to = 1.00, by = 0.01)) {
+  for (cutoff in seq(from = 0, to = 1.01, by = 0.01)) {
     predictionsMMFiltered <- predictionsMM %>% filter(probability1 > cutoff)
 
     TP <- predictionsMMFiltered %>% filter(originalCall == predict) %>% nrow()
@@ -30,12 +30,13 @@ estimateProbabilityThreshold <- function(predictionsMM) {
     FN <- predictionsMM %>% filter(probability1 <= cutoff,
                                    originalCall == predict) %>% nrow()
 
+    #recall <- nrow(predictionsMMFiltered) / nrow(predictionsMM)
     binaryScoreDF <- data.frame(cutoff = cutoff,
                                 TP = TP,
                                 FP = FP,
                                 TN = TN,
                                 FN = FN)
-    if (cutoff == 0.01) {
+    if (cutoff == 0) {
       totalbinaryScoreDF <- binaryScoreDF
     } else {
       totalbinaryScoreDF <- rbind(totalbinaryScoreDF,
@@ -48,7 +49,9 @@ estimateProbabilityThreshold <- function(predictionsMM) {
 
   totalbinaryScoreDF$precision <- totalbinaryScoreDF$TP / (totalbinaryScoreDF$TP + totalbinaryScoreDF$FP)
 
-  totalbinaryScoreDF$recall <- totalbinaryScoreDF$sensitivity
+  totalbinaryScoreDF$recall <- (totalbinaryScoreDF$TP + totalbinaryScoreDF$FP) /
+    (totalbinaryScoreDF$TP + totalbinaryScoreDF$FP + totalbinaryScoreDF$TN + totalbinaryScoreDF$FN)
 
+  totalbinaryScoreDF$precision[is.na(totalbinaryScoreDF$precision)] <- 1
   return(totalbinaryScoreDF)
 }

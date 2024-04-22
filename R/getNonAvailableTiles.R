@@ -22,8 +22,8 @@ getNonAvailableTiles <- function(predictionsMM,
   predictionsMMFiltered <- predictionsMM %>% filter(probability1 > probabilityScore)
 
   tumorConfusionMatrix <- confusionMatrix(factor(predictionsMMFiltered$predict,
-                                                 levels = unique(c(predictionsMMFiltered$originalCall, predictionsMMFiltered$predict))),
-                                          factor(predictionsMMFiltered$originalCall, levels = unique(c(predictionsMMFiltered$originalCall, predictionsMMFiltered$predict))),
+                                                 levels = unique(c(predictionsMM$originalCall, predictionsMM$predict))),
+                                          factor(predictionsMMFiltered$originalCall, levels = unique(c(predictionsMM$originalCall, predictionsMM$predict))),
                                           dnn = c("Prediction", "Reference"))
   predictionFrequencies <- tumorConfusionMatrix$table %>% as.data.frame()
   nonAvailableTiles <- predictionFrequencies %>% filter(Freq == 0, Prediction != Reference)
@@ -35,10 +35,10 @@ getNonAvailableTiles <- function(predictionsMM,
   for (i in seq(1:nrow(nonAvailableTiles))) {
 
     if (nonAvailableTiles$Prediction[i] %in% abbreviations[, classColumn]) {
-      nonAvailableTiles$Prediction[i] <- abbreviations[abbreviations[,classColumn] == nonAvailableTiles$Prediction[i], "abbreviation"]
+      nonAvailableTiles$Prediction[i] <- abbreviations[abbreviations[,classColumn] == nonAvailableTiles$Prediction[i], "abbreviation"] %>% unique()
     }
     if (nonAvailableTiles$Reference[i] %in% abbreviations[, classColumn]) {
-      nonAvailableTiles$Reference[i] <- abbreviations[abbreviations[, classColumn] == nonAvailableTiles$Reference[i], "abbreviation"]
+      nonAvailableTiles$Reference[i] <- abbreviations[abbreviations[, classColumn] == nonAvailableTiles$Reference[i], "abbreviation"]  %>% unique()
     }
   }
   return(nonAvailableTiles)

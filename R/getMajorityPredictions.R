@@ -5,7 +5,6 @@
 #' @param MMProbabilityList List of all the samples containing the probabilities for the different sample predictions from the integrated M&M classifier.
 #' @param higherClassColumn Column name within metadata-file that contains the cancer type labels.
 #' @param crossValidation Specify whether the results are from the cross-validation setup or not.
-#' @param metaDataRef Metadata-file for the reference cohort.
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
 #' If so, use _subtype = T_. If you want to obtain tumor type predictions instead, use _subtype = F_.
 #'
@@ -15,24 +14,23 @@
 getMajorityPredictions <- function(minority,
                                    MMProbabilityList,
                                    higherClassColumn,
-                                   crossValidation,
-                                   metaDataRef,
                                    subtype) {
 
-  if (crossValidation == T) {
-  predictions <- minority$classifications[, c("predict", "originalCall")]
+
+  if ("originalCall" %in% colnames(minority$classifications)) {
+  predictions <- minority$classifications[names(MMProbabilityList), c("predict", "originalCall")]
   if(subtype == F) {
-    predictions$originalCall <- metaDataRef[rownames(predictions), higherClassColumn]
+    predictions$originalCall <- minority$metaDataRef[rownames(predictions), higherClassColumn]
   }
   } else {
     predictions <- minority$classifications[, "predict", drop = F]
   }
 
   predictions$probability1 <- NA
-  predictions$probability2 <- NA
-  predictions$probability3 <- NA
   predictions$predict2 <- NA
+  predictions$probability2 <- NA
   predictions$predict3 <- NA
+  predictions$probability3 <- NA
 
   for (i in seq(1:length(MMProbabilityList))) {
     allProbs <- MMProbabilityList[[i]]

@@ -15,7 +15,7 @@
 #'
 #' @return Dataframe containing the predictions for the _nModels_ different generated models, with the different folds
 #' in the columns and the different samples to be predicted in the rows.
-#' @export
+#' @import magrittr
 #'
 obtainPredictionMajorityClassifier <- function(rotationsAndScalingsList,
                                      dataTrain,
@@ -44,12 +44,12 @@ obtainPredictionMajorityClassifier <- function(rotationsAndScalingsList,
 
     rotatedTrainDataK <- rotatedTrainData[grep("\\.",rownames(rotatedTrainData),invert=T),]
 
-    kTrain <- train.kknn(class~., rotatedTrainDataK,
+    kTrain <- kknn::train.kknn(class~., rotatedTrainDataK,
                          distance = 1,
                          kernel = "optimal",
                          scale=F,ks=c(1:maxNeighbours))
 
-    model <- kknn(class~., rotatedTrainData,
+    model <- kknn::kknn(class~., rotatedTrainData,
                   rotatedTestSamples,
                   distance = 1,
                   kernel = "optimal",

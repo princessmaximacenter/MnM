@@ -4,28 +4,28 @@
 #'
 #' @param classifierResults R-object containing the results from the minority or majority classifier.
 #' The object should contain a list with the probabilities for each prediction.
-#' @param crossValidation A boolean factor specifying whether the R-object was generated within a cross-validation setup.
-#' @param nModels How many models were used to obtain a final prediction?
-#'
+
 #' @return List of all the samples containing the probabilities for the different sample predictions from the _nModels_ generated models.
-#' @export
 #'
-obtainProbabilities <- function(classifierResults,
-                                   crossValidation,
-                                   nModels) {
+obtainProbabilities <- function(classifierResults) {
 
-  if (crossValidation == T) {
-    probabilityList <- classifierResults$probabilityList
+  depth <- function(this) ifelse(is.list(this), 1L + max(sapply(this, depth)), 0L)
+  probabilityList <- classifierResults$probabilityList
 
+  if (depth(probabilityList) == 2) {
     for (i in seq(1:length(probabilityList))) {
+      nModels <- sum(probabilityList[[1]][[1]])
       if (i == 1) {
+
         probabilities <- lapply(probabilityList[[i]], function(x) x / nModels)
       } else {
         probabilities <- c(probabilities, lapply(probabilityList[[i]], function(x) x / nModels))
       }
     }
   } else {
-    probabilities <- lapply(classifierResults$probability, function(x) x / nModels)
+    nModels <- sum(probabilityList[[1]])
+
+    probabilities <- lapply(classifierResults$probabilityList, function(x) x / nModels)
   }
 
   return(probabilities)

@@ -46,7 +46,7 @@ getAccuraciesPerScoreBlock <- function(predictionsMM,
       totalAccDF <- rbind(totalAccDF, accuracyDF )
     }
   }
-  totalAccDF <- getCumulativeAccuracy(totalAccDF)
+  totalAccDF <- getCumulativeAccuracy(totalAccDF, totalSamples = nrow(predictionsMM))
 
   return(totalAccDF)
 }

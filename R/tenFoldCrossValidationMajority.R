@@ -7,6 +7,8 @@
 #' different genes in the rows.
 #' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
 #' @param nModels How many models should be created for the majority voting system?
 #' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
 #' @param nFeatures How many of the most variable genes within the dataset should we select for principal component analysis (PCA)?
@@ -14,7 +16,8 @@
 #' @param maxNeighbours What is the maximum number of neigbours to be used for the weighted _k_-nearest neighbor algorithm?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
-#' @param proteinDir In which directory can we find the file specifying the names of protein-coding genes within our dataset?
+#' @param proteinCodingGenes
+#' @param patientColumn Column in the metadata file that contains the patient labels.
 #' @import tidyverse dplyr magrittr foreach doParallel kknn
 #'
 #' @return R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),
@@ -25,35 +28,81 @@
 tenFoldCrossValidationMajority <-  function(countDataRef,
                                             metaDataRef,
                                             classColumn,
+                                            higherClassColumn,
+                                            domainColumn,
+                                            patientColumn,
                                             nModels = 100,
                                             maxSamplesPerType = 50,
                                             nFeatures = 2500,
                                             nComps = 100,
                                             maxNeighbours = 25,
                                             whichSeed = 1,
-                                            outputDir = "./",
-                                            proteinDir = "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/"
+                                            outputDir = ".",
+                                            proteinCodingGenes
 
 ) {
+
+
+  `%notin%` <- Negate(`%in%`)
+  rownames(metaDataRef) <- metaDataRef[, patientColumn]
+  # Make sure the metadata and count data are in the right format and same order
+  if (nrow(metaDataRef) != ncol(countDataRef)) {
+    stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
+  } else if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
+    stop("Your input data is not as required. Please make sure your patient IDs are within the patientColumn or within the row names of the metadata, and in the column names of the count data")
+  }
+
+  if (is.numeric(countDataRef) != T) {
+    stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.")
+
+  }
+
+  # Include a statement to store the classColumn, higherClassColumn and domainColumn
+  print(paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
+  print(unique(metaDataRef[,classColumn])[1:3])
+
+  print(paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
+  print(unique(metaDataRef[,higherClassColumn])[1:3])
+
+  print(paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
+  print(unique(metaDataRef[,domainColumn])[1:3])
+  print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
+
+
+
+  tumorEntitiesWithTooFewSamples <- table(metaDataRef[,classColumn])[table(metaDataRef[,classColumn]) < 3] %>% names()
+  if (length(tumorEntitiesWithTooFewSamples) >0) {
+
+    metaDataRef %<>% filter(!!sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
+    print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
+    #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
+
+  }
+  countDataRef <- countDataRef[, rownames(metaDataRef)]
 
   # Make sure you have CPM counts
   countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
 
-
-  directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"), "/")
+  if (!dir.exists(outputDir)) {
+    dir.create(outputDir)}
+  directory <- outputDir#paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"), "/")
+  modelDirectory <- paste0(directory, "/seed", whichSeed)
   if (!dir.exists(directory)) {
-    dir.create(directory) }
+    dir.create(directory)
+    dir.create(modelDirectory)
+  } else if (!dir.exists(modelDirectory)){
+    dir.create(modelDirectory)
+  }
 
   # Correct for ribosomal protein contamination
-    riboCountFile <- paste0(directory, "modelListRiboCounts.rds")
+    riboCountFile <- paste0(modelDirectory, "/modelListRiboCounts.rds")
     if (!file.exists(riboCountFile)) {
 
-      proteinCodingGenes <- read.table(paste0(proteinDir,"20230320_proteinCodingGenes_gencode31.csv"), sep = "\t") %>%
-        select(x) %>% deframe
       set.seed(whichSeed)
       riboModelList <- riboCorrectCounts(data = countDataRef,
                                          proteinCodingGenes = proteinCodingGenes,
-                                         outputDir = directory
+                                         outputDir = modelDirectory,
+                                         saveRiboModels = F
       )
 
     } else {
@@ -131,41 +180,15 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   for (i in seq(1:length(featuresAndModels))) {
     result <- featuresAndModels[[i]][["result"]]
 
-    # Find out how often a certain tumor type prediction is made for a specific sample
-    probability <- apply(result, 1, table)
 
-    # Store the resulting probabilities in a list
-    probabilityList[[i]] <- probability
+    #FUNCTION TO GET THE ultimatePredictions"
+    classificationResults <- convertResultToClassification(result = result,
+                                                           metaDataRef = metaDataRef,
+                                                           addOriginalCall = T,
+                                                           classColumn = classColumn)
 
-    # Locate the position of the highest probability
-    positions <- lapply(probability, which.max)
-    positions <- unlist(positions)
-
-    bestFit <- data.frame(predict = rep(NA, times = length(result$fold1)))
-    probabilityScores <- vector()
-
-    # Extract the different calls being made for each sample
-    mostAppearingNames <- lapply(probability, names)
-
-    # Store the one with the highest probability score into the bestFit dataframe
-    for (j in seq(1:length(mostAppearingNames))) {
-      numberPositions <- as.numeric(positions[j])
-      probabilityScores[j] <- probability[[j]][numberPositions]
-      bestFit[j,] <- mostAppearingNames[[j]][numberPositions]
-    }
-
-    # Look at the original calls for each test sample
-    originalCall <- metaDataRef[rownames(result),classColumn]
-
-    # Store the bestFit, the Originalcall and the accompanying probability score within the final dataframe.
-    ultimatePredictions <- cbind(bestFit,
-                                 originalCall = originalCall,
-                                 probability = probabilityScores)
-
-
-    # Make sure that the ultimatePredictions still have their accompanying biomaterial_id
-    rownames(ultimatePredictions) <- rownames(result)
-
+    probabilityList[[i]] <- classificationResults$probabilityList
+    ultimatePredictions <- classificationResults$classifications
     # Add each fold to a dataframe that combines all results
     if (i == 1) {
       wrongClassifications <- ultimatePredictions[ultimatePredictions$predict != ultimatePredictions$originalCall,]
@@ -180,9 +203,15 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   accuracy <- sum(classifications$predict == classifications$originalCall) / length(classifications$originalCall)
   print(accuracy)
 
+
+
+
+
   # Store the settings of the classifier run within the resulting object
   metaDataRun <- data.frame(nModels = nModels,
                             classColumn = classColumn,
+                            higherClassColumn = higherClassColumn,
+                            domainColumn = domainColumn,
                             maxSamplesPerType = maxSamplesPerType,
                             nFeatures = nFeatures,
                             nComps = nComps,
@@ -192,12 +221,12 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   crossValidationMajorityResults <- list(classifications = classifications,
                                          wrongClassifications = wrongClassifications,
                                          probabilityList = probabilityList,
-                                         metaData = metaDataRef,
+                                         metaDataRef = metaDataRef,
                                          metaDataRun = metaDataRun
   )
 
   print("We have finished the classification process. Please find your results in the generated object.")
-  filename <- paste0(directory, "/crossValidationMajorityResults.rds")
-  write_rds(crossValidationMajorityResults, file = filename)
+  filename <- paste0(modelDirectory, "/crossValidationMajorityResults.rds")
+  saveRDS(crossValidationMajorityResults, file = filename)
   return(crossValidationMajorityResults)
 }

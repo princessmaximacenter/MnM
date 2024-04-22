@@ -11,18 +11,20 @@
 #' @param nModels How many models should be created for the majority voting system?
 #' @param howManyFeatures How many features should we keep after determining
 #' the most important genes using the Random Forest Importance Score?
+#' @param nANOVAgenes How many genes did we select during the ANOVA procedure?
 #'
 #' @return Names of the top most important genes present in the training data,
 #' containing most information to distinguish the different tumor (sub)types.
-#'
+
 reduceFeatures <- function(dataTrain,
                            samplesTrainDefList,
                            ntree = 500,
                            nModels =10,
-                           howManyFeatures = 300) {
+                           howManyFeatures = 300,
+                           nANOVAgenes) {
 
   modelList <- list()
-  nModels <- min(nModels, 10)
+  nModels <- min(nModels, 100)
   for (i in seq(1:nModels)) {
     samplesTrainDef <- samplesTrainDefList[[i]]
 
@@ -37,7 +39,7 @@ reduceFeatures <- function(dataTrain,
 
     classwt <- as.numeric(probabilityClasses)
 
-    model <- randomForest(x = train.data, y = as.factor(train.category),
+    model <- randomForest::randomForest(x = train.data, y = as.factor(train.category),
                           importance = T, ntree = ntree,
                           proximity = F, classwt = classwt)
     modelList[[i]] <- model

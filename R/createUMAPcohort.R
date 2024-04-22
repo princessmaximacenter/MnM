@@ -4,32 +4,66 @@
 #' and paving the way for transforming new samples into the same sample space by
 #' saving the transformation-model and ribo-depletion correction model.
 #'
+#' Please note that the tumor domain, type and subtype all need to be specified within the metadata.
+#'
 #' @param countDataRef Matrix containing the RNA-transcript per million data. Patients are in the columns,
 #' different genes in the rows.
 #' @param metaDataRef Metadata file containing the links between the patients and
 #' the tumor (sub)type diagnosis within the reference cohort.
-#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn
 #' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param abbreviationTumorType Dataframe containing the links between the tumor (sub)type,
+#' @param abbreviations Dataframe containing the links between the tumor (sub)type,
 #' the abbreviation required in the plot, and the domain.
 #' @param proteinFile In which directory can we find the file specifying the names of protein-coding genes within our dataset?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
+#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param correctRibo Do you want to perform a correction for the ribodepletion protocol on your dataset?
+#' Default = FALSE, giving only the tumor type labels with the associated abbreviations.
 #'
-#' @return List containing the UMAP-transformed datapoints ($dataUMAP), the
-#' umap-transformation model to help with transforming potential new samples
-#' in the same space ($umapTransform), and the ribodepletion correction model ($riboModelList).
+#' @return List containing the UMAP-transformed datapoints ($dataUMAP), and the ribodepletion correction model ($riboModelList).
 #' @export
-#' @import uwot dplyr magrittr
+#' @import umap dplyr magrittr
 
 createUMAPcohort <- function(countDataRef,
                              metaDataRef,
                              classColumn,
+                             higherClassColumn,
                              domainColumn,
-                             abbreviationTumorType,
+                             correctRibo = T,
+                             abbreviations = NA,
                              proteinFile = "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/20230320_proteinCodingGenes_gencode31.csv",
                              whichSeed = 1) {
 
 
+  if (missing("classColumn") | missing("higherClassColumn") | missing("domainColumn")) {
+    stop("You need to input the parameter in classColumn, higherClassColumn and domainColumn.")
+  }
+
+  if (nrow(metaDataRef) != ncol(countDataRef)) {
+    stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
+  } else if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
+    stop("Your input data is not as required. Please make sure your patient IDs are within the row names of the metadata, and in the column names of the count data")
+  }
+
+  if (is.numeric(countDataRef) != T) {
+    stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.
+         Non-available measurements are not allowed.")
+
+  }
+
+  if (is.na(abbreviations)[1]) {
+
+    abbreviations <- metaDataRef[, c(domainColumn, classColumn, higherClassColumn)] %>% unique()
+    abbreviations$abbreviationSubtype <- abbreviations[,classColumn]
+    abbreviations$abbreviationTumorType <- abbreviations[,higherClassColumn]
+
+    print("You have not supplied any abbreviations (abbreviations). If you would like to use abbreviations,
+          please generate a dataframe with the following columns and abbreviations within abbreviationSubtype and abbreviationTumorType:")
+    print(abbreviations[1:4,])
+  }
+
+  if (correctRibo == T) {
   proteinCodingGenes <- read.table(proteinFile, sep = "\t") %>%
     select(x) %>% deframe
   set.seed(whichSeed)
@@ -39,33 +73,42 @@ createUMAPcohort <- function(countDataRef,
                                      saveRiboModels = F
   )
   countDataRef <- riboModelList$counts
-
+  }
   # Log-transform data
   dataLogRef <- log(countDataRef +1) %>% t() %>% as.data.frame()
+  abbreviations %<>% filter(!!sym(classColumn) %in% unique(metaDataRef[, classColumn]),
+                            !!sym(higherClassColumn) %in% unique(metaDataRef[, higherClassColumn])
+                            )
+  metaDataJoined <- left_join(metaDataRef, abbreviations[,c(classColumn, "abbreviationTumorType", "abbreviationSubtype")])
 
-  metaDataJoined <- left_join(metaDataRef, abbreviationTumorType[,c(classColumn, "abbreviation")])
   rownames(metaDataJoined) <- rownames(metaDataRef)
   metaDataRef <- metaDataJoined
-
-  dataLogRef$abbreviation <- metaDataRef[rownames(dataLogRef), "abbreviation"]
-  dataLogRef$subclass <- metaDataRef[rownames(dataLogRef), classColumn]
-  dataLogRef$Domain <- metaDataRef[rownames(dataLogRef), domainColumn]
-
 
   set.seed(whichSeed)
   dataLogUMAP <- dataLogRef %>%
     select(where(is.numeric)) %>%
-    uwot::umap(., ret_model = T)
+    umap::umap()
+  colnames(dataLogUMAP$layout) <- c("UMAP1", "UMAP2")
 
-  colnames(dataLogUMAP$embedding) <- c("UMAP1", "UMAP2")
-
-  dataUMAP <- dataLogUMAP$embedding %>%
+  dataUMAP <- dataLogUMAP$layout %>%
     as.data.frame()
 
-  dataUMAP <- cbind(dataUMAP, dataLogRef[, c("subclass","Domain", "abbreviation"), drop = F])
+  dataUMAP$abbreviationTumorType <- metaDataRef[rownames(dataUMAP), "abbreviationTumorType"]
+  dataUMAP$abbreviationSubtype <- metaDataRef[rownames(dataUMAP), "abbreviationSubtype"]
+  dataUMAP$Domain <- metaDataRef[rownames(dataUMAP), domainColumn]
+
+
+  dataUMAP$subclass <- metaDataRef[rownames(dataUMAP), higherClassColumn]
+  dataUMAP$subtype <- metaDataRef[rownames(dataUMAP), classColumn]
+
+
+  #dataUMAP <- cbind(dataUMAP, dataLogRef[, c("subclass","Domain", "abbreviation"), drop = F])
   dataUMAPList <- list(dataUMAP = dataUMAP,
-       umapTransform = dataLogUMAP,
-       riboModelList = riboModelList)
+                       abbreviations = abbreviations)
+
+  if (correctRibo == T) {
+    dataUMAPList$riboModelList <- riboModelList
+  }
   return(dataUMAPList)
 
 }

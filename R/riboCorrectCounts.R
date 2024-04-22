@@ -35,10 +35,10 @@ riboCorrectCounts <- function(data,
 
   set.seed(1)
   # Do cross-validation for glmnet, generalized linear model, Lasso and Elastic-Net Regularized
-  modelCV <- cv.glmnet(x = t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian")
+  modelCV <- glmnet::cv.glmnet(x = t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian")
 
 
-  model <- glmnet(x = t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian",lambda = modelCV$lambda.1se)
+  model <- glmnet::glmnet(x = t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian",lambda = modelCV$lambda.1se)
 
   allCoefficients <- as.matrix(coef(model))[which(as.matrix(coef(model)) > 0),]
   relevantCoefficients <- c(allCoefficients[1],allCoefficients[-1][allCoefficients[-1] > 0.01])
@@ -59,13 +59,14 @@ riboCorrectCounts <- function(data,
                     "meanGenes"=meanGenes,
                     "varGenes"=varGenes)
 
-  directory <- outputDir
-  if (!dir.exists(directory)) {
-    dir.create(directory) }
-  filename <- paste0(directory, "modelListRiboCounts.rds")
+
   riboModelList <- list("counts"=data,"riboModel"=modelList)
   if(saveRiboModels == T) {
-  write_rds(riboModelList, file = filename)
+    directory <- outputDir
+    filename <- paste0(directory, "modelListRiboCounts.rds")
+    if (!dir.exists(directory)) {
+      dir.create(directory) }
+    saveRDS(riboModelList, file = filename)
   }
   return(riboModelList)
 }

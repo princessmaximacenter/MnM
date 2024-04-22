@@ -10,7 +10,6 @@
 #'
 #' @return The reference cohort cleaned from duplicate samples, with one sample per patient per diagnosis.
 #' This means that if one patient has multiple tumors, multiple samples with the same patient ID can still be present within the dataset.
-#' @export
 #'
 removeDuplicates <- function(refCohort, inputDir) {
 

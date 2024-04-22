@@ -1,4 +1,4 @@
-#' Predict tumor (sub)type for new samples
+#' Predict tumor (sub)type for new samples with Majority Classifier
 #'
 #' Function to generate predictions for new input samples from their
 #' RNA-seq count data.
@@ -15,26 +15,20 @@
 #' different genes in the rows.
 #' @param countDataNew Matrix containing the RNA-transcript per million data for the new samples to be classified.
 #' Patients are in the columns, different genes in the rows.
-#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
-#' @param nModels How many models should be created for the majority voting system?
-#' @param nComps How many principal components will be selected after PCA?
-#' @param maxNeighbours What is the maximum number of neigbours to be used for the weighted _k_-nearest neighbor algorithm?
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
+#' @param saveModel Do you want to save the resulting predictions in an R object?
 #'
 #' @return R-object containing the final classifications ($classifications) for the samples,
 #' and the probabilities associated to the different classifications ($probability).
 #' @export
 #'
-newPredictionsMajority <- function(createdModelsMajority = createdModelsMajority,
+newPredictionsMajority <- function(createdModelsMajority,
                                    countDataRef,
                                    countDataNew,
-                                   metaDataRef,
                                    classColumn,
-                                   nModels,
-                                   nComps,
-                                   maxNeighbours,
-                                   outputDir
+                                   outputDir = "./",
+                                   saveModel = T
 ) {
   # Make sure you have CPM counts
   countDataNew <- apply(countDataNew,2,function(x) (x/sum(x))*1E6)
@@ -56,60 +50,26 @@ newPredictionsMajority <- function(createdModelsMajority = createdModelsMajority
   result <- obtainPredictionMajorityClassifier(rotationsAndScalingsList = createdModelsMajority$rotationsAndScalingsList,
                                      dataTrain = dataLogNonZero,
                                      dataTest = dataLogNewNonZero,
-                                     metaData = metaDataRef,
+                                     metaDataRef = createdModelsMajority$metaDataRef,
                                      samplesTrainDefList = createdModelsMajority$samplesTrainDefList,
                                      classColumn = classColumn,
-                                     nModels = nModels,
+                                     nModels = createdModelsMajority$metaDataRun$nModels,
                                      testSamples = testSamples,
-                                     maxNeighbours = maxNeighbours
+                                     maxNeighbours = createdModelsMajority$metaDataRun$maxNeighbours
   )
 
-  if (nrow(result) == 1) {
-    randomVector <- paste0("fake", 1:ncol(result)) %>% as.data.frame() %>% t() %>% as.data.frame()
-    colnames(randomVector) <- colnames(result)
-    result1 <- rbind(result, randomVector)
-    probability <-  apply(result1, 1, table)
-  } else {
-  # Find out how often a certain tumor type prediction is made for a specific sample
-  probability <- apply(result, 1, table)
+   classificationList <- convertResultToClassification(result = result,
+                                                         metaDataRef = createdModelsMajority$metaDataRef,
+                                                         addOriginalCall = F)
+
+   classificationList$metaDataRun <- createdModelsMajority$metaDataRun
+if (saveModel == T) {
+  #directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"))
+  if (!dir.exists(outputDir)) {
+    dir.create(outputDir) }
+
+  filename <- paste0(outputDir, "/majorityClassifierResult.rds")
+  saveRDS(classificationList, file = filename)
 }
-  # Locate the position of the highest probability
-  positions <- lapply(probability, which.max)
-  positions <- unlist(positions)
-
-  bestFit <- data.frame(predict = rep(NA, times = length(result$fold1)))
-  probabilityScores <- vector()
-
-  # Extract the different calls being made for each sample
-  mostAppearingNames <- lapply(probability, names)
-
-  # Store the one with the highest probability score into the bestFit dataframe
-  for (j in seq(1:length(mostAppearingNames))) {
-    numberPositions <- as.numeric(positions[j])
-    probabilityScores[j] <- probability[[j]][numberPositions]
-    bestFit[j,] <- mostAppearingNames[[j]][numberPositions]
-  }
-
-  # Store the bestFit, the Originalcall and the accompanying probability score within the final dataframe.
-  classifications <- cbind(bestFit,
-                           probability = probabilityScores)
-
-if (nrow(result) == 1) {
-  classifications <- classifications[1, , drop = F]
-
-}
-  # Make sure that the classifications still have their accompanying biomaterial_id
-  rownames(classifications) <- rownames(result)
-
-  classificationList <- list(classifications = classifications,
-                             probability = probability)
-
-  directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"))
-  if (!dir.exists(directory)) {
-    dir.create(directory) }
-
-  filename <- paste0(directory, "/majorityClassifierResult.rds")
-  write_rds(classificationList, file = filename)
-
   return(classificationList)
 }
