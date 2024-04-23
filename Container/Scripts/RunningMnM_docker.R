@@ -1,7 +1,7 @@
 ###########
-#Dedicated R Script to running the MnM Classifier via docker/singularity
-#Date 23-04-2024
-#Project Tumor-Classification
+#Dedicated R Script to running the MnM Classifier via containerization
+#Date 24-04-2024
+#Project: MnM/Tumor Classification
 ###########
 
 "Loading Packages"
