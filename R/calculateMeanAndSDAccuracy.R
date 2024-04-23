@@ -1,7 +1,5 @@
 #' Calculate performance of M&M on total train and test set
 #'
-#' @param classColumn Column in the original metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the original metadata file that contains the tumor type labels.
 #' @param minorityDir Directory in which the minority model(s) are stored.
 #' @param majorityDir Directory in which the majority model(s) are stored.
 #' @param metaDataTest Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.
@@ -19,10 +17,9 @@
 #'The total amount of samples within each frequency range ($meanSamples) is also specified.
 #' @export
 #' @import magrittr dplyr
-calculateMeanAndSDAccuracy <- function(#classColumn,
-                                       #higherClassColumn,
-                                       minorityDir,
-                                       majorityDir,
+calculateMeanAndSDAccuracy <- function(
+  minorityDir,
+  majorityDir,
                                        metaDataTest = NA,
          subtype = F,
          rounding = F,

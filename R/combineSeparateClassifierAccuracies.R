@@ -2,9 +2,6 @@
 #'
 #' @param minorityDir Directory in which the minority model(s) are stored.
 #' @param majorityDir Directory in which the majority model(s) are stored.
-#' @param classColumn Column in the metadata file, used to generate the classification models and stored within the minority & majority classifier R-objects (e.g. minority$metaDataRef),
-#' that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the metadata file, used to generate the classification models and stored within the minority & majority classifier R-objects (e.g. minority$metaDataRef),
 #' @param probabilityThreshold What is the probability score threshold you would like to use to call a
 #' classification 'confident' for a M&M prediction?
 #' @param probabilityThresholdMajority What is the probability score threshold you would like to use to call a
@@ -21,13 +18,10 @@
 #'
 combineSeparateClassifierAccuracies <- function(minorityDir,
                                              majorityDir,
-                                             #classColumn,
-                                             #higherClassColumn,
                                              probabilityThreshold = 0.8,
                                              probabilityThresholdMajority = 0.9,
                                              probabilityThresholdMinority = 0.73,
                                              subtype,
-                                             metaDataRef,
                                              returnPlot = T
                                              ) {
 
@@ -69,8 +63,7 @@ combineSeparateClassifierAccuracies <- function(minorityDir,
 
   predictionsMMFinalList <- integrateMM(minority = minority,
                                         majority = majority,
-                                        subtype = subtype
-  )
+                                        subtype = subtype)
 
   predictionsMMFinal <- predictionsMMFinalList$predictionsMMFinal
 

@@ -9,6 +9,7 @@
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param domainColumn Column in the metadata file that contains the tumor domain labels.
+#' @param sampleColumn Column in the metadata file that contains the patient labels.
 #' @param nModels How many models should be created for the majority voting system?
 #' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
 #' @param nFeatures How many of the most variable genes within the dataset should we select for principal component analysis (PCA)?
@@ -16,8 +17,8 @@
 #' @param maxNeighbours What is the maximum number of neigbours to be used for the weighted _k_-nearest neighbor algorithm?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
-#' @param proteinCodingGenes
-#' @param patientColumn Column in the metadata file that contains the patient labels.
+#' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
+#' Please supply it as a vector. This is needed for ribo-depletion correction model.
 #' @import tidyverse dplyr magrittr foreach doParallel kknn
 #'
 #' @return R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),
@@ -30,7 +31,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                                             classColumn,
                                             higherClassColumn,
                                             domainColumn,
-                                            patientColumn,
+                                            sampleColumn,
                                             nModels = 100,
                                             maxSamplesPerType = 50,
                                             nFeatures = 2500,
@@ -44,12 +45,14 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 
 
   `%notin%` <- Negate(`%in%`)
-  rownames(metaDataRef) <- metaDataRef[, patientColumn]
+
+
+  rownames(metaDataRef) <- metaDataRef[, sampleColumn]
   # Make sure the metadata and count data are in the right format and same order
   if (nrow(metaDataRef) != ncol(countDataRef)) {
     stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
   } else if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
-    stop("Your input data is not as required. Please make sure your patient IDs are within the patientColumn or within the row names of the metadata, and in the column names of the count data")
+    stop("Your input data is not as required. Please make sure your sample IDs are within the sampleColumn or within the row names of the metadata, and in the column names of the count data")
   }
 
   if (is.numeric(countDataRef) != T) {
@@ -213,6 +216,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                             higherClassColumn = higherClassColumn,
                             domainColumn = domainColumn,
                             maxSamplesPerType = maxSamplesPerType,
+                            maxNeighbours = maxNeighbours,
                             nFeatures = nFeatures,
                             nComps = nComps,
                             whichSeed = whichSeed)

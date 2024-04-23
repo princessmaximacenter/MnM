@@ -15,7 +15,6 @@
 #' different genes in the rows.
 #' @param countDataNew Matrix containing the RNA-transcript per million data for the new samples to be classified.
 #' Patients are in the columns, different genes in the rows.
-#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
 #' @param saveModel Do you want to save the resulting predictions in an R object?
 #'
@@ -26,7 +25,6 @@
 newPredictionsMajority <- function(createdModelsMajority,
                                    countDataRef,
                                    countDataNew,
-                                   classColumn,
                                    outputDir = "./",
                                    saveModel = T
 ) {
@@ -52,7 +50,7 @@ newPredictionsMajority <- function(createdModelsMajority,
                                      dataTest = dataLogNewNonZero,
                                      metaDataRef = createdModelsMajority$metaDataRef,
                                      samplesTrainDefList = createdModelsMajority$samplesTrainDefList,
-                                     classColumn = classColumn,
+                                     classColumn = createdModelsMajority$metaDataRun$classColumn,
                                      nModels = createdModelsMajority$metaDataRun$nModels,
                                      testSamples = testSamples,
                                      maxNeighbours = createdModelsMajority$metaDataRun$maxNeighbours

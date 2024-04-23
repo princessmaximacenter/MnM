@@ -6,13 +6,16 @@
 #'
 #' @return Plot showing the accuracy for train and test set for the different frequencies
 #' @export
+#' @import magrittr
 plotMeanSDAccuracy <- function(meanAndSDPlotTrain,
                                meanAndSDPlotTest = NA
                                ) {
+  meanAndSDPlotTrain %<>% filter(!is.na(meanFractionCorrect))
   meanAndSDPlotTrain$type <- "Train"
 
   if (!is.na(meanAndSDPlotTest)[1]) {
   meanAndSDPlotTest$type <- "Test"
+  meanAndSDPlotTest %<>% filter(!is.na(meanFractionCorrect))
 
   meanAndSDPlot <- rbind(meanAndSDPlotTrain,
                                 meanAndSDPlotTest)

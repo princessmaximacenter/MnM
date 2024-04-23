@@ -2,11 +2,10 @@
 #'
 #' @param minority R-object that contains the results from the Minority classifier
 #' @param majority R-object that contains the results from the Majority classifier
-#' This is important, as for the cross-validation setup there is a ground truth ($originalCall), while for new predictions there is not.
-#' @param classColumn Column name within metadata-file that contains the cancer subtype-labels.
-#' @param higherClassColumn Column name within metadata-file that contains the cancer type labels.
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
-#' @param probabilityThreshold What is the probability score threshold that needs to be used to filter confident sample classifications with?
+#' @param probabilityThresholdMajority What is the probability score threshold that needs to be used to filter confident sample classifications with within the majority classifier?
+#'
+#'
 #' @return Dataframe containing the total amount of samples ($nSamples), how many samples pass the the probability score threshold ($nSamplesFiltered),
 #' what is the fraction non-classified samples ($notClassified),
 #' what is the fraction of samples that pass the threshold ($fraction), what is the fraction of correct samples within the highest scoring classification ($fractionCorrect),
@@ -17,11 +16,9 @@
 #'
 getSeparateClassifierAccuracies <- function(minority,
                                              majority,
-                                             #classColumn,
-                                            # higherClassColumn,
                                              subtype = F,
-                                            probabilityThresholdMajority,
-                                            probabilityThresholdMinority
+                                            probabilityThresholdMajority = 0.9,
+                                            probabilityThresholdMinority = 0.73
                                              ) {
 
   predictionsList <- integrateMM(minority = minority,

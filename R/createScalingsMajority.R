@@ -149,6 +149,7 @@ createScalingsMajority <-  function(countDataRef,
                             higherClassColumn = higherClassColumn,
                             domainColumn = domainColumn,
                             maxSamplesPerType = maxSamplesPerType,
+                            maxNeighbours = maxNeighbours,
                             nFeatures = nFeatures,
                             nComps = nComps,
                             whichSeed = whichSeed)

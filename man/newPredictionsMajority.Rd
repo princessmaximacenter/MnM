@@ -8,7 +8,6 @@ newPredictionsMajority(
   createdModelsMajority,
   countDataRef,
   countDataNew,
-  classColumn,
   outputDir = "./",
   saveModel = T
 )
@@ -28,8 +27,6 @@ different genes in the rows.}
 
 \item{countDataNew}{Matrix containing the RNA-transcript per million data for the new samples to be classified.
 Patients are in the columns, different genes in the rows.}
-
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
 
 \item{outputDir}{Directory in which you would like to store the R-object containing the results.}
 

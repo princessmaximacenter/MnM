@@ -11,7 +11,6 @@ combineSeparateClassifierAccuracies(
   probabilityThresholdMajority = 0.9,
   probabilityThresholdMinority = 0.73,
   subtype,
-  metaDataRef,
   returnPlot = T
 )
 }
@@ -32,11 +31,6 @@ classification 'confident' for a Minority Classifier prediction? Default value e
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
 
 \item{returnPlot}{Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?}
-
-\item{classColumn}{Column in the metadata file, used to generate the classification models and stored within the minority & majority classifier R-objects (e.g. minority$metaDataRef),
-that contains the tumor subtype labels.}
-
-\item{higherClassColumn}{Column in the metadata file, used to generate the classification models and stored within the minority & majority classifier R-objects (e.g. minority$metaDataRef),}
 }
 \value{
 If returnPlot = T: Plot with the separate classifier accuracy (Minority Classifier,

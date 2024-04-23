@@ -1,16 +1,15 @@
-#' Title
+#' Plot the separate accuracies of the Minority, Majority and M&M classifier
 #'
-#' @param fractionCorrectTotalPivoted
+#' @param separateClassifierAccuracies Dataframe coming from the function 'combineSeparateClassifierAccuracies'.
 #'
-#' @return
+#' @return Plot showing the accuracy for different population frequencies separately for the Minority, Majority and M&M classifier.
 #' @export
 #'
-#' @examples
-plotSeparateClassifierAccuracies <- function(fractionCorrectTotalPivoted) {
+plotSeparateClassifierAccuracies <- function(separateClassifierAccuracies) {
 
 
 
-  plotSeparateScores <- fractionCorrectTotalPivoted %>%
+  plotSeparateScores <- separateClassifierAccuracies %>%
 
     ggplot(aes(
       x = whichTop,
@@ -40,7 +39,7 @@ plotSeparateClassifierAccuracies <- function(fractionCorrectTotalPivoted) {
     facet_grid( ~ nCases) +
     geom_vline(xintercept = 2.6, linetype = 2)
 
-  if ("M&M" %in% unique(fractionCorrectTotalPivoted$classifier)){
+  if ("M&M" %in% unique(separateClassifierAccuracies$classifier)){
     plotSeparateScores <- plotSeparateScores +
       scale_color_manual(values = c("M&M" = "#606ca5",
                                     "Minority Classifier" = "#f8766d",

@@ -25,10 +25,6 @@ calculateMeanAndSDAccuracy(
 \item{rounding}{Do you want rounded numbers for the performance scores?}
 
 \item{probabilityThreshold}{What is the probability score threshold you would like to use to call a classification 'confident'?}
-
-\item{classColumn}{Column in the original metadata file that contains the tumor subtype labels.}
-
-\item{higherClassColumn}{Column in the original metadata file that contains the tumor type labels.}
 }
 \value{
 Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases).

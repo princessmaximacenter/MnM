@@ -8,23 +8,18 @@ getSeparateClassifierAccuracies(
   minority,
   majority,
   subtype = F,
-  probabilityThresholdMajority,
-  probabilityThresholdMinority
+  probabilityThresholdMajority = 0.9,
+  probabilityThresholdMinority = 0.73
 )
 }
 \arguments{
 \item{minority}{R-object that contains the results from the Minority classifier}
 
-\item{majority}{R-object that contains the results from the Majority classifier
-This is important, as for the cross-validation setup there is a ground truth ($originalCall), while for new predictions there is not.}
+\item{majority}{R-object that contains the results from the Majority classifier}
 
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
 
-\item{classColumn}{Column name within metadata-file that contains the cancer subtype-labels.}
-
-\item{higherClassColumn}{Column name within metadata-file that contains the cancer type labels.}
-
-\item{probabilityThreshold}{What is the probability score threshold that needs to be used to filter confident sample classifications with?}
+\item{probabilityThresholdMajority}{What is the probability score threshold that needs to be used to filter confident sample classifications with within the majority classifier?}
 }
 \value{
 Dataframe containing the total amount of samples ($nSamples), how many samples pass the the probability score threshold ($nSamplesFiltered),

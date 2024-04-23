@@ -11,13 +11,13 @@
 #' @param metaDataRef Metadata file containing the links between the patients and
 #' the tumor (sub)type diagnosis within the reference cohort.
 #' @param classColumn Column in the metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn
-#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param abbreviations Dataframe containing the links between the tumor (sub)type,
-#' the abbreviation required in the plot, and the domain.
-#' @param proteinFile In which directory can we find the file specifying the names of protein-coding genes within our dataset?
-#' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
+#' @param abbreviations Optional. Dataframe containing the links between the tumor (sub)type,
+#' the abbreviation required in the plot, and the domain.
+#' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
+#' Please supply it as a vector. This is needed for ribo-depletion correction model.
+#' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param correctRibo Do you want to perform a correction for the ribodepletion protocol on your dataset?
 #' Default = FALSE, giving only the tumor type labels with the associated abbreviations.
 #'
@@ -32,10 +32,10 @@ createUMAPcohort <- function(countDataRef,
                              domainColumn,
                              correctRibo = T,
                              abbreviations = NA,
-                             proteinFile = "~/surfdrive/Shared/Kemmeren group/Research_Projects/RNA_classification_FW/data/input/20230320_proteinCodingGenes_gencode31.csv",
+                             proteinCodingGenes,
                              whichSeed = 1) {
 
-
+  `%notin%` <- Negate(`%in%`)
   if (missing("classColumn") | missing("higherClassColumn") | missing("domainColumn")) {
     stop("You need to input the parameter in classColumn, higherClassColumn and domainColumn.")
   }
@@ -64,8 +64,7 @@ createUMAPcohort <- function(countDataRef,
   }
 
   if (correctRibo == T) {
-  proteinCodingGenes <- read.table(proteinFile, sep = "\t") %>%
-    select(x) %>% deframe
+
   set.seed(whichSeed)
   riboModelList <- riboCorrectCounts(data = countDataRef,
                                      proteinCodingGenes = proteinCodingGenes,

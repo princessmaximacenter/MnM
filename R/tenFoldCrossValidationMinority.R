@@ -16,7 +16,8 @@
 #' @param howManyFeatures How many features should we keep after determining the most important genes using the Random Forest Importance Score?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
-#' @param proteinCodingGenes
+#' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
+#' Please supply it as a vector. This is needed for ribo-depletion correction model.
 #' @param patientColumn Column in the metadata file that contains the patient labels.
 #'
 #' @return R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),
