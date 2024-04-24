@@ -1,0 +1,60 @@
+# R Script Configuration
+script:
+  name: "MnM Classifier via Docker/Singularity"
+  date: "23-04-2024"
+  project: "MnM/Tumor Classification"
+
+# File Paths
+inputs:
+  package_path: "/app/mnm/"
+  reference_metadata: "/app/Inputs/Classifier_Metadata_Reference_CompleteOverview_022024.tsv"
+  test_metadata: "/app/Inputs/Classifier_Metadata_Test_BALL_022024.tsv"
+  reference_count_data: "/app/Inputs/20230419_countDataTrainingCohortClassifier.tsv"
+  test_count_data: "/app/Inputs/20230928_countDataTestBALL.tsv"
+  majority_model: "/app/SavedModels/modelsMajority.rds"
+  minority_model: "/app/SavedModels/modelsMinority.rds"
+
+# Temporary Filtering
+filtering:
+  disease_subclass: "B-ALL"
+  remove_temporary: true
+
+# Model Training values
+model_training_variables:
+  model_training: TRUE
+  patientColumn: "biomaterial_id"
+  classColumn: "Disease_sub_specification1"
+  whichSeed: 1
+  outputDir: "/app/Outputs"
+  proteinDir: "/app/Inputs"
+  saveModel: TRUE
+
+# Specific values for createModelsMinority
+create_models_minority:
+  meanExpression: 5
+  nModels: 10
+  nANOVAgenes: 1000
+  maxSamplesPerType: 3
+  ntree: 500
+  howManyFeatures: 300
+
+# Specific values for createScalingsMajority
+majority_classifier:
+  nModels: 10
+  maxSamplesPerType: 50
+  nComps: 100
+  nFeatures: 2500
+  maxNeighbours: 25
+  whichSeed: 1
+
+# Specific values for Predictions
+classifer_predictions:
+  outputDir: "/app/Outputs"
+  saveModel: "TRUE"
+
+# Specific values for integrateMM
+integrateMM:
+  nModels: 10
+  subtype: TRUE
+  higherClassColumn: "Disease_sub_class"
+  crossValidation: FALSE
