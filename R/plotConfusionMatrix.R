@@ -1,37 +1,122 @@
-#' Create confusion matrix plot with the three domains.
+#' Plot tumor subtype confusion matrix
 #'
-#' This function can plot a confusion matrix both for the tumor type
-#' and the tumor subtype level.
+#' Function to plot the confusion matrix plot for a single domain,
+#' showing the reference-prediction combinations for the tumor subtypes.
+#' Using a color coding, it is shown within the plot which tumor subtypes belong to the same parent tumor type.
+
 #'
-#' @param confusionPlotDF Dataframe specifying how often certain reference-prediction
-#' combinations are present.
-#' @param nonAvailableTiles A dataframe containing the empty tiles for a confusion matrix plot.
+#' @param domain Which domain do you want to plot? This name should be available in the
+#' domain column of the abbreviations. If not specified, plot will be made for all tumor domains.
+#' @param confusionPlotInfo List resulting from running the function 'getConfusionMatrixPlot'.
+#' @param domainColor Which colors should we use for each designated tumor type? If not specified, default ggplot colors will be used.
+#' @param colorTiles Which domain color tiles do we want to use? Only applicable when argument _domain_ is specified.
 #'
-#' @return ggplot object with the confusion matrix of the three domains.
+#' @return ggplot object containing the tumor subtype confusion matrix.
 #' @export
-#' @import ggplot2
 #'
-plotConfusionMatrix <- function(confusionPlotInfo) {
+plotConfusionMatrix <- function(domain = NA,
+                                         confusionPlotInfo,
+                                         domainColor = NA,
+                                         colorTiles = "#012695") {
+
   confusionPlotDF <- confusionPlotInfo$confusionPlotDF
+  abbreviations <- confusionPlotInfo$abbreviations
   nonAvailableTiles <- confusionPlotInfo$nonAvailableTiles
-  confusionPlot <- ggplot(confusionPlotDF, aes(y = Prediction,
-                                               x = Reference, fill= Domain, label = Freq)) +
-    geom_tile(color = "black") + coord_equal() +
-    geom_text(color = "white") +
-    #   scale_fill_continuous(low="white", high="steelblue",
-    #                         guide="colorbar",na.value="white") +
-    guides(fill=F) + # removing legend for `fill`
-    theme_bw() +
-    #labs(title = paste(whichClassification, "Classified Samples")) + #Add Title
-    # geom_text(aes(label=Freq), color="black") + # Add values to tiles
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 14),
-          axis.text.y = element_text(size = 14),
-          axis.title = element_text(size = 24),
-          plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")
-          )  +
-    scale_y_discrete(drop=FALSE) + scale_x_discrete(drop = FALSE) +
-    geom_tile(data = nonAvailableTiles, fill = "white", color = "lightgrey") +
-    labs(y = "Classification")
+
+  if (is.na(domain)) {
+    DomainDF <- confusionPlotDF
+    nonAvailableTilesDomain <- nonAvailableTiles
+  } else {
+
+    DomainDF <- confusionPlotDF %>% dplyr::filter(Domain == domain)
+    abbreviationsDomain <- abbreviations %>% dplyr::filter(Domain == domain,
+                                                           abbreviation %in% as.character(base::unique(c(DomainDF$Reference, DomainDF$Prediction))) )
+    abbreviationsExtra <- abbreviations %>% dplyr::filter(Domain != domain,
+                                                          abbreviation %in% as.character(base::unique(c(DomainDF$Reference, DomainDF$Prediction))),
+                                                          Domain != "Not classified")
+    domainSubtypes <- c("Not classified", base::unique(abbreviationsDomain$abbreviation), base::unique(abbreviationsExtra$abbreviation))
+    #domainSubtypes <- c(unique(abbreviationsDomain$abbreviation))
+    DomainDF$Prediction <- as.character(DomainDF$Prediction) %>% factor(. , levels = domainSubtypes)
+
+    DomainDF$Reference <- as.character(DomainDF$Reference) %>% factor(. , levels = domainSubtypes)
+    #  DomainDF$Reference <- factor(DomainDF$Reference,
+    #                               levels = domainSubtypes)
+
+    "Nieuwe factor levels moeten gemaakt worden omdat we maar een sub-deel gebruiken van de labels."
+
+    nonAvailableTilesDomain <- nonAvailableTiles %>% dplyr::filter(Reference %in% domainSubtypes,
+                                                                   Prediction %in% domainSubtypes)
+    nonAvailableTilesDomain$Prediction <- as.character(nonAvailableTilesDomain$Prediction) %>%
+      factor(., levels = domainSubtypes)
+
+    nonAvailableTilesDomain$Reference <- as.character(nonAvailableTilesDomain$Reference) %>%
+      factor(., levels = domainSubtypes)
+
+
+    notClassifiedDF <- data.frame(
+      Prediction = domainSubtypes,
+      Reference = "Not classified", #[domainSubtypes != "Not classified"],
+      Freq = 0,
+      Domain = NA)
+
+
+    notClassifiedDF[,"TumorType"] <- NA
+
+    for (i in seq(1:nrow(notClassifiedDF))) {
+      if (notClassifiedDF$Prediction[i] %in% abbreviationsDomain[,"abbreviation"] & confusionPlotInfo$subtype == T) {
+        notClassifiedDF$TumorType[i] <- abbreviationsDomain[abbreviationsDomain[,"abbreviation"] == notClassifiedDF$Prediction[i], confusionPlotInfo$higherClassColumn]
+      }
+    }
+
+    namesDomain <- base::unique(notClassifiedDF$TumorType)
+
+    notClassifiedDF$TumorType <- factor(notClassifiedDF$TumorType, levels = namesDomain)
+  }
+
+  if (!is.na(domain)) {
+    confusionPlot <- ggplot2::ggplot(data = DomainDF, aes(y = Prediction,
+                                                          x = Reference,
+                                                          label = Freq)) +
+
+      ggplot2::geom_tile(color = "black",
+                         fill = colorTiles) + coord_equal()
+  } else {
+    confusionPlot <- ggplot2::ggplot(data = DomainDF, aes(y = Prediction,
+                                                          x = Reference,
+                                                          label = Freq,
+                                                          fill= Domain)) +
+
+      ggplot2::geom_tile(color = "black") + coord_equal()
+
+  }
+  confusionPlot <- confusionPlot +
+
+
+    ggplot2::geom_text(color = "white") +
+    ggplot2::guides(fill=F) + # removing legend for `fill`
+    ggplot2::theme_bw() +
+    ggplot2::theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                   axis.text = element_text(size = 14),
+                   axis.title = element_text(size = 18),
+                   plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")
+    ) +
+
+    ggplot2::geom_tile(data = (nonAvailableTilesDomain), fill = "white", color = "lightgrey") +
+    ggplot2::scale_y_discrete(drop=FALSE) + scale_x_discrete(drop = FALSE) +
+
+    ggplot2::labs(y = "Classification")
+
+  if (!is.na(domain)) {
+    confusionPlot <- confusionPlot +
+      ggplot2::geom_tile(data = notClassifiedDF, aes(fill = TumorType),
+                         color = "black")
+  }
+
+  if (!is.na(domainColor)[1]) {
+    confusionPlot <- confusionPlot +
+      ggplot2::scale_fill_manual(values = c("grey", domainColor),
+                                 breaks = namesDomain)
+  }
 
   return(confusionPlot)
 }
