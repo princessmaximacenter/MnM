@@ -9,7 +9,7 @@
 #' @param samplesTrainDefList List of different training data subsets used for the majority voting system.
 #' @param ntree How many trees should we use during the weighted Random Forest (RF) procedure?
 #' @param nModels How many models should be created for the majority voting system?
-#' @param howManyFeatures How many features should we keep after determining
+#' @param nFeatures How many features should we keep after determining
 #' the most important genes using the Random Forest Importance Score?
 #' @param nANOVAgenes How many genes did we select during the ANOVA procedure?
 #'
@@ -20,7 +20,7 @@ reduceFeatures <- function(dataTrain,
                            samplesTrainDefList,
                            ntree = 500,
                            nModels =10,
-                           howManyFeatures = 300,
+                           nFeatures = 300,
                            nANOVAgenes) {
 
   modelList <- list()
@@ -53,7 +53,7 @@ reduceFeatures <- function(dataTrain,
 
   topFeatures <- meanAccuracyValuesDF %>%
     sort(decreasing = T) %>%
-    head(n = howManyFeatures)
+    head(n = nFeatures)
 
   topFeaturesNamesAccuracy <- names(topFeatures)
 

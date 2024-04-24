@@ -7,62 +7,65 @@
 createModelsMinority(
   countDataRef,
   metaDataRef,
-  patientColumn,
-  meanExpression = 5,
   classColumn,
   higherClassColumn,
   domainColumn,
+  sampleColumn,
   nModels = 100,
+  meanExpression = 5,
   nANOVAgenes = 1000,
   maxSamplesPerType = 3,
   ntree = 500,
-  howManyFeatures = 300,
+  nFeatures = 300,
   whichSeed = 1,
-  outputDir = "./",
+  outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
   proteinCodingGenes,
   saveModel = T
 )
 }
 \arguments{
-\item{countDataRef}{Matrix containing the RNA-transcript per million data. Patients are in the columns,
-different genes in the rows.}
+\item{countDataRef}{Matrix containing the RNA-transcript per million data. Samples are in the columns,
+different RNA-transcripts in the rows.}
 
-\item{metaDataRef}{Reference cohort metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
+\item{metaDataRef}{Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.}
 
-\item{patientColumn}{Column in the metadata file that contains the patient labels.}
-
-\item{meanExpression}{Selection criterion for the genes,
-specifying what the minimum mean expression of a gene should be for it to be included in the F-statistic analysis.}
-
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 
 \item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
 
 \item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
-\item{nModels}{How many models should be created for the majority voting system?}
+\item{sampleColumn}{Column in the metadata file that contains the samples.}
 
-\item{nANOVAgenes}{How many genes should we select using the F-statistic of ANOVA?}
+\item{nModels}{How many models should be created for the Minority classifier?
+Default is 100.}
 
-\item{maxSamplesPerType}{How many samples should we maximally use per tumor (sub)type?}
+\item{meanExpression}{Selection criterion for the RNA-transcripts,
+specifying what the minimum mean expression of a RNA-transcripts should be for it to be included in the F-statistic analysis.
+Default is 5.}
 
-\item{ntree}{How many trees should we use during the weighted Random Forest (RF) procedure?}
+\item{nANOVAgenes}{How many RNA-transcripts should we select using the F-statistic of ANOVA? Default is 1000.}
 
-\item{howManyFeatures}{How many features should we keep after determining the most important genes using the Random Forest Importance Score?}
+\item{maxSamplesPerType}{How many samples should we maximally use per tumor subtype? Default is 3.}
 
-\item{whichSeed}{For reproducibility, the seed can be specified with this parameter.}
+\item{ntree}{How many trees should we use during the weighted Random Forest procedure? Default is 500.}
 
-\item{outputDir}{Directory in which you would like to store the R-object containing the results.}
+\item{nFeatures}{How many features should we keep after determining the most important RNA-transcripts using the Random Forest Importance Score?}
 
-\item{saveModel}{Do you want to save your generated scalings in an R-object?}
+\item{whichSeed}{For reproducibility, the seed can be specified with this parameter. Default is 1.}
+
+\item{outputDir}{Directory in which you would like to store the R-object containing the results. Default is today's date.}
+
+\item{proteinCodingGenes}{What are the names of the RNA-transcripts that stand for protein-coding RNA-transcripts within our dataset?
+Please supply it as a vector. This is needed for ribo-depletion correction model.}
+
+\item{saveModel}{Do you want to save your generated scalings in an R-object? Default is TRUE.}
 }
 \value{
 R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),
 the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
 the metadata file associated to the reference cohort ($metaData)
 and the metadata for the performed run ($metaDataRun).
-
-@import tidyverse dplyr magrittr randomForest caret glmnet
 }
 \description{
 Setup to obtain the models for the Minority classifier.

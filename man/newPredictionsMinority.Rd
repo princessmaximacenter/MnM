@@ -7,7 +7,7 @@
 newPredictionsMinority(
   createdModelsMinority,
   countDataNew,
-  outputDir,
+  outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
   saveModel = T
 )
 }

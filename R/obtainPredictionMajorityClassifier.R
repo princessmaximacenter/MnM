@@ -4,27 +4,25 @@
 #'
 #' @param rotationsAndScalingsList List containing both the derived PCA-transformation information ($prList)
 #' and the information needed to scale new sample input data to center the features around 0 ($scaleFeaturesList).
-#' @param dataTrain Data to be used for training, containing the whole reference cohort.
+#' @param dataTrain Data to be used for training, containing the all samples available within the training dataset.
 #' @param dataTest Data for which the classifier should predict a label.
-#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
-#' @param samplesTrainDefList List of different training data subsets used for the majority voting system.
+#' @param metaDataRef Metadata file containing the links between the samples and the tumor (sub)type diagnosis.
 #' @param testSamples IDs for test samples from the test data.
-#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
-#' @param maxNeighbours What is the maximum number of neigbours to be used for the weighted _k_-nearest neighbor algorithm?
+#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
+#' @param maxNeighbors What is the maximum number of neighbors to be used for the weighted _k_-nearest neighbor algorithm?
 #' @param nModels How many models should be created for the majority voting system?
 #'
 #' @return Dataframe containing the predictions for the _nModels_ different generated models, with the different folds
 #' in the columns and the different samples to be predicted in the rows.
-#' @import magrittr
+#' @import kknn
 #'
 obtainPredictionMajorityClassifier <- function(rotationsAndScalingsList,
                                      dataTrain,
                                      dataTest,
                                      metaDataRef,
-                                     samplesTrainDefList,
                                      testSamples,
-                                     classColumn = classColumn,
-                                     maxNeighbours = 25,
+                                     classColumn,
+                                     maxNeighbors = 25,
                                      nModels = 100
 ) {
   for (i in seq(1:nModels)) {
@@ -47,7 +45,7 @@ obtainPredictionMajorityClassifier <- function(rotationsAndScalingsList,
     kTrain <- kknn::train.kknn(class~., rotatedTrainDataK,
                          distance = 1,
                          kernel = "optimal",
-                         scale=F,ks=c(1:maxNeighbours))
+                         scale=F,ks=c(1:maxNeighbors))
 
     model <- kknn::kknn(class~., rotatedTrainData,
                   rotatedTestSamples,

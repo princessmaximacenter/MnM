@@ -3,26 +3,28 @@
 #' Setup to automatically run the 10x stratified cross-validation majority classifier.
 #'
 #'
-#' @param countDataRef Matrix containing the RNA-transcript per million data. Patients are in the columns,
-#' different genes in the rows.
-#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis.
-#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param countDataRef Matrix containing the RNA-transcript per million data. Samples are in the columns,
+#' different RNA-transcripts in the rows.
+#' @param metaDataRef Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.
+#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param sampleColumn Column in the metadata file that contains the patient labels.
-#' @param nModels How many models should be created for the majority voting system?
+#' @param sampleColumn Column in the metadata file that contains the samples.
+#' @param nModels How many models should be created for the Majority classifier?
 #' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
 #' @param nFeatures How many of the most variable genes within the dataset should we select for principal component analysis (PCA)?
 #' @param nComps How many principal components will be selected after PCA?
-#' @param maxNeighbours What is the maximum number of neigbours to be used for the weighted _k_-nearest neighbor algorithm?
+#' @param maxNeighbors What is the maximum number of neigbours to be used for the weighted _k_-nearest neighbor algorithm?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
-#' @param outputDir Directory in which you would like to store the R-object containing the results.
+#' @param outputDir Directory in which you would like to store the R-object containing the results. Default is today's date.
 #' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
 #' Please supply it as a vector. This is needed for ribo-depletion correction model.
-#' @import tidyverse dplyr magrittr foreach doParallel kknn
+#' @import foreach doParallel
 #'
 #' @return R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),
-#'  the probabilities for each classification ($probabilityList), the metadata file associated to the reference cohort ($metaData),
+#'  the probabilities for each classification ($probabilityList), the  rotations and scalings
+#' for each reference cohort subset($rotationsAndScalingList),
+#' the metadata file associated to the reference cohort ($metaDataRef),
 #'  and metadata for the performed run ($metaDataRun).
 #' @export
 #'
@@ -36,9 +38,9 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                                             maxSamplesPerType = 50,
                                             nFeatures = 2500,
                                             nComps = 100,
-                                            maxNeighbours = 25,
+                                            maxNeighbors = 25,
                                             whichSeed = 1,
-                                            outputDir = ".",
+                                            outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                             proteinCodingGenes
 
 ) {
@@ -46,7 +48,15 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 
   `%notin%` <- Negate(`%in%`)
 
-
+  if (sampleColumn %notin% colnames(metaDataRef)) {
+    stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
+  } else if (classColumn %notin% colnames(metaDataRef)) {
+    stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
+  } else if (higherClassColumn %notin% colnames(metaDataRef)){
+    stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
+  } else if (domainColumn %notin% colnames(metaDataRef)) {
+    stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
+  }
   rownames(metaDataRef) <- metaDataRef[, sampleColumn]
   # Make sure the metadata and count data are in the right format and same order
   if (nrow(metaDataRef) != ncol(countDataRef)) {
@@ -62,18 +72,18 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 
   # Include a statement to store the classColumn, higherClassColumn and domainColumn
   print(paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
-  print(unique(metaDataRef[,classColumn])[1:3])
+  print(base::unique(metaDataRef[,classColumn])[1:3])
 
   print(paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
-  print(unique(metaDataRef[,higherClassColumn])[1:3])
+  print(base::unique(metaDataRef[,higherClassColumn])[1:3])
 
   print(paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
-  print(unique(metaDataRef[,domainColumn])[1:3])
+  print(base::unique(metaDataRef[,domainColumn])[1:3])
   print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
 
 
 
-  tumorEntitiesWithTooFewSamples <- table(metaDataRef[,classColumn])[table(metaDataRef[,classColumn]) < 3] %>% names()
+  tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
   if (length(tumorEntitiesWithTooFewSamples) >0) {
 
     metaDataRef %<>% filter(!!sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
@@ -120,7 +130,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   # Remove the genes with zero variance across the dataset
 
   dataLogZeroVar <- t(dataLogRef) %>% as.data.frame(.)
-  zeroVar <- nearZeroVar(dataLogZeroVar)
+  zeroVar <- caret::nearZeroVar(dataLogZeroVar)
 
   dataLogNonZero <- dataLogRef[-zeroVar, ]
 
@@ -129,9 +139,9 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   set.seed(whichSeed)
 
   # Create splits for cross-validation setup with equal distribution of tumor types
-  folds <- createFolds(metaDataRef[ , classColumn], k = 10, returnTrain = TRUE, list = TRUE)
+  folds <- caret::createFolds(metaDataRef[ , classColumn], k = 10, returnTrain = TRUE, list = TRUE)
 
-  featuresAndModels <- foreach(i=c(1:length(folds))) %dopar%{
+  featuresAndModels <- foreach::foreach(i=c(1:base::length(folds))) %dopar%{
 
     print(paste0("Working on fold", i))
     # Select metadata and log-transformed data for training samples
@@ -167,7 +177,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                                        testSamples = testSamples,
                                        classColumn = classColumn,
                                        nModels = nModels,
-                                       maxNeighbours = maxNeighbours
+                                       maxNeighbors = maxNeighbors
     )
 
     featuresAndModels <- list(result = result)
@@ -180,7 +190,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   # We need to combine the results for the different folds.
   # This is done looping over all folds.
 
-  for (i in seq(1:length(featuresAndModels))) {
+  for (i in seq(1:base::length(featuresAndModels))) {
     result <- featuresAndModels[[i]][["result"]]
 
 
@@ -203,7 +213,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   }
 
   # Check the accuracy of the current run
-  accuracy <- sum(classifications$predict == classifications$originalCall) / length(classifications$originalCall)
+  accuracy <- sum(classifications$predict == classifications$originalCall) / base::length(classifications$originalCall)
   print(accuracy)
 
 
@@ -216,7 +226,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                             higherClassColumn = higherClassColumn,
                             domainColumn = domainColumn,
                             maxSamplesPerType = maxSamplesPerType,
-                            maxNeighbours = maxNeighbours,
+                            maxNeighbors = maxNeighbors,
                             nFeatures = nFeatures,
                             nComps = nComps,
                             whichSeed = whichSeed)
@@ -225,6 +235,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   crossValidationMajorityResults <- list(classifications = classifications,
                                          wrongClassifications = wrongClassifications,
                                          probabilityList = probabilityList,
+                                         rotationsAndScalingsList = rotationsAndScalingsList,
                                          metaDataRef = metaDataRef,
                                          metaDataRun = metaDataRun
   )
@@ -232,5 +243,6 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   print("We have finished the classification process. Please find your results in the generated object.")
   filename <- paste0(modelDirectory, "/crossValidationMajorityResults.rds")
   saveRDS(crossValidationMajorityResults, file = filename)
+  print(paste0("Please find the generated R-object with the classification results within ", filename))
   return(crossValidationMajorityResults)
 }

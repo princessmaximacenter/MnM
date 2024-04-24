@@ -7,8 +7,8 @@
 #' (prediction probability < threshold). A true positive is a classified sample for which the prediction is
 #' correct, a true negative a non-classified sample that had a wrong prediction.
 #'
-#' @param predictionsMM  Dataframe showing the top 3 predictions for the tumor (sub)type,
-#' together with their probability scores.
+#' @param predictionsMM  Dataframe showing the top 3 classifications for the tumor (sub)type,
+#' together with their probability scores and the original pathology label (originalCall)
 #'
 #' @return Dataframe containing the number of true positives ($TP), false positives ($FP),
 #' true negatives ($TN) and false negatives ($FN) at different probability score tresholds.

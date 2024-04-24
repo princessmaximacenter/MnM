@@ -6,9 +6,9 @@
 #'
 #' Please note that the tumor domain, type and subtype all need to be specified within the metadata.
 #'
-#' @param countDataRef Matrix containing the RNA-transcript per million data. Patients are in the columns,
+#' @param countDataRef Matrix containing the RNA-transcript per million data. Samples are in the columns,
 #' different genes in the rows.
-#' @param metaDataRef Metadata file containing the links between the patients and
+#' @param metaDataRef Metadata file containing the links between the samples and
 #' the tumor (sub)type diagnosis within the reference cohort.
 #' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
@@ -19,11 +19,10 @@
 #' Please supply it as a vector. This is needed for ribo-depletion correction model.
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param correctRibo Do you want to perform a correction for the ribodepletion protocol on your dataset?
-#' Default = FALSE, giving only the tumor type labels with the associated abbreviations.
-#'
-#' @return List containing the UMAP-transformed datapoints ($dataUMAP), and the ribodepletion correction model ($riboModelList).
+
+#' @return List containing the UMAP-transformed datapoints ($dataUMAP), the abbreviations used to name the UMAP-transformed datapoints, and the ribodepletion correction model ($riboModelList).
 #' @export
-#' @import umap dplyr magrittr
+#' @import umap
 
 createUMAPcohort <- function(countDataRef,
                              metaDataRef,
@@ -36,8 +35,13 @@ createUMAPcohort <- function(countDataRef,
                              whichSeed = 1) {
 
   `%notin%` <- Negate(`%in%`)
-  if (missing("classColumn") | missing("higherClassColumn") | missing("domainColumn")) {
-    stop("You need to input the parameter in classColumn, higherClassColumn and domainColumn.")
+
+   if (classColumn %notin% colnames(metaDataRef)) {
+    stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
+  } else if (higherClassColumn %notin% colnames(metaDataRef)){
+    stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
+  } else if (domainColumn %notin% colnames(metaDataRef)) {
+    stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
   }
 
   if (nrow(metaDataRef) != ncol(countDataRef)) {
@@ -47,8 +51,7 @@ createUMAPcohort <- function(countDataRef,
   }
 
   if (is.numeric(countDataRef) != T) {
-    stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.
-         Non-available measurements are not allowed.")
+    stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix. Non-available measurements are not allowed.")
 
   }
 
@@ -58,8 +61,8 @@ createUMAPcohort <- function(countDataRef,
     abbreviations$abbreviationSubtype <- abbreviations[,classColumn]
     abbreviations$abbreviationTumorType <- abbreviations[,higherClassColumn]
 
-    print("You have not supplied any abbreviations (abbreviations). If you would like to use abbreviations,
-          please generate a dataframe with the following columns and abbreviations within abbreviationSubtype and abbreviationTumorType:")
+    print(paste("You have not supplied any abbreviations (abbreviations). If you would like to use abbreviations,",
+                " please generate a dataframe with the following columns and abbreviations within abbreviationSubtype and abbreviationTumorType:"))
     print(abbreviations[1:4,])
   }
 
@@ -75,17 +78,17 @@ createUMAPcohort <- function(countDataRef,
   }
   # Log-transform data
   dataLogRef <- log(countDataRef +1) %>% t() %>% as.data.frame()
-  abbreviations %<>% filter(!!sym(classColumn) %in% unique(metaDataRef[, classColumn]),
+  abbreviations %<>% dplyr::filter(!!sym(classColumn) %in% unique(metaDataRef[, classColumn]),
                             !!sym(higherClassColumn) %in% unique(metaDataRef[, higherClassColumn])
                             )
-  metaDataJoined <- left_join(metaDataRef, abbreviations[,c(classColumn, "abbreviationTumorType", "abbreviationSubtype")])
+  metaDataJoined <- dplyr::left_join(metaDataRef, abbreviations[,c(classColumn, "abbreviationTumorType", "abbreviationSubtype")])
 
   rownames(metaDataJoined) <- rownames(metaDataRef)
   metaDataRef <- metaDataJoined
 
   set.seed(whichSeed)
   dataLogUMAP <- dataLogRef %>%
-    select(where(is.numeric)) %>%
+    dplyr::select(where(is.numeric)) %>%
     umap::umap()
   colnames(dataLogUMAP$layout) <- c("UMAP1", "UMAP2")
 

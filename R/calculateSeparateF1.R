@@ -2,14 +2,15 @@
 #'
 #' @param minorityDir Directory in which the minority model(s) are stored.
 #' @param majorityDir Directory in which the majority model(s) are stored.
-#' @param subtype  Do you want to obtain the predictions on the tumor subtype classification level?
-#' @param metaDataTest  Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set
-#' @param filterOrNot Do you want to analyse the confident classifications only?
+#' @param subtype  Do you want to obtain the classifications on the tumor subtype classification level?
+#' @param metaDataTest  Metadata file containing the links between the samples and the tumor (sub)type diagnosis within the test set
 #' @param probabilityThreshold What is the threshold you would like to use to call a classification 'confident'?
+#' If you do not want to filter the classifications, specify a score of 0.
 #'
 #' @return Dataframe containing the mean precision ($meanPrecision), F1-score ($meanF1), recall ($meanRecall)
 #' and sensitivity per tumor (sub)type ($tumorType).
 #' Results are stratified by the population frequency ($nCases).
+#' Lastly, it's specified whether a cross-validation (Train) or test (Test) type was used.
 #' @export
 #'
 calculateSeparateF1 <- function(
@@ -17,7 +18,6 @@ calculateSeparateF1 <- function(
     majorityDir,
     subtype,
     metaDataTest = NA,
-    filterOrNot = T,
     probabilityThreshold) {
 
 
@@ -95,15 +95,13 @@ calculateSeparateF1 <- function(
       fractionsCorrect <- extractIndividualValuesF1(predictionsMM = predictionsMMFinal,
                                                     metaDataRef = minority$metaDataRef,
                                                     classColumn = classColumn,
-                                                    probabilityThreshold = probabilityThreshold,
-                                                    filterOrNot = filterOrNot
+                                                    probabilityThreshold = probabilityThreshold
                                                     )
     } else {
       fractionsCorrect <- extractIndividualValuesF1(predictionsMM = predictionsMMFinal,
                                                     metaDataRef = minority$metaDataRef,
                                                     classColumn = higherClassColumn,
-                                                    probabilityThreshold = probabilityThreshold,
-                                                    filterOrNot = filterOrNot)
+                                                    probabilityThreshold = probabilityThreshold)
 
     }
     fractionsCorrect$seed <- i
@@ -114,14 +112,20 @@ calculateSeparateF1 <- function(
     }
   }
   accuracyDF$nCases <- factor(accuracyDF$nCases, levels = unique(accuracyDF$nCases))
-  meanNumbers <- accuracyDF %>% group_by(nCases, tumorType) %>%
-    summarise(
-
+  meanNumbers <- accuracyDF %>%
+    dplyr::group_by(nCases, tumorType) %>%
+    dplyr::summarise(
       meanPrecision = mean(Precision),
       meanF1 = mean(F1),
       meanRecall = mean(Recall),
       meanSensitivity = mean(Sensitivity)
     )
+
+  if (crossValidation == T) {
+    meanNumbers$type <- "Train"
+  } else {
+    meanNumbers$type <- "Test"
+  }
 
  # levelsNCases <- c("n = 3", paste( nCases[-length(nCases)],"< n <=",nCases[-1])[-1], "n > 100", "All")
   #levelsNCases <- unique(meanNumbers$nCases)

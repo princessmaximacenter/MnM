@@ -25,7 +25,7 @@
 newPredictionsMajority <- function(createdModelsMajority,
                                    countDataRef,
                                    countDataNew,
-                                   outputDir = "./",
+                                   outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                    saveModel = T
 ) {
   # Make sure you have CPM counts
@@ -53,7 +53,7 @@ newPredictionsMajority <- function(createdModelsMajority,
                                      classColumn = createdModelsMajority$metaDataRun$classColumn,
                                      nModels = createdModelsMajority$metaDataRun$nModels,
                                      testSamples = testSamples,
-                                     maxNeighbours = createdModelsMajority$metaDataRun$maxNeighbours
+                                     maxNeighbors = createdModelsMajority$metaDataRun$maxNeighbors
   )
 
    classificationList <- convertResultToClassification(result = result,
@@ -68,6 +68,7 @@ if (saveModel == T) {
 
   filename <- paste0(outputDir, "/majorityClassifierResult.rds")
   saveRDS(classificationList, file = filename)
+  print(paste0("Please find the generated R-object with the classification results within ", filename))
 }
   return(classificationList)
 }

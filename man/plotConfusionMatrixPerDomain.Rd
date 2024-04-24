@@ -7,15 +7,17 @@
 plotConfusionMatrixPerDomain(
   domain,
   confusionPlotInfo,
-  domainColor,
+  domainColor = NA,
   colorTiles = "#012695"
 )
 }
 \arguments{
-\item{domain}{Which domain do you want to plot? This name should be present in the
-domainColorumn of the metadata.}
+\item{domain}{Which domain do you want to plot? This name should be available in the
+domain column of the abbreviations.}
 
-\item{domainColor}{Which colors should we use for each designated tumor type?}
+\item{confusionPlotInfo}{List resulting from running the function 'getConfusionMatrixPlot'.}
+
+\item{domainColor}{Which colors should we use for each designated tumor type? If not specified, default ggplot colors will be used.}
 
 \item{colorTiles}{Which domain color do we want to use?}
 }
@@ -25,9 +27,5 @@ ggplot object containing the tumor subtype confusion matrix.
 \description{
 Function to plot the confusion matrix plot for a single domain,
 showing the reference-prediction combinations for the tumor subtypes.
-Using a color coding, it is shown which tumor subtypes belong to the same overheading tumor type.
-IMPORTANT: The order of the colors will be applied to the tumor types in the order of the
-tumors within the abbreviations dataframe. Make sure you specify the
-order of the tumor types well within the abbreviations, not only concerning the domains,
-but also the subsequent tumor types order and tumor subtypes order.
+Using a color coding, it is shown within the plot which tumor subtypes belong to the same parent tumor type.
 }

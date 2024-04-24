@@ -2,17 +2,21 @@
 #'
 #' This function is designed to extract which tiles of the confusion matrix
 #' do contain reference-prediction information.
+
+#' IMPORTANT: The order of the tumor types within the plot will be equal to the order of the
+#' tumors within the _abbreviations_ dataframe. Make sure you specify the
+#' order of the tumor types well within the abbreviations, not only concerning the domains,
+#' but also the subsequent tumor types order and tumor subtypes order.
 #'
-#' @param minorityDir
-#' @param majorityDir
+#' @param minorityDir Directory in which the Minority classifier model(s) are stored.
+#' @param majorityDirDirectory in which the Majority classifier model(s) are stored.
 #' @param abbreviations Dataframe containing the links between the tumor (sub)type,
 #' the abbreviation required in the plot, and the domain.
 #' @param defineTumorWithColor Do you want to have an extra column where the tumors can
 #' be specified with a color?
-#' @param probabilityScore Which probability score do you want to use as a cutoff
+#' @param probabilityScore Which probability score do you want to use as a cutoff for calling classifications confident or not?
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
-#' for being classified or non-classified?
-#' @import tidyverse dplyr magrittr
+#' @import magrittr dplyr
 #' @return Dataframe specifying how often certain reference-prediction
 #' combinations are present.
 #' @export
@@ -22,7 +26,7 @@ getConfusionMatrixPlot <- function(minorityDir,
          abbreviations = NA,
          subtype,
          defineTumorWithColor = F,
-         probabilityScore = 0.8) {
+         probabilityScore) {
 
   `%notin%` <- Negate(`%in%`)
 
@@ -95,30 +99,20 @@ getConfusionMatrixPlot <- function(minorityDir,
 
 
 
-  predictionsMMFiltered <- predictionsMM %>% filter(probability1 > probabilityScore)
+  predictionsMMFiltered <- predictionsMM %>% dplyr::filter(probability1 > probabilityScore)
 
-
-
-
-
-  #tumorConfusionMatrix <- confusionMatrix(factor(predictionsMMFiltered$predict,
-   #                                              levels = unique(c(predictionsMMFiltered$originalCall, predictionsMMFiltered$predict))),
-    #                                      factor(predictionsMMFiltered$originalCall, levels = unique(c(predictionsMMFiltered$originalCall,
-     #                                                                                                  predictionsMMFiltered$predict))),
-      #                                    dnn = c("Prediction", "Reference"))
-
-  tumorConfusionMatrix <- confusionMatrix(factor(predictionsMMFiltered$predict,
+  tumorConfusionMatrix <- caret::confusionMatrix(factor(predictionsMMFiltered$predict,
                                                  levels = unique(c(predictionsMM$originalCall, predictionsMM$predict))),
                                           factor(predictionsMMFiltered$originalCall, levels = unique(c(predictionsMM$originalCall,
                                                                                                        predictionsMM$predict))),
                                           dnn = c("Prediction", "Reference"))
-  predictionFrequencies <- tumorConfusionMatrix$table %>% as.data.frame() #%>% filter(Freq != 0)
+  predictionFrequencies <- tumorConfusionMatrix$table %>% as.data.frame()
   predictionFrequencies$Prediction <- as.character(predictionFrequencies$Prediction)
   predictionFrequencies$Reference <- as.character(predictionFrequencies$Reference)
-  missingTumors <- predictionFrequencies %>% filter(Reference == Prediction,
+  missingTumors <- predictionFrequencies %>% dplyr::filter(Reference == Prediction,
                                                     Freq == 0)
 
-  predictionFrequencies %<>% filter(Freq != 0)
+  predictionFrequencies %<>% dplyr::filter(Freq != 0)
 
   for (j in seq(1:nrow(missingTumors))) {
 
@@ -147,11 +141,11 @@ getConfusionMatrixPlot <- function(minorityDir,
   linkClassAndDomain <- metaDataRef[ , c( chosenClassColumn, domainColumn)] %>% unique
 
   for (i in seq(1:length(difPredictions))) {
-    total <- predictionFrequencies %>% filter(Reference == difPredictions[i])
+    total <- predictionFrequencies %>% dplyr::filter(Reference == difPredictions[i])
     total$Domain <- linkClassAndDomain[linkClassAndDomain[,chosenClassColumn] == total$Reference[1], domainColumn]
     totalNum <- sum(total$Freq)
     metaTotal <-predictionsMM %>%
-      filter(originalCall == difPredictions[i]) %>%
+      dplyr::filter(originalCall == difPredictions[i]) %>%
       nrow()
     notClassified <- metaTotal - totalNum
 
@@ -204,7 +198,6 @@ getConfusionMatrixPlot <- function(minorityDir,
                                    missingNotClassifiedDF)
     }
   }
-  #confusionPlotDF <- rbind(confusionPlotDF, missingClassifiedDF)
 
   if (defineTumorWithColor == T) {
     confusionPlotDF$Reference <- factor(confusionPlotDF$Reference,

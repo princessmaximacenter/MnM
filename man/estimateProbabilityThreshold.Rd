@@ -7,8 +7,8 @@
 estimateProbabilityThreshold(predictionsMM)
 }
 \arguments{
-\item{predictionsMM}{Dataframe showing the top 3 predictions for the tumor (sub)type,
-together with their probability scores.}
+\item{predictionsMM}{Dataframe showing the top 3 classifications for the tumor (sub)type,
+together with their probability scores and the original pathology label (originalCall)}
 }
 \value{
 Dataframe containing the number of true positives ($TP), false positives ($FP),

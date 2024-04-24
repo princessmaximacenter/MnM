@@ -10,20 +10,23 @@ getConfusionMatrixPlot(
   abbreviations = NA,
   subtype,
   defineTumorWithColor = F,
-  probabilityScore = 0.8
+  probabilityScore
 )
 }
 \arguments{
+\item{minorityDir}{Directory in which the Minority classifier model(s) are stored.}
+
 \item{abbreviations}{Dataframe containing the links between the tumor (sub)type,
 the abbreviation required in the plot, and the domain.}
 
-\item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?
-for being classified or non-classified?}
+\item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
 
 \item{defineTumorWithColor}{Do you want to have an extra column where the tumors can
 be specified with a color?}
 
-\item{probabilityScore}{Which probability score do you want to use as a cutoff}
+\item{probabilityScore}{Which probability score do you want to use as a cutoff for calling classifications confident or not?}
+
+\item{majorityDirDirectory}{in which the Majority classifier model(s) are stored.}
 }
 \value{
 Dataframe specifying how often certain reference-prediction
@@ -32,4 +35,8 @@ combinations are present.
 \description{
 This function is designed to extract which tiles of the confusion matrix
 do contain reference-prediction information.
+IMPORTANT: The order of the tumor types within the plot will be equal to the order of the
+tumors within the \emph{abbreviations} dataframe. Make sure you specify the
+order of the tumor types well within the abbreviations, not only concerning the domains,
+but also the subsequent tumor types order and tumor subtypes order.
 }

@@ -14,7 +14,7 @@
 #' @export
 
 newPredictionsMinority <- function(createdModelsMinority, countDataNew,
-                                   outputDir,
+                                   outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                    saveModel = T) {
   # Find the predictions for the test data
   # PREPARE DATA
@@ -44,6 +44,7 @@ newPredictionsMinority <- function(createdModelsMinority, countDataNew,
     if (!dir.exists(outputDir)) {
       dir.create(outputDir) }
   saveRDS(classificationList, file = filename)
+  print(paste0("Please find the generated R-object with the classification results within ", filename))
   }
   return(classificationList)
 }

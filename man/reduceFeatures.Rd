@@ -9,7 +9,7 @@ reduceFeatures(
   samplesTrainDefList,
   ntree = 500,
   nModels = 10,
-  howManyFeatures = 300,
+  nFeatures = 300,
   nANOVAgenes
 )
 }
@@ -22,7 +22,7 @@ reduceFeatures(
 
 \item{nModels}{How many models should be created for the majority voting system?}
 
-\item{howManyFeatures}{How many features should we keep after determining
+\item{nFeatures}{How many features should we keep after determining
 the most important genes using the Random Forest Importance Score?}
 
 \item{nANOVAgenes}{How many genes did we select during the ANOVA procedure?}

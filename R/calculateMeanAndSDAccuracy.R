@@ -2,9 +2,9 @@
 #'
 #' @param minorityDir Directory in which the minority model(s) are stored.
 #' @param majorityDir Directory in which the majority model(s) are stored.
-#' @param metaDataTest Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.
-#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
-#' @param rounding Do you want rounded numbers for the performance scores?
+#' @param metaDataTest Metadata file containing the links between the samples and the tumor type and subtype diagnoses within the test set.
+#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level (subtype = TRUE)?
+#' @param rounding Do you want rounded numbers for the performance scores? Default = FALSE.
 #' @param probabilityThreshold What is the probability score threshold you would like to use to call a classification 'confident'?
 #'
 #' @return Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases).
@@ -13,14 +13,16 @@
 #' averaged precision values for the average of all tumor entities within the frequency range ($meanPrecision),
 #' averaged recall values for the average of all tumor entities within the frequency range ($meanRecall),
 #' and averaged F1 scores for the average of all tumor entities within the frequency range ($meanF1).
+#' Furthermore, the standard deviations of all mentioned values are calculated in case multiple runs with different seeds have been performed ($sd...).
 #' Please note that the precision, F1 and recall are calculated for the confident sample classifications only.
 #'The total amount of samples within each frequency range ($meanSamples) is also specified.
+#' Lastly, it's specified whether a cross-validation (Train) or test (Test) type was used.
 #' @export
-#' @import magrittr dplyr
+#'
 calculateMeanAndSDAccuracy <- function(
   minorityDir,
   majorityDir,
-                                       metaDataTest = NA,
+  metaDataTest = NA,
          subtype = F,
          rounding = F,
          probabilityThreshold
@@ -118,8 +120,9 @@ calculateMeanAndSDAccuracy <- function(
     }
   }
 
-  meanNumbers <- accuracyDF %>% group_by(nCases) %>%
-    summarise(
+  meanNumbers <- accuracyDF %>%
+    dplyr::group_by(nCases) %>%
+    dplyr::summarise(
       meanFractionCorrect = mean(fractionCorrect),
       meanFractionCorrectFiltered = mean(fractionCorrectFiltered),
       meanFractionIncorrect = mean(1 - fractionCorrect),
@@ -140,6 +143,12 @@ calculateMeanAndSDAccuracy <- function(
       sdRecall = sd(Recall),
       meanSamples = mean(nSamples)
     )
+
+  if (crossValidation == T) {
+    meanNumbers$type <- "Train"
+  } else {
+    meanNumbers$type <- "Test"
+  }
 
   return(meanNumbers)
 }

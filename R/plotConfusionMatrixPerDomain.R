@@ -2,38 +2,34 @@
 #'
 #' Function to plot the confusion matrix plot for a single domain,
 #' showing the reference-prediction combinations for the tumor subtypes.
-#' Using a color coding, it is shown which tumor subtypes belong to the same overheading tumor type.
-#' IMPORTANT: The order of the colors will be applied to the tumor types in the order of the
-#' tumors within the abbreviations dataframe. Make sure you specify the
-#' order of the tumor types well within the abbreviations, not only concerning the domains,
-#' but also the subsequent tumor types order and tumor subtypes order.
+#' Using a color coding, it is shown within the plot which tumor subtypes belong to the same parent tumor type.
+
 #'
-#' @param domain Which domain do you want to plot? This name should be present in the
-#' domainColorumn of the metadata.
-#' @param confusionPlotInfo
-#' @param domainColor Which colors should we use for each designated tumor type?
+#' @param domain Which domain do you want to plot? This name should be available in the
+#' domain column of the abbreviations.
+#' @param confusionPlotInfo List resulting from running the function 'getConfusionMatrixPlot'.
+#' @param domainColor Which colors should we use for each designated tumor type? If not specified, default ggplot colors will be used.
 #' @param colorTiles Which domain color do we want to use?
 #'
 #' @return ggplot object containing the tumor subtype confusion matrix.
 #' @export
-#' @import ggplot2 magrittr
 #'
 plotConfusionMatrixPerDomain <- function(domain,
                                          confusionPlotInfo,
-                                         domainColor,
+                                         domainColor = NA,
                                          colorTiles = "#012695") {
 
   confusionPlotDF <- confusionPlotInfo$confusionPlotDF
   abbreviations <- confusionPlotInfo$abbreviations
   nonAvailableTiles <- confusionPlotInfo$nonAvailableTiles
 
-  DomainDF <- confusionPlotDF %>% filter(Domain == domain)
-  abbreviationsDomain <- abbreviations %>% filter(Domain == domain,
-                                                         abbreviation %in% as.character(unique(c(DomainDF$Reference, DomainDF$Prediction))) )
-  abbreviationsExtra <- abbreviations %>% filter(Domain != domain,
-                                                       abbreviation %in% as.character(unique(c(DomainDF$Reference, DomainDF$Prediction))),
+  DomainDF <- confusionPlotDF %>% dplyr::filter(Domain == domain)
+  abbreviationsDomain <- abbreviations %>% dplyr::filter(Domain == domain,
+                                                         abbreviation %in% as.character(base::unique(c(DomainDF$Reference, DomainDF$Prediction))) )
+  abbreviationsExtra <- abbreviations %>% dplyr::filter(Domain != domain,
+                                                       abbreviation %in% as.character(base::unique(c(DomainDF$Reference, DomainDF$Prediction))),
                                                        Domain != "Not classified")
-  domainSubtypes <- c("Not classified", unique(abbreviationsDomain$abbreviation), unique(abbreviationsExtra$abbreviation))
+  domainSubtypes <- c("Not classified", base::unique(abbreviationsDomain$abbreviation), base::unique(abbreviationsExtra$abbreviation))
   #domainSubtypes <- c(unique(abbreviationsDomain$abbreviation))
   DomainDF$Prediction <- as.character(DomainDF$Prediction) %>% factor(. , levels = domainSubtypes)
 
@@ -43,7 +39,7 @@ plotConfusionMatrixPerDomain <- function(domain,
 
   "Nieuwe factor levels moeten gemaakt worden omdat we maar een sub-deel gebruiken van de labels."
 
-  nonAvailableTilesDomain <- nonAvailableTiles %>% filter(Reference %in% domainSubtypes,
+  nonAvailableTilesDomain <- nonAvailableTiles %>% dplyr::filter(Reference %in% domainSubtypes,
                                                           Prediction %in% domainSubtypes)
   nonAvailableTilesDomain$Prediction <- as.character(nonAvailableTilesDomain$Prediction) %>%
     factor(., levels = domainSubtypes)
@@ -67,33 +63,37 @@ plotConfusionMatrixPerDomain <- function(domain,
     }
   }
 
-  namesDomain <- unique(notClassifiedDF$TumorType)
+  namesDomain <- base::unique(notClassifiedDF$TumorType)
 
   notClassifiedDF$TumorType <- factor(notClassifiedDF$TumorType, levels = namesDomain)
 
-  confusionPlot <- ggplot(data = DomainDF, aes(y = Prediction,
+  confusionPlot <- ggplot2::ggplot(data = DomainDF, aes(y = Prediction,
                               x = Reference,
                               label = Freq)) +
 
-    geom_tile(color = "black",
+    ggplot2::geom_tile(color = "black",
               fill = colorTiles) + coord_equal() +
 
-    geom_text(color = "white") +
-    guides(fill=F) + # removing legend for `fill`
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    ggplot2::geom_text(color = "white") +
+    ggplot2::guides(fill=F) + # removing legend for `fill`
+    ggplot2::theme_bw() +
+    ggplot2::theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
           axis.text = element_text(size = 14),
           axis.title = element_text(size = 18),
           plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")
           ) +
 
-    geom_tile(data = (nonAvailableTilesDomain), fill = "white", color = "lightgrey") +
-    scale_y_discrete(drop=FALSE) + scale_x_discrete(drop = FALSE) +
-    geom_tile(data = notClassifiedDF, aes(fill = TumorType),
+    ggplot2::geom_tile(data = (nonAvailableTilesDomain), fill = "white", color = "lightgrey") +
+    ggplot2::scale_y_discrete(drop=FALSE) + scale_x_discrete(drop = FALSE) +
+    ggplot2::geom_tile(data = notClassifiedDF, aes(fill = TumorType),
               color = "black") +
-    scale_fill_manual(values = c("grey", domainColor),
-                      breaks = namesDomain) +
-    labs(y = "Classification")
+    ggplot2::labs(y = "Classification")
+
+  if (!is.na(domainColor )) {
+    confusionPlot <- confusionPlot +
+      ggplot2::scale_fill_manual(values = c("grey", domainColor),
+                                 breaks = namesDomain)
+  }
 
   return(confusionPlot)
 }

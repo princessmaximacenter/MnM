@@ -7,8 +7,8 @@
 calculateMeanAndSDInfluenceTumorHeterogeneity(
   minorityDir,
   majorityDir,
-  metaDataRef,
-  metaDataTest = NA,
+  metaDataRefWithStatus,
+  metaDataTestWithStatus = NA,
   probabilityScoreTumor,
   probabilityScoreSubtype,
   metaDataFFPE = NA,
@@ -21,26 +21,23 @@ calculateMeanAndSDInfluenceTumorHeterogeneity(
 
 \item{majorityDir}{Directory in which the majority model(s) are stored.}
 
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
+\item{metaDataRefWithStatus}{Metadata file containing the links between the samples and the tumor (sub)type diagnosis, and the tumor status (primary, metastasis, etc.).
+Column names for the status are 'Status' and 'SystemicTreatment'.}
 
-\item{metaDataTest}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the test set.}
+\item{metaDataTestWithStatus}{Metadata file containing the links between the samples and the tumor (sub)type diagnosis within the test set.}
 
 \item{probabilityScoreTumor}{What is the probability score threshold you would like to use to call a classification 'confident' on the tumor type level?}
 
 \item{probabilityScoreSubtype}{What is the probability score threshold you would like to use to call a classification 'confident' on the tumor subtype level?}
 
-\item{metaDataFFPE}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis for the FFPE samples.}
+\item{metaDataFFPE}{Metadata file containing the links between the samples and the tumor (sub)type diagnosis for the FFPE samples.}
 
 \item{predictionsFFPE}{Predictions for the FFPE samples on the tumor type level.}
 
 \item{predictionsFFPESubtype}{Predictions for the FFPE samples on the tumor subtype level.}
-
-\item{trainOrTest}{Do you want to calculate for the reference cohort ("Train") or independent test set ("Test")?}
-
-\item{nSeeds}{How many seeds was the cross-validation setup run with?}
 }
 \value{
-Dataframe containing the results concerning the samples from different sources of tumor heterogeneity for all train or test datasets.
+Dataframe containing the results concerning the samples from different sources of tumor heterogeneity for supplied dataset.
 }
 \description{
 Calculate the influence of tumor heterogeneity on performance M&M

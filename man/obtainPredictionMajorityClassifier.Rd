@@ -9,7 +9,6 @@ obtainPredictionMajorityClassifier(
   dataTrain,
   dataTest,
   metaDataRef,
-  samplesTrainDefList,
   testSamples,
   classColumn = classColumn,
   maxNeighbours = 25,
@@ -20,19 +19,17 @@ obtainPredictionMajorityClassifier(
 \item{rotationsAndScalingsList}{List containing both the derived PCA-transformation information ($prList)
 and the information needed to scale new sample input data to center the features around 0 ($scaleFeaturesList).}
 
-\item{dataTrain}{Data to be used for training, containing the whole reference cohort.}
+\item{dataTrain}{Data to be used for training, containing the all samples available within the training dataset.}
 
 \item{dataTest}{Data for which the classifier should predict a label.}
 
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
-
-\item{samplesTrainDefList}{List of different training data subsets used for the majority voting system.}
+\item{metaDataRef}{Metadata file containing the links between the samples and the tumor (sub)type diagnosis.}
 
 \item{testSamples}{IDs for test samples from the test data.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 
-\item{maxNeighbours}{What is the maximum number of neigbours to be used for the weighted \emph{k}-nearest neighbor algorithm?}
+\item{maxNeighbours}{What is the maximum number of neigbors to be used for the weighted \emph{k}-nearest neighbor algorithm?}
 
 \item{nModels}{How many models should be created for the majority voting system?}
 }
