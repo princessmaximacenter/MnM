@@ -9,7 +9,7 @@ library("devtools")
 library("yaml")
 library("optparse") # Library for parsing command-line options
 #Load MnM Package
-libray("MnM")
+library("MnM")
 
 # Define command-line options
 option_list <- list(
@@ -46,7 +46,7 @@ countDataRef <- read.table(MnM_config$inputs$reference_count_data, sep = "\t",
                            row.names = 1) %>% as.matrix()
 
 ##Test Cohort
-testCounts <- read.table(MnM_config$inputs$test_count_data, sep = "\t",
+countDataRef <- read.table(MnM_config$inputs$test_count_data, sep = "\t",
                          row.names = 1) %>% as.matrix()
 
 "Data Prep"
