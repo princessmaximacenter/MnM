@@ -150,5 +150,7 @@ calculateMeanAndSDAccuracy <- function(
     meanNumbers$type <- "Test"
   }
 
+  meanNumbers$subtype <- subtype
+
   return(meanNumbers)
 }
