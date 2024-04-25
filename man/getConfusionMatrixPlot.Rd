@@ -9,32 +9,32 @@ getConfusionMatrixPlot(
   majorityDir,
   abbreviations = NA,
   subtype,
-  defineTumorWithColor = F,
-  probabilityScore
+  probabilityThreshold
 )
 }
 \arguments{
 \item{minorityDir}{Directory in which the Minority classifier model(s) are stored.}
 
-\item{abbreviations}{Dataframe containing the links between the tumor (sub)type,
-the abbreviation required in the plot, and the domain.}
+\item{abbreviations}{Dataframe containing the links between the tumor subtype and their abbreviations ($abbreviationSubtype),
+the tumor types and their abbreviations ($abbreviationTumorType), and the domain.}
 
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
 
-\item{defineTumorWithColor}{Do you want to have an extra column where the tumors can
-be specified with a color?}
-
-\item{probabilityScore}{Which probability score do you want to use as a cutoff for calling classifications confident or not?}
+\item{probabilityThreshold}{Which probability score do you want to use as a cutoff for calling classifications confident or not?}
 
 \item{majorityDirDirectory}{in which the Majority classifier model(s) are stored.}
 }
 \value{
-Dataframe specifying how often certain reference-prediction
-combinations are present.
+List containing all tiles that contain classifications with their frequencies ($confusionPlotDF),
+which tiles do not contain classifications ($nonAvailableTiles),
+what were the abbreviations used as input for generating the  ($abbreviations),
+what is the column in the abbreviations that contains the tumor subtype labels ($classColumn),
+what is the column in the abbreviations that contains the tumor type labels ($higherClassColumn),
+and lastly whether the tiles with classification frequencies were based on tumor type($subtype = F) or subtype level ($subtype = T).
 }
 \description{
 This function is designed to extract which tiles of the confusion matrix
-do contain reference-prediction information.
+do contain reference-prediction information, and which do not.
 IMPORTANT: The order of the tumor types within the plot will be equal to the order of the
 tumors within the \emph{abbreviations} dataframe. Make sure you specify the
 order of the tumor types well within the abbreviations, not only concerning the domains,

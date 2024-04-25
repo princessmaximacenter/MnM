@@ -14,19 +14,21 @@ newPredictionsMinority(
 \arguments{
 \item{createdModelsMinority}{R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),
 the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
-the metadata file associated to the reference cohort ($metaData)
+the metadata file associated to the reference cohort ($metaDataRef)
 and the metadata for the performed run ($metaDataRun).}
 
 \item{countDataNew}{Matrix containing the RNA-transcript per million data for the new samples to be classified.
-Patients are in the columns, different genes in the rows.}
+Samples are in the columns, different RNA-transcripts in the rows.}
 
 \item{outputDir}{Directory in which you would like to store the R-object containing the results.}
 
-\item{saveModel}{Do you want to save the resulting predictions in an R object?}
+\item{saveModel}{Do you want to save the results in an R object?}
 }
 \value{
 R-object containing the final classifications ($classifications) for the samples,
-and the probabilities associated to the different classifications ($probability).
+the probabilities associated to the different classifications ($probability),
+the metadata file associated to the reference cohort ($metaDataRef)
+and the metadata for the performed run ($metaDataRun).
 }
 \description{
 Predict tumor (sub)type for new samples with Minority Classifier

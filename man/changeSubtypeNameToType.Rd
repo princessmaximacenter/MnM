@@ -12,13 +12,13 @@ changeSubtypeNameToType(
 )
 }
 \arguments{
-\item{probabilities}{List with the probabilities from the different tumor subtype predictions from the minority or majority classifier.}
+\item{probabilities}{List with the probabilities from the different tumor subtype predictions from the Minority or Majority classifier.}
 
 \item{linkClassAndHigherClass}{dataframe containing the link between the tumor subtypes and the tumor types.
 The dataframe is automatically generated in previous functions from the metadata.}
 }
 \value{
-List of all the samples containing the probabilities for the different tumor type predictions from the minority or majority classifier.
+List of all the samples containing the probabilities for the different \emph{tumor type} predictions from the Minority or Majority classifier.
 }
 \description{
 Function to find the associated tumor type for each tumor subtype prediction.

@@ -15,7 +15,7 @@ tenFoldCrossValidationMajority(
   maxSamplesPerType = 50,
   nFeatures = 2500,
   nComps = 100,
-  maxNeighbours = 25,
+  maxNeighbors = 25,
   whichSeed = 1,
   outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
   proteinCodingGenes
@@ -43,7 +43,7 @@ different RNA-transcripts in the rows.}
 
 \item{nComps}{How many principal components will be selected after PCA?}
 
-\item{maxNeighbours}{What is the maximum number of neigbours to be used for the weighted \emph{k}-nearest neighbor algorithm?}
+\item{maxNeighbors}{What is the maximum number of neigbours to be used for the weighted \emph{k}-nearest neighbor algorithm?}
 
 \item{whichSeed}{For reproducibility, the seed can be specified with this parameter.}
 
@@ -54,8 +54,7 @@ Please supply it as a vector. This is needed for ribo-depletion correction model
 }
 \value{
 R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),
-the probabilities for each classification ($probabilityList), the  rotations and scalings
-for each reference cohort subset($rotationsAndScalingList),
+the probabilities for each classification ($probabilityList),
 the metadata file associated to the reference cohort ($metaDataRef),
 and metadata for the performed run ($metaDataRun).
 }

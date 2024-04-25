@@ -20,21 +20,21 @@ combineSeparateClassifierAccuracies(
 \item{majorityDir}{Directory in which the majority model(s) are stored.}
 
 \item{probabilityThreshold}{What is the probability score threshold you would like to use to call a
-classification 'confident' for a M&M prediction?}
+classification 'confident' for a M&M classification?}
 
 \item{probabilityThresholdMajority}{What is the probability score threshold you would like to use to call a
-classification 'confident' for a Majority Classifier prediction? Default value established based on ROC-curve analyses.}
+classification 'confident' for a Majority classifier classification? Default value established based on ROC-curve analyses.}
 
 \item{probabilityThresholdMinority}{What is the probability score threshold you would like to use to call a
-classification 'confident' for a Minority Classifier prediction? Default value established based on ROC-curve analyses.}
+classification 'confident' for a Minority classifier classification? Default value established based on ROC-curve analyses.}
 
-\item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
+\item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level (subtype = TRUE)?}
 
 \item{returnPlot}{Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?}
 }
 \value{
-If returnPlot = T: Plot with the separate classifier accuracy (Minority Classifier,
-Majority Classifier and M&M) stratified on population frequency.
+If returnPlot = T: Plot with the separate classifier accuracy (Minority classifier,
+Majority classifier and M&M) stratified on population frequency.
 If returnPlot = F: Dataframe containing the fraction correct labels within the top1, top2 and top3 classification labels.
 }
 \description{

@@ -15,7 +15,7 @@ createScalingsMajority(
   maxSamplesPerType = 50,
   nComps = 100,
   nFeatures = 2500,
-  maxNeighbours = 25,
+  maxNeighbors = 25,
   whichSeed = 1,
   outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
   proteinCodingGenes,
@@ -44,7 +44,7 @@ different RNA-transcripts in the rows.}
 
 \item{nFeatures}{How many of the most variable RNA-transcripts within the dataset should we select for principal component analysis (PCA)?}
 
-\item{maxNeighbours}{What is the maximum number of neigbors to be used for the weighted \emph{k}-nearest neighbor algorithm?}
+\item{maxNeighbors}{What is the maximum number of neigbors to be used for the weighted \emph{k}-nearest neighbor algorithm?}
 
 \item{whichSeed}{For reproducibility, the seed can be specified with this parameter.}
 

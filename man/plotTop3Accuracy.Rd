@@ -4,18 +4,14 @@
 \alias{plotTop3Accuracy}
 \title{Plot accuracy within the top 3 highest scoring classification labels M&M}
 \usage{
-plotTop3Accuracy(meanAndSDPlotTrain, meanAndSDPlotTest, metaDataRef, subtype)
+plotTop3Accuracy(meanAndSDPlotTrain, meanAndSDPlotTest)
 }
 \arguments{
 \item{meanAndSDPlotTrain}{Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases) for the reference cohort.
-Object obtained from running the function calculateMeanAndSDAccuracy}
+Object obtained from running the function 'calculateMeanAndSDAccuracy'}
 
-\item{meanAndSDPlotTest}{Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases) for the test set.
-Object obtained from running the function calculateMeanAndSDAccuracy}
-
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis within the reference cohort.}
-
-\item{subtype}{Do you want to analyse the results on the tumor subtype classification level?}
+\item{meanAndSDPlotTest}{Dataframe containing the average performance of tumor classifications within a certain frequency range (nCases) for the test cohort.
+Object obtained from running the function 'calculateMeanAndSDAccuracy'}
 }
 \value{
 Plot showing the accuracy if not only the top scoring classification label, but also the second and third highest labels are taken into consideration.

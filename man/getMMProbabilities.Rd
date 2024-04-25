@@ -12,7 +12,7 @@ getMMProbabilities(majorityProbability, minorityProbability)
 \item{minorityProbability}{List of all samples containing the probabilities for the different sample predictions from the Minority classifier.}
 }
 \value{
-List of all the samples containing the probabilities for the different sample predictions from the integrated M&M classifier.
+List of all the samples containing the probabilities for the different sample classifications from the integrated M&M classifier.
 }
 \description{
 This function calculates the probability for each prediction,

@@ -4,16 +4,17 @@
 \alias{riboCorrectCounts}
 \title{Correct ribodepletion protocol}
 \usage{
-riboCorrectCounts(data, proteinCodingGenes, outputDir, saveRiboModels = T)
+riboCorrectCounts(data, proteinCodingGenes, outputDir, saveRiboModels = F)
 }
 \arguments{
-\item{data}{Dataframe containing the ribo-depleted count data from an RNA-seq experiment.}
+\item{data}{Dataframe containing the ribo-depleted TPM-normalized count data from an RNA-seq experiment.}
 
-\item{proteinCodingGenes}{Names of the protein-coding genes within our RNA-seq count data.}
+\item{proteinCodingGenes}{What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
+Please supply it as a vector.}
 
 \item{outputDir}{Directory where the generated model for predicting the protein fraction should be stored.}
 
-\item{saveRiboModels}{Do you want to save the riboModel?}
+\item{saveRiboModels}{Do you want to save the riboModel? Default is FALSE.}
 }
 \value{
 list containing the corrected count data ($counts) and the essentials needed to correct new data using the same model ($modelList).

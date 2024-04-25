@@ -8,7 +8,8 @@ extractIndividualValuesF1(
   predictionsMM,
   metaDataRef,
   classColumn,
-  probabilityThreshold
+  probabilityThreshold,
+  filterOrNot
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ the tumor (sub)type diagnosis within the reference cohort.}
 \item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
 
 \item{probabilityThreshold}{What is the probability score threshold you would like to use to call a classification 'confident'?}
+
+\item{filterOrNot}{Do you want to filter the 'confident' classifications only for your calculation?}
 }
 \value{
 Dataframe containing the tumor (sub)type ($tumorType) with its associated precision ($Precision), F1 score ($F1),

@@ -8,7 +8,7 @@ predictRiboCounts(riboModel, data)
 }
 \arguments{
 \item{riboModel}{Model for ribocorrection, normally stored inside the R-object
-obtained form running the function createScalingsMajority.}
+obtained from running the function createModelsMinority or createScalingsMajority as 'riboModelList'.}
 
 \item{data}{Count data to be transformed.}
 }

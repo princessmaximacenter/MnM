@@ -21,8 +21,8 @@ different genes during a weighted RF procedure for different models.
 The genes are in the rows, the different models in the columns.
 }
 \description{
-This function is designed to extract all the mean decreases in accuracy
+This function is designed to extract all the mean decreases in accuracy / Gini score
 from a performed weighted Random Forest (RF). The mean decreases in accuracy / Gini score
-from all different #' genes selected in the ANOVA-procedure is calculated,
+from all different RNA-transcripts selected in the ANOVA-procedure is calculated,
 for all models within the modelList.
 }

@@ -18,7 +18,6 @@
 #' @return ggplot with only the datapoints of the selected domain,
 #' color coded by the tumor type (subtype = F) or tumor subtype (subtype = T).
 #' @export
-#' @import umap
 #'
 plotCohortUMAP <- function(dataUMAPList,
                                 domain = NA,

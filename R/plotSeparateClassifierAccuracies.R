@@ -1,6 +1,6 @@
-#' Plot the separate accuracies of the Minority, Majority and M&M classifier
+#' Plot the separate accuracies of the Minority classifier, Majority classifier and M&M classifier
 #'
-#' @param separateClassifierAccuracies Dataframe coming from the function 'combineSeparateClassifierAccuracies'.
+#' @param separateClassifierAccuracies Dataframe obtained from the function 'combineSeparateClassifierAccuracies'.
 #'
 #' @return Plot showing the accuracy for different population frequencies separately for the Minority, Majority and M&M classifier.
 #' @export

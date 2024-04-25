@@ -1,19 +1,20 @@
-#' Reduce features Minority Classifier with RF-importance
+#' Reduce features Minority classifier with Random Forest importance score
 #'
-#' This functions' purpose is to further reduce the number of features within the Minority Classifier.
+#' This functions' purpose is to further reduce the number of features within the Minority classifier.
 #' Ten Random Forest (RF) models will be generated using the reference cohort training data,
-#' from which the importance scores for the different genes will be extracted.
-#' The _howManyFeatures_ genes with the highest importance scores will be selected for the final Minority Classifier training.
+#' from which the importance scores for the different RNA-transcripts will be extracted.
+#' Each model is generated using a different subset of the training data, as specified in the _samplesTrainDefList_.
+#' The _nFeatures_ RNA-transcripts with the highest importance scores will be selected for the final Minority Classifier training.
 #'
-#' @param dataTrain Data to be used for training, containing the whole reference cohort.
-#' @param samplesTrainDefList List of different training data subsets used for the majority voting system.
-#' @param ntree How many trees should we use during the weighted Random Forest (RF) procedure?
+#' @param dataTrain Data to be used for model training, containing the all samples available within the training dataset.
+#' @param samplesTrainDefList List of different training data sample subsets used for subsetting the available training dataset (dataTrain).
+#' @param ntree How many trees should we generate during the weighted RF procedure?
 #' @param nModels How many models should be created for the majority voting system?
 #' @param nFeatures How many features should we keep after determining
-#' the most important genes using the Random Forest Importance Score?
-#' @param nANOVAgenes How many genes did we select during the ANOVA procedure?
-#'
-#' @return Names of the top most important genes present in the training data,
+#' the most important RNA-transcripts using the RF Importance Score?
+#' @param nANOVAgenes How many RNA-transcripts did we select during the ANOVA procedure?
+#' @import randomForest
+#' @return Names of the top most important RNA-transcripts present in the training data,
 #' containing most information to distinguish the different tumor (sub)types.
 
 reduceFeatures <- function(dataTrain,
@@ -32,9 +33,9 @@ reduceFeatures <- function(dataTrain,
 
     train.category <- as.character(train.data$class)
 
-    train.data %<>% select(-c("class"))
+    train.data %<>% dplyr::select(-c("class"))
 
-    classesVal <- table(train.category)
+    classesVal <- base::table(train.category)
     probabilityClasses <- 1/classesVal
 
     classwt <- as.numeric(probabilityClasses)
@@ -52,10 +53,10 @@ reduceFeatures <- function(dataTrain,
   meanAccuracyValuesDF <- apply(accuracyValuesDF, 1, mean)
 
   topFeatures <- meanAccuracyValuesDF %>%
-    sort(decreasing = T) %>%
+    base::sort(decreasing = T) %>%
     head(n = nFeatures)
 
-  topFeaturesNamesAccuracy <- names(topFeatures)
+  topFeaturesNamesAccuracy <- base::names(topFeatures)
 
   return(topFeaturesNamesAccuracy)
 }

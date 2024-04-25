@@ -2,16 +2,16 @@
 % Please edit documentation in R/plotSeparateClassifierAccuracies.R
 \name{plotSeparateClassifierAccuracies}
 \alias{plotSeparateClassifierAccuracies}
-\title{Plot the separate accuracies of the Minority, Majority and M&M classifier}
+\title{Plot the separate accuracies of the Minority classifier, Majority classifier and M&M classifier}
 \usage{
 plotSeparateClassifierAccuracies(separateClassifierAccuracies)
 }
 \arguments{
-\item{separateClassifierAccuracies}{Dataframe coming from the function 'combineSeparateClassifierAccuracies'.}
+\item{separateClassifierAccuracies}{Dataframe obtained from the function 'combineSeparateClassifierAccuracies'.}
 }
 \value{
 Plot showing the accuracy for different population frequencies separately for the Minority, Majority and M&M classifier.
 }
 \description{
-Plot the separate accuracies of the Minority, Majority and M&M classifier
+Plot the separate accuracies of the Minority classifier, Majority classifier and M&M classifier
 }

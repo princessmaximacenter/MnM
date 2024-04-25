@@ -10,8 +10,8 @@ obtainPredictionMajorityClassifier(
   dataTest,
   metaDataRef,
   testSamples,
-  classColumn = classColumn,
-  maxNeighbours = 25,
+  classColumn,
+  maxNeighbors = 25,
   nModels = 100
 )
 }
@@ -21,22 +21,22 @@ and the information needed to scale new sample input data to center the features
 
 \item{dataTrain}{Data to be used for training, containing the all samples available within the training dataset.}
 
-\item{dataTest}{Data for which the classifier should predict a label.}
+\item{dataTest}{New samples for which the classifier should provide a classification label.}
 
-\item{metaDataRef}{Metadata file containing the links between the samples and the tumor (sub)type diagnosis.}
+\item{metaDataRef}{Metadata file containing the links between the samples and the tumor subtype diagnosis.}
 
-\item{testSamples}{IDs for test samples from the test data.}
+\item{testSamples}{test sample IDs matching with samples from the test data.}
 
 \item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 
-\item{maxNeighbours}{What is the maximum number of neigbors to be used for the weighted \emph{k}-nearest neighbor algorithm?}
+\item{maxNeighbors}{What is the maximum number of neighbors to be used for the weighted \emph{k}-nearest neighbor algorithm?}
 
-\item{nModels}{How many models should be created for the majority voting system?}
+\item{nModels}{How many models should be created for the Majority classifier?}
 }
 \value{
-Dataframe containing the predictions for the \emph{nModels} different generated models, with the different folds
+Dataframe containing the classifications for the \emph{nModels} different generated models, with the different folds
 in the columns and the different samples to be predicted in the rows.
 }
 \description{
-This function looks at the accompanying prediction for the test samples for the different generated Majority Classifier models.
+This function looks at the accompanying prediction for the test samples for the different generated Majority classifier models.
 }

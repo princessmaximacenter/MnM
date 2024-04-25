@@ -2,17 +2,19 @@
 % Please edit documentation in R/obtainProbabilities.R
 \name{obtainProbabilities}
 \alias{obtainProbabilities}
-\title{Obtain probabilities for classifier predictions}
+\title{Obtain probabilities for classifications}
 \usage{
 obtainProbabilities(classifierResults)
 }
 \arguments{
-\item{classifierResults}{R-object containing the results from the minority or majority classifier.
-The object should contain a list with the probabilities for each prediction.}
+\item{classifierResults}{R-object containing the results from the Minority or Majority classifier.
+The object should contain a list with the probabilities for each classification label}
 }
 \value{
-List of all the samples containing the probabilities for the different sample predictions from the \emph{nModels} generated models.
+List of all the samples containing the probabilities for the different sample classifications from the generated models.
 }
 \description{
-This function calculates the probability for each prediction, by dividing the number of models predicting a tumor (sub)type by the total number of models ( \emph{nModels}).
+This function calculates the probability for each classification,
+by dividing the number of models for a specific tumor (sub)type label by the total number of models.
+In this way, the probability is equal to the fraction of classifier calls for a certain label.
 }

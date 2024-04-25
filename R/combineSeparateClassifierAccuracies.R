@@ -3,17 +3,17 @@
 #' @param minorityDir Directory in which the minority model(s) are stored.
 #' @param majorityDir Directory in which the majority model(s) are stored.
 #' @param probabilityThreshold What is the probability score threshold you would like to use to call a
-#' classification 'confident' for a M&M prediction?
+#' classification 'confident' for a M&M classification?
 #' @param probabilityThresholdMajority What is the probability score threshold you would like to use to call a
-#' classification 'confident' for a Majority Classifier prediction? Default value established based on ROC-curve analyses.
+#' classification 'confident' for a Majority classifier classification? Default value established based on ROC-curve analyses.
 #' @param probabilityThresholdMinority What is the probability score threshold you would like to use to call a
-#' classification 'confident' for a Minority Classifier prediction? Default value established based on ROC-curve analyses.
-#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
+#' classification 'confident' for a Minority classifier classification? Default value established based on ROC-curve analyses.
+#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level (subtype = TRUE)?
 #' @param returnPlot Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?
 #'
 #' @export
-#' @return If returnPlot = T: Plot with the separate classifier accuracy (Minority Classifier,
-#' Majority Classifier and M&M) stratified on population frequency.
+#' @return If returnPlot = T: Plot with the separate classifier accuracy (Minority classifier,
+#' Majority classifier and M&M) stratified on population frequency.
 #' If returnPlot = F: Dataframe containing the fraction correct labels within the top1, top2 and top3 classification labels.
 #'
 combineSeparateClassifierAccuracies <- function(minorityDir,
@@ -36,16 +36,16 @@ combineSeparateClassifierAccuracies <- function(minorityDir,
   selectedDirsMinority <- allDirsMinority[grep("seed", allDirsMinority)]
   selectedDirsMajority <- allDirsMajority[grep("seed", allDirsMajority)]
 
-  if (length(selectedDirsMinority) != length(selectedDirsMajority)) {
+  if (base::length(selectedDirsMinority) != base::length(selectedDirsMajority)) {
     stop("The number of models for the minority and majority classifier are not the same.
          Please check your models within the minorityDir and majorityDir that the
          same seeds have been used for the generation of a minority and a majority classifier.")
-  } else if (!all.equal(selectedDirsMajority, selectedDirsMinority) ) {
+  } else if (!base::all.equal(selectedDirsMajority, selectedDirsMinority) ) {
     stop("Please make sure you run the crossvalidation with the same seed for complementary classifications,
          and store them in the same directory.")
   }
 
-  for (i in seq(1:length(selectedDirsMajority))) {
+  for (i in seq(1:base::length(selectedDirsMajority))) {
     minorityDoc <- paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
     majorityDoc <- paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
     minority <- readRDS(minorityDoc)
@@ -101,12 +101,12 @@ combineSeparateClassifierAccuracies <- function(minorityDir,
   }
   }
 
-  fractionCorrectTotalPivoted <- fractionsCorrectTotalCombi %>% group_by(nCases, classifier) %>%
-    summarise(
+  fractionCorrectTotalPivoted <- fractionsCorrectTotalCombi %>% dplyr::group_by(nCases, classifier) %>%
+    dplyr::summarise(
       Top1 = mean(Top1),
       Top2 = mean(Top2),
       Top3 = mean(Top3)
-    ) %>% pivot_longer(cols = c(Top1, Top3),
+    ) %>% tidyr::pivot_longer(cols = c(Top1, Top3),
                        names_to = "whichTop",
                        values_to = "accuracy")
 

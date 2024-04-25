@@ -13,15 +13,15 @@ getAccuraciesPerTumorTypeSize(
 )
 }
 \arguments{
-\item{predictionsMM}{Dataframe showing the top 3 predictions for the tumor (sub)type, together with their probability scores.}
+\item{predictionsMM}{Dataframe showing the top 3 classifications for the tumor (sub)type, together with their probability scores.}
 
 \item{metaDataRef}{Metadata-file for the reference cohort containing the tumor (sub)type labels.}
 
 \item{classColumn}{Which column within the metadata file contains the tumor (sub)type labels?}
 
-\item{rounding}{Do you want rounded numbers for the performance scores?}
+\item{rounding}{Do you want rounded numbers for the performance scores? Default is TRUE.}
 
-\item{probabilityThreshold}{What is the threshold you would like to use to call a classification 'confident'?}
+\item{probabilityThreshold}{What is the probability score threshold you would like to use to call a classification 'confident'?}
 }
 \value{
 Dataframe showing the performance scores for the different tumor frequencies (nCases).
@@ -33,7 +33,8 @@ the top 2  ($fractionCorrect2) an top 3 highest scoring classifications ($fracti
 Furthermore, the fraction correct classifications within the confident classifications is denoted ($fractionCorrectFiltered),
 together with the amount of errors remaining in here ($errorsFiltered).
 
-For the rest, for the confident classifications the average precision ($Precision), F1 score ($F1) and recall ($Recall) for all tumor entities combined is determined.
+For the rest, for the confident classifications the average precision ($Precision),
+F1 score ($F1) and recall ($Recall) for all tumor entities combined is determined.
 }
 \description{
 Obtain accuracies per tumor (sub)type sample size

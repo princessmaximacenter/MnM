@@ -12,22 +12,23 @@
 #' @param nModels How many models should be created for the Minority classifier?
 #' Default is 100.
 #' @param meanExpression Selection criterion for the RNA-transcripts,
-#' specifying what the minimum mean expression of a RNA-transcripts should be for it to be included in the F-statistic analysis.
+#' specifying what the minimum mean TPM-expression of a RNA-transcripts should be for it to be included in the F-statistic analysis.
 #' Default is 5.
 #' @param nANOVAgenes How many RNA-transcripts should we select using the F-statistic of ANOVA? Default is 1000.
 #' @param maxSamplesPerType How many samples should we maximally use per tumor subtype? Default is 3.
 #' @param ntree How many trees should we use during the weighted Random Forest procedure? Default is 500.
 #' @param nFeatures How many features should we keep after determining the most important RNA-transcripts using the Random Forest Importance Score?
+#' Default is 300.
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter. Default is 1.
 #' @param outputDir Directory in which you would like to store the R-object containing the results. Default is today's date.
-#' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding RNA-transcripts within our dataset?
+#' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
 #' Please supply it as a vector. This is needed for ribo-depletion correction model.
 #' @param saveModel Do you want to save your generated scalings in an R-object? Default is TRUE.
 #'
 #'
 #' @return R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),
 #'  the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
-#'   the metadata file associated to the reference cohort ($metaData)
+#'   the metadata file associated to the reference cohort ($metaDataRef)
 #'  and the metadata for the performed run ($metaDataRun).
 #'
 #' @export
@@ -68,7 +69,7 @@ createModelsMinority <-  function(countDataRef,
   if (nrow(metaDataRef) != ncol(countDataRef)) {
     stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
   } else if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
-    stop("Your input data is not as required. Please make sure your patient IDs are within the row names of the metadata, and in the column names of the count data")
+    stop("Your input data is not as required. Please make sure your sample IDs are within the row names of the metadata, and in the column names of the count data")
   }
 
   if (is.numeric(countDataRef) != T) {
@@ -124,7 +125,7 @@ createModelsMinority <-  function(countDataRef,
 
   # Specify max samples per tumor type
   if (is.na(maxSamplesPerType)) {
-    maxSamplesPerType <- ceiling(median(table(metaDataRef[, classColumn])))
+    maxSamplesPerType <- ceiling(median(base::table(metaDataRef[, classColumn])))
   }
 
   # Remove genes with mean expression for ANOVA

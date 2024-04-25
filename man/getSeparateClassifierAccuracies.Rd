@@ -2,7 +2,7 @@
 % Please edit documentation in R/getSeparateClassifierAccuracies.R
 \name{getSeparateClassifierAccuracies}
 \alias{getSeparateClassifierAccuracies}
-\title{Get separate results from minority and majority classifier}
+\title{Get separate results from Minority and Majority classifier}
 \usage{
 getSeparateClassifierAccuracies(
   minority,
@@ -17,9 +17,13 @@ getSeparateClassifierAccuracies(
 
 \item{majority}{R-object that contains the results from the Majority classifier}
 
-\item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
+\item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level (subtype = TRUE)?}
 
-\item{probabilityThresholdMajority}{What is the probability score threshold that needs to be used to filter confident sample classifications with within the majority classifier?}
+\item{probabilityThresholdMajority}{What is the probability score threshold that needs to be used to
+filter confident sample classifications with within the Majority classifier?}
+
+\item{probabilityThresholdMinority}{What is the probability score threshold
+that needs to be used to filter confident sample classifications with within the Minority classifier?}
 }
 \value{
 Dataframe containing the total amount of samples ($nSamples), how many samples pass the the probability score threshold ($nSamplesFiltered),
@@ -27,8 +31,9 @@ what is the fraction non-classified samples ($notClassified),
 what is the fraction of samples that pass the threshold ($fraction), what is the fraction of correct samples within the highest scoring classification ($fractionCorrect),
 the top 2 scoring classification ($fractionCorrect2) and top 3 scoring classifications ($fractionCorrect3), what is the fraction of incorrect classifications ($fractionIncorrect),
 how many of the confident classifications are correct ($fractionCorrectFiltered), and certain score metrics ($Precision, $F1 and $Recall),
-all split up based on their population frequency within the reference cohohrt ($nCases) and the classifier used to obtain the metrics.
+all split up based on their population frequency within the reference cohort ($nCases) and the classifier used to obtain the metrics
+($classifier = Minority / Majority).
 }
 \description{
-Get separate results from minority and majority classifier
+Get separate results from Minority and Majority classifier
 }

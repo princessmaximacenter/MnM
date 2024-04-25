@@ -9,7 +9,8 @@ calculateSeparateF1(
   majorityDir,
   subtype,
   metaDataTest = NA,
-  probabilityThreshold
+  probabilityThreshold,
+  filterOrNot = T
 )
 }
 \arguments{
@@ -21,14 +22,16 @@ calculateSeparateF1(
 
 \item{metaDataTest}{Metadata file containing the links between the samples and the tumor (sub)type diagnosis within the test set}
 
-\item{probabilityThreshold}{What is the threshold you would like to use to call a classification 'confident'?
-If you do not want to filter the classifications, specify a score of 0.}
+\item{probabilityThreshold}{What is the threshold you would like to use to call a classification 'confident'?}
+
+\item{filterOrNot}{Do you want to filter the 'confident' classifications only for your calculation?}
 }
 \value{
 Dataframe containing the mean precision ($meanPrecision), F1-score ($meanF1), recall ($meanRecall)
 and sensitivity per tumor (sub)type ($tumorType).
 Results are stratified by the population frequency ($nCases).
-Lastly, it's specified whether a cross-validation (Train) or test (Test) type was used.
+Lastly, it's specified whether a cross-validation ($type = Train) or test ($type = Test) type was used,
+and whether the calculations were performed on the tumor type ($subtype = F) or subtype level ($subtype = T).
 }
 \description{
 Calculate performance measures for separate tumor (sub)types

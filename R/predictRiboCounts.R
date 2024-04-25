@@ -4,7 +4,7 @@
 #' on the new samples as was used on the reference cohort.
 #'
 #' @param riboModel Model for ribocorrection, normally stored inside the R-object
-#' obtained form running the function createScalingsMajority.
+#' obtained from running the function createModelsMinority or createScalingsMajority as 'riboModelList'.
 #' @param data Count data to be transformed.
 #'
 #' @return Count data corrected for the efficacy of the ribodepletion protocol.
@@ -13,13 +13,13 @@
 predictRiboCounts <- function(riboModel, data) {
   # Predict how much protein coding reads v.s. the ribosomal reads are present within the data
   relevantCoefficients <- riboModel$relevantCoefficients
-  highMeanGenes <- names(riboModel$meanGenes)
+  highMeanGenes <- base::names(riboModel$meanGenes)
   meanGenes <- riboModel$meanGenes
   varGenes <- riboModel$varGenes
   dataSub <- data[highMeanGenes, , drop = F]
   normalizedData <- apply(dataSub,2,function(x) (x -meanGenes[highMeanGenes])/varGenes[highMeanGenes])
 
-  predictProteinCoding <- 1-(relevantCoefficients[1] + t(normalizedData[names(relevantCoefficients)[-1], , drop = F]) %*% relevantCoefficients[-1])
+  predictProteinCoding <- 1-(relevantCoefficients[1] + t(normalizedData[base::names(relevantCoefficients)[-1], , drop = F]) %*% relevantCoefficients[-1])
 
   # Divide counts for each sample by the percentage of protein coding sequence.
   # The less protein coding reads, the higher the scale-up of eventual reads.
@@ -28,7 +28,7 @@ predictRiboCounts <- function(riboModel, data) {
   colnames(data) <- colnames(normalizedData)
 
   # After scaling-up samples with limited numbers of protein coding reads,
-  # the most important ribosomal proteins are removed from the dataset.
-  data <- data[!(rownames(data) %in% names(relevantCoefficients)[-1]), , drop = F]
+  # the most important ribosomal RNAs are removed from the dataset.
+  data <- data[!(rownames(data) %in% base::names(relevantCoefficients)[-1]), , drop = F]
   return(data)
 }

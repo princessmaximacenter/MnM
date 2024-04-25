@@ -37,7 +37,7 @@ convertResultToClassification <- function(result,
   mostAppearingNames <- lapply(probability, base::names)
 
   # Store the one with the highest probability score into the bestFit dataframe
-  for (j in seq(1:length(mostAppearingNames))) {
+  for (j in seq(1:base::length(mostAppearingNames))) {
     numberPositions <- as.numeric(positions[j])
     probabilityScores[j] <- probability[[j]][numberPositions]
     bestFit[j,] <- mostAppearingNames[[j]][numberPositions]

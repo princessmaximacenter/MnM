@@ -41,7 +41,7 @@ different RNA-transcripts in the rows.}
 Default is 100.}
 
 \item{meanExpression}{Selection criterion for the RNA-transcripts,
-specifying what the minimum mean expression of a RNA-transcripts should be for it to be included in the F-statistic analysis.
+specifying what the minimum mean TPM-expression of a RNA-transcripts should be for it to be included in the F-statistic analysis.
 Default is 5.}
 
 \item{nANOVAgenes}{How many RNA-transcripts should we select using the F-statistic of ANOVA? Default is 1000.}
@@ -50,13 +50,14 @@ Default is 5.}
 
 \item{ntree}{How many trees should we use during the weighted Random Forest procedure? Default is 500.}
 
-\item{nFeatures}{How many features should we keep after determining the most important RNA-transcripts using the Random Forest Importance Score?}
+\item{nFeatures}{How many features should we keep after determining the most important RNA-transcripts using the Random Forest Importance Score?
+Default is 300.}
 
 \item{whichSeed}{For reproducibility, the seed can be specified with this parameter. Default is 1.}
 
 \item{outputDir}{Directory in which you would like to store the R-object containing the results. Default is today's date.}
 
-\item{proteinCodingGenes}{What are the names of the RNA-transcripts that stand for protein-coding RNA-transcripts within our dataset?
+\item{proteinCodingGenes}{What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
 Please supply it as a vector. This is needed for ribo-depletion correction model.}
 
 \item{saveModel}{Do you want to save your generated scalings in an R-object? Default is TRUE.}
@@ -64,7 +65,7 @@ Please supply it as a vector. This is needed for ribo-depletion correction model
 \value{
 R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),
 the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
-the metadata file associated to the reference cohort ($metaData)
+the metadata file associated to the reference cohort ($metaDataRef)
 and the metadata for the performed run ($metaDataRun).
 }
 \description{
