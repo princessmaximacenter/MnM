@@ -8,7 +8,7 @@ precisionsForDomains(
   minorityDir,
   majorityDir,
   subtype,
-  metaDataTest,
+  metaDataTest = NA,
   probabilityThreshold,
   metaDataRef
 )

@@ -10,13 +10,13 @@ plotPieChartDomain(
   classColumn,
   higherClassColumn,
   domainColumn,
-  textSizeClass = 0.5,
-  textSizeSubspec = 0.45,
+  textSizeClass,
+  textSizeSubspec,
   freqSameTumorType,
   plotColors,
-  saveImage = T,
+  saveImage,
   storeLocation,
-  includeNumbers = T
+  includeNumbers
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ plotPieChartDomain(
 with the labels being present on both the classColumn and higherClassColumn level.}
 
 \item{domain}{Which domain do you want to plot? This name should be present in the
-Domain column of the domainColumn of the metadata.}
+domainColumn of the metadata.}
 
 \item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 
@@ -40,12 +40,11 @@ Domain column of the domainColumn of the metadata.}
 
 \item{plotColors}{Which colors do you want to use to color your plot?}
 
-\item{saveImage}{Do you want to save your image? Boolean (T/F) input.}
+\item{saveImage}{Do you want to save your image?}
 
 \item{storeLocation}{Where do you want to save the image?}
 
-\item{includeNumbers}{Do you want to show the numbers for the pie chart on the outer edge?
-Default is includeNumbers = TRUE.}
+\item{includeNumbers}{Do you want to show the numbers for the pie chart on the outer edge?}
 }
 \value{
 Piechart of how many samples are present within the dataset belonging to a

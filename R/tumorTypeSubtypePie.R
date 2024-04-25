@@ -30,7 +30,7 @@ tumorTypeSubtypePie <- function(x, labels = names(x), edges = 200, radius = 0.8,
   else labels <- as.graphicsAnnot(labels)
   x <- c(0, cumsum(x)/sum(x))
   dx <- diff(x)
-  nx <- length(dx)
+  nx <- base::length(dx)
   plot.new()
   pin <- par("pin")
   xlim <- ylim <- c(-1, 1)
@@ -40,11 +40,7 @@ tumorTypeSubtypePie <- function(x, labels = names(x), edges = 200, radius = 0.8,
   dev.hold()
   on.exit(dev.flush())
   plot.window(xlim, ylim, "", asp = 1)
-  #if (is.null(col))
-  #  col <- if (is.null(density))
-  #    c("white", "lightblue", "mistyrose", "lightcyan",
-  #             "lavender", "cornsilk")
-  #             else par("fg")
+
   if (!is.null(col))
     col <- rep_len(col, nx)
   if (!is.null(border))
@@ -69,7 +65,6 @@ tumorTypeSubtypePie <- function(x, labels = names(x), edges = 200, radius = 0.8,
     P <- t2xy(mean(x[i + 0:1]))
     lab <- as.character(labels[i])
     if (!is.na(lab) && nzchar(lab)) {
-      #lines(c(1, 1.05) * P$x, c(1, 1.05) * P$y)
       text(1.1 * P$x, 1.1 * P$y, labels[i], xpd = TRUE,
            srt = ifelse(P$x < 0, P$an/pi*180+180, P$an/pi*180),
            adj = ifelse(P$x < 0, 1, 0), ...)
