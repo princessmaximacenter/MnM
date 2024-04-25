@@ -22,8 +22,7 @@
 #' @import foreach doParallel
 #'
 #' @return R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),
-#'  the probabilities for each classification ($probabilityList), the  rotations and scalings
-#' for each reference cohort subset($rotationsAndScalingList),
+#'  the probabilities for each classification ($probabilityList),
 #' the metadata file associated to the reference cohort ($metaDataRef),
 #'  and metadata for the performed run ($metaDataRun).
 #' @export
@@ -173,7 +172,6 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                                        dataTrain = dataCV,
                                        dataTest = testDataCV,
                                        metaDataRef = metaDataCV,
-                                       samplesTrainDefList = samplesTrainDefList,
                                        testSamples = testSamples,
                                        classColumn = classColumn,
                                        nModels = nModels,
@@ -214,11 +212,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 
   # Check the accuracy of the current run
   accuracy <- sum(classifications$predict == classifications$originalCall) / base::length(classifications$originalCall)
-  print(accuracy)
-
-
-
-
+  print(paste("accuracy: ", accuracy))
 
   # Store the settings of the classifier run within the resulting object
   metaDataRun <- data.frame(nModels = nModels,
@@ -235,7 +229,6 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   crossValidationMajorityResults <- list(classifications = classifications,
                                          wrongClassifications = wrongClassifications,
                                          probabilityList = probabilityList,
-                                         rotationsAndScalingsList = rotationsAndScalingsList,
                                          metaDataRef = metaDataRef,
                                          metaDataRun = metaDataRun
   )

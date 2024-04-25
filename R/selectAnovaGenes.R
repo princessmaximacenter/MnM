@@ -1,15 +1,16 @@
-#' Select most informative genes Minority Classifier
+#' Select most informative RNA-transcripts as features for Minority classifier
 #'
-#' This function allows for the extraction of the genes that are most differently expressed between the different tumor (sub)types.
-#' The gene selection is based on an analysis of variance (ANOVA) with equal variances, where the genes with the highest F-scores are selected.
+#' This function allows for the extraction of the RNA-transcripts that are most differently expressed between the different tumor subtypes.
+#' The RNA-transcripts selection is based on an analysis of variance (ANOVA) with equal variances,
+#' where the RNA-transcripts with the highest F-scores are selected.
 #'
-#' @param metaDataRef Metadata file containing the links between the patients and the tumor (sub)type diagnosis for the reference cohort.
-#' @param countDataRef Matrix containing the RNA-transcript per million data. Patients are in the columns,
-#' different genes in the rows.
-#' @param nANOVAgenes How many genes should we select using the F-statistic of ANOVA?
-#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param metaDataRef Metadata file containing the links between the samples and the tumor subtype diagnosis for the reference cohort.
+#' @param countDataRef Matrix containing the RNA-transcript per million data. Samples are in the columns,
+#' different RNA-transcripts in the rows.
+#' @param nANOVAgenes How many RNA-transcripts should we select using the F-statistic of ANOVA?
+#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #'
-#' @return Vector containing the names of the most interesting genes according to the F-statistic of ANOVA.
+#' @return Vector containing the names of the most interesting RNA-transcripts according to the F-statistic of ANOVA.
 #'
 selectAnovaGenes <- function(metaDataRef,
                              countDataRef,
@@ -20,30 +21,32 @@ selectAnovaGenes <- function(metaDataRef,
   countDataRef <- t(countDataRef) %>% as.data.frame
   allGenes <- colnames(countDataRef)
 
-  classesWith2 <- table(metaDataRef[,classColumn])[table(metaDataRef[,classColumn]) == 2] %>%
-    names(.)
+  classesWith2 <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) == 2] %>%
+    base::names(.)
 
-  if (length(classesWith2) > 0 ) {
+  if (base::length(classesWith2) > 0 ) {
     countDataRef$class <- as.factor(metaDataRef[rownames(countDataRef),classColumn])
     countDataRef <- createExtraData(countDataRef, classesWith2)
     metaDataRef$class <- as.character(metaDataRef[,classColumn])
-    metaDataRef <- createExtraMetaData(metaDataRef = metaDataRef, classesWith2 = classesWith2)
+    metaDataRef <- createExtraMetaData(metaDataRef = metaDataRef,
+                                       classesWith2 = classesWith2)
   }
 
-  countDataRef$Patient <- rownames(countDataRef)
+  countDataRef$Sample <- rownames(countDataRef)
 
-  metaDataRef$Patient <- rownames(metaDataRef)
-  allMaterial <- left_join(metaDataRef, countDataRef, by = "Patient")
- # allGenes <- allMaterial %>%
-  #  select(where(is.numeric)) %>% colnames
+  metaDataRef$Sample <- rownames(metaDataRef)
+  allMaterial <- dplyr::left_join(metaDataRef, countDataRef, by = "Sample")
 
-  # Perform an ANOVA test on all genes
-  results <- getAnovaResults(allMaterial, allGenes, classColumn)
+  # Perform an ANOVA test on all RNA-transcripts
+  results <- getAnovaResults(allMaterial = allMaterial,
+                             allGenes = allGenes,
+                             classColumn = classColumn)
 
-  # Arrange the genes so that the genes with the highest F-scores are at the top
-  filterResults <- results %>% arrange(desc(F_val))
+  # Arrange the RNA-transcripts so that the RNA-transcripts with the highest F-scores are at the top
+  filterResults <- results %>% dplyr::arrange(desc(F_val))
 
-  # Select the top n F-score genes
-  interestingAnovaGenes <- head(filterResults$allGenes, n = nANOVAgenes)
+  # Select the top n F-score RNA-transcripts
+  interestingAnovaGenes <- head(filterResults$allGenes,
+                                n = nANOVAgenes)
   return(interestingAnovaGenes)
 }

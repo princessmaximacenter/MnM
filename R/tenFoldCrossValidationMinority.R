@@ -155,7 +155,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
     set.seed(whichSeed)
     interestingANOVAgenes <- selectAnovaGenes(metaDataRef  = metaDataCV,
                                            countDataRef  = countDataCV,
-                                           nANOVAgenes = nANOVAgenes, # How many ANOVA genes
+                                           nANOVAgenes = nANOVAgenes,
                                            classColumn = classColumn)
 
     print(paste("Found interesting ANOVA genes for Fold ", i))
@@ -257,7 +257,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
   # Check the accuracy of the current run
   accuracy <- sum(classifications$predict == classifications$originalCall) / base::length(classifications$originalCall)
-  print(accuracy)
+  print(paste("accuracy: ", accuracy))
 
   # Store the settings of the classifier run within the resulting object
   metaDataRun <- data.frame(nModels = nModels,

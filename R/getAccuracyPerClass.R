@@ -10,8 +10,8 @@ getAccuracyPerClass <- function(predictions) {
 
 
   for (i in seq(1:length(classes))) {
-    predictionsFiltered <- predictions %>% filter(originalCall == classes[i])
-    correct <- predictionsFiltered %>% filter(originalCall == predict)
+    predictionsFiltered <- predictions %>% dplyr::filter(originalCall == classes[i])
+    correct <- predictionsFiltered %>% dplyr::filter(originalCall == predict)
 
     accuracyDF <- data.frame(
       accuracy = nrow(correct) / nrow(predictionsFiltered))
