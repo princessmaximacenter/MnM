@@ -1,17 +1,21 @@
-#' Plot tumor subtype confusion matrix
+#' Plot tumor type or subtype confusion matrix
 #'
-#' Function to plot the confusion matrix plot for a single domain,
-#' showing the reference-prediction combinations for the tumor subtypes.
-#' Using a color coding, it is shown within the plot which tumor subtypes belong to the same parent tumor type.
+#' Function to plot the confusion matrix (CM) plot within all domains (domain = NA)
+#' or within a single domain (e.g. domain = "Hemato").
+#' The CM plots can both be made on the tumor type and subtype level,
+#' which depends on the information stored within the 'confusionPlotInfo'.
+#' The CM plot shows the reference-classification combinations for the tumor (sub)types.
+#' Within tumor subtype CM plots, it is shown which tumor subtypes belong to the same parent tumor type using color coding.
 
 #'
 #' @param domain Which domain do you want to plot? This name should be available in the
 #' domain column of the abbreviations. If not specified, plot will be made for all tumor domains.
 #' @param confusionPlotInfo List resulting from running the function 'getConfusionMatrixPlot'.
-#' @param domainColor Which colors should we use for each designated tumor type? If not specified, default ggplot colors will be used.
+#' @param domainColor If one domain is plotted, which colors should we use for each designated tumor type?
+#' If not specified, default ggplot colors will be used.
 #' @param colorTiles Which domain color tiles do we want to use? Only applicable when argument _domain_ is specified.
 #'
-#' @return ggplot object containing the tumor subtype confusion matrix.
+#' @return ggplot object containing the tumor type or subtype CM plot.
 #' @export
 #'
 plotConfusionMatrix <- function(domain = NA,
@@ -55,7 +59,7 @@ plotConfusionMatrix <- function(domain = NA,
 
     notClassifiedDF <- data.frame(
       Prediction = domainSubtypes,
-      Reference = "Not classified", #[domainSubtypes != "Not classified"],
+      Reference = "Not classified",
       Freq = 0,
       Domain = NA)
 
