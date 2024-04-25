@@ -10,7 +10,8 @@
 #' @return Dataframe containing the mean precision ($meanPrecision), F1-score ($meanF1), recall ($meanRecall)
 #' and sensitivity per tumor (sub)type ($tumorType).
 #' Results are stratified by the population frequency ($nCases).
-#' Lastly, it's specified whether a cross-validation (Train) or test (Test) type was used.
+#' Lastly, it's specified whether a cross-validation ($type = Train) or test ($type = Test) type was used,
+#' and whether the calculations were performed on the tumor type ($subtype = F) or subtype level ($subtype = T).
 #' @export
 #'
 calculateSeparateF1 <- function(

@@ -27,7 +27,7 @@ extractIndividualValuesF1 <- function(predictionsMM,
   patientsPerTumor <- base::table(metaDataRef[,classColumn])
 
   if (filterOrNot == T) {
-    predictionsMMFiltered <- predictionsMM %>% filter(probability1 > probabilityThreshold)
+    predictionsMMFiltered <- predictionsMM %>% dplyr::filter(probability1 > probabilityThreshold)
   } else {
     predictionsMMFiltered <- predictionsMM
   }
