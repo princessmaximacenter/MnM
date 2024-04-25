@@ -5,7 +5,7 @@
 #' the tumor (sub)type diagnosis within the reference cohort.
 #' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
 #' @param probabilityThreshold What is the probability score threshold you would like to use to call a classification 'confident'?
-#'
+#' @param filterOrNot Do you want to filter the 'confident' classifications only for your calculation?
 #' @import caret
 #'
 #' @return Dataframe containing the tumor (sub)type ($tumorType) with its associated precision ($Precision), F1 score ($F1),
@@ -18,14 +18,19 @@
 extractIndividualValuesF1 <- function(predictionsMM,
                                       metaDataRef,
                                       classColumn,
-                                      probabilityThreshold
+                                      probabilityThreshold,
+                                      filterOrNot
                                       ) {
 
 
   nCases <- c(1,5,10,20,40,100)
   patientsPerTumor <- base::table(metaDataRef[,classColumn])
 
-  predictionsMMFiltered <- predictionsMM %>% dplyr::filter(probability1 > probabilityThreshold)
+  if (filterOrNot == T) {
+    predictionsMMFiltered <- predictionsMM %>% filter(probability1 > probabilityThreshold)
+  } else {
+    predictionsMMFiltered <- predictionsMM
+  }
 
   tumorConfusionMatrix <- caret::confusionMatrix(factor(predictionsMMFiltered$predict,
                                                  levels = base::unique(c(predictionsMMFiltered$originalCall))),

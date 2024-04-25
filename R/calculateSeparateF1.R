@@ -5,7 +5,7 @@
 #' @param subtype  Do you want to obtain the classifications on the tumor subtype classification level?
 #' @param metaDataTest  Metadata file containing the links between the samples and the tumor (sub)type diagnosis within the test set
 #' @param probabilityThreshold What is the threshold you would like to use to call a classification 'confident'?
-#' If you do not want to filter the classifications, specify a score of 0.
+#' @param filterOrNot Do you want to filter the 'confident' classifications only for your calculation?
 #'
 #' @return Dataframe containing the mean precision ($meanPrecision), F1-score ($meanF1), recall ($meanRecall)
 #' and sensitivity per tumor (sub)type ($tumorType).
@@ -18,7 +18,8 @@ calculateSeparateF1 <- function(
     majorityDir,
     subtype,
     metaDataTest = NA,
-    probabilityThreshold) {
+    probabilityThreshold,
+    filterOrNot = T) {
 
 
 
@@ -63,12 +64,12 @@ calculateSeparateF1 <- function(
 
       if (classColumn %notin% colnames(metaDataTest)) {
         print("Please note that the wanted column for the tumor subtype labels cannot be found within 'metaDataTest'.")
-        print("Either change the column with the tumor subtype labels to the name: ", classColumn)
+        print(paste0("Either change the column with the tumor subtype labels to the name: ", classColumn))
         stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
       } else if (higherClassColumn %notin% colnames(metaDataTest)) {
 
         print("Please note that the wanted column for the tumor type labels cannot be found within 'metaDataTest'.")
-        print("Either change the column with the tumor type labels to the name: ", higherClassColumn)
+        print(paste0("Either change the column with the tumor type labels to the name: ", higherClassColumn))
         stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
       } else {
         print(paste0("Found columns ", classColumn, " and ", higherClassColumn, " within metaDataTest specifying the tumor subtype, and tumor type."))
@@ -95,13 +96,16 @@ calculateSeparateF1 <- function(
       fractionsCorrect <- extractIndividualValuesF1(predictionsMM = predictionsMMFinal,
                                                     metaDataRef = minority$metaDataRef,
                                                     classColumn = classColumn,
-                                                    probabilityThreshold = probabilityThreshold
+                                                    probabilityThreshold = probabilityThreshold,
+                                                    filterOrNot = filterOrNot
                                                     )
     } else {
       fractionsCorrect <- extractIndividualValuesF1(predictionsMM = predictionsMMFinal,
                                                     metaDataRef = minority$metaDataRef,
                                                     classColumn = higherClassColumn,
-                                                    probabilityThreshold = probabilityThreshold)
+                                                    probabilityThreshold = probabilityThreshold,
+                                                    filterOrNot = filterOrNot
+                                                    )
 
     }
     fractionsCorrect$seed <- i
@@ -126,6 +130,8 @@ calculateSeparateF1 <- function(
   } else {
     meanNumbers$type <- "Test"
   }
+
+  meanNumbers$subtype <- subtype
 
  # levelsNCases <- c("n = 3", paste( nCases[-length(nCases)],"< n <=",nCases[-1])[-1], "n > 100", "All")
   #levelsNCases <- unique(meanNumbers$nCases)
