@@ -53,7 +53,7 @@ integrateMM <- function(minority,
   MMProbabilityList <- getMMProbabilities(minorityProbability = probabilitiesMinority,
                                           majorityProbability = probabilitiesMajority)
 
-  predictionsMM <- getMajorityPredictions(minority = minority,
+  predictionsMM <- getTopClassifications(minority = minority,
                                           MMProbabilityList = MMProbabilityList,
                                           higherClassColumn = higherClassColumn,
                                           subtype = subtype)
@@ -61,12 +61,12 @@ integrateMM <- function(minority,
   predictionsList <- list(predictionsMMFinal = predictionsMM,
                           MMProbabilityList = MMProbabilityList)
   } else {
-    predictionsMinority <- getMajorityPredictions(minority = minority,
+    predictionsMinority <- getTopClassifications(minority = minority,
                                                   MMProbabilityList = probabilitiesMinority,
                                                   higherClassColumn = higherClassColumn,
                                                   subtype = subtype)
 
-    predictionsMajority <- getMajorityPredictions(minority = majority,
+    predictionsMajority <- getTopClassifications(minority = majority,
                                                   MMProbabilityList = probabilitiesMajority,
                                                   higherClassColumn = higherClassColumn,
                                                   subtype = subtype)
