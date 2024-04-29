@@ -9,11 +9,10 @@ getPieDF(metaDataRef, abbreviations, higherClassColumn, classColumn)
 \arguments{
 \item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
 
-\item{abbreviations}{Dataframe containing the different tumor subtype labels with their appropriate abbreviations ($abbreviationSubtype),
-and tumor type labels with their appropriate abbreviations (abbreviationTumorType).
+\item{abbreviations}{Dataframe containing the different tumor subtype labels (classColumn) with their appropriate abbreviations ($abbreviationSubtype),
+and tumor type labels (higherClassColumn) with their appropriate abbreviations (abbreviationTumorType).
 Please make sure that the higherClassColumn name is used as column name within abbreviationsCombi for the tumor type labels,
-and classColumn name for the tumor subtype labels.
-tumor type label and tumor type abbreviation.}
+and classColumn name for the tumor subtype labels.}
 
 \item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
 

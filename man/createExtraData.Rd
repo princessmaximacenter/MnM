@@ -2,28 +2,28 @@
 % Please edit documentation in R/createExtraData.R
 \name{createExtraData}
 \alias{createExtraData}
-\title{Create fake count data entries}
+\title{Create synthetic count data entries}
 \usage{
 createExtraData(countDataRef, classesWith2)
 }
 \arguments{
 \item{countDataRef}{Dataframe containing the RNA-transcript per million data. Patient samples are in the rows,
-different genes in the columns.The data has been cleaned by the ribodepletion correction protocol.}
+different RNA-transcripts in the columns.The data has been cleaned by the ribodepletion correction protocol.}
 
-\item{classesWith2}{A vector containing the tumor (sub)types that currently
+\item{classesWith2}{A vector containing the tumor subtypes that currently
 only have two samples within the metadata file.}
 }
 \value{
-Count-data dataframe now including extra fake entries, with a minimum of
-three entries per tumor (sub)type.
+Count dataframe now including extra synthetic data entries, guaranteeing a minimum of
+three entries per tumor subtype.
 }
 \description{
 This function is designed to create new count data entries for
-tumor (sub)types that only have two samples.
+tumor subtypes that only have two samples.
 Additional entries are needed for analysis of variance (ANOVA),
-as each group requires at least three entries to calculate a mean and a standard deviation for each gene.
-These entries are calculated by taking the mean values for each gene from the two available samples,
+as each group requires at least three entries for each RNA-transcript.
+These synthetic count data entries are calculated by taking the mean values for each RNA-transcript from the two available samples,
 giving an 'average' sample as the third input for the ANOVA.
-These extra samples are only used during the gene selection procedure,
+These extra samples are only used during the feature selection procedure,
 not during the classification.
 }

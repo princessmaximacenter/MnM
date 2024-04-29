@@ -2,26 +2,26 @@
 % Please edit documentation in R/obtainModelsMinorityClassifier.R
 \name{obtainModelsMinorityClassifier}
 \alias{obtainModelsMinorityClassifier}
-\title{Generate Models Minority Classifier}
+\title{Generate models Minority classifier}
 \usage{
 obtainModelsMinorityClassifier(
   dataTrain,
   samplesTrainDefList,
-  nModels,
+  nModels = 100,
   ntree = 500
 )
 }
 \arguments{
-\item{dataTrain}{Data to be used for training, containing the whole reference cohort.}
+\item{dataTrain}{Data to be used for model training, containing the all samples available within the training dataset.}
 
-\item{samplesTrainDefList}{List of different training data subsets used for the majority voting system.}
+\item{samplesTrainDefList}{List of different training data sample subsets used for subsetting the available training dataset (dataTrain).}
 
-\item{nModels}{How many models should be created for the majority voting system?}
+\item{nModels}{How many models should be created for the classifier?}
 
-\item{ntree}{How many trees should we use during the weighted RF procedure?}
+\item{ntree}{How many trees should we generate during the weighted RF procedure?}
 }
 \value{
-List containing the different Minority Classifier models to use for subsequent tumor (sub)type predictions.
+List containing the different Minority classifier models to use for subsequent tumor (sub)type predictions.
 }
 \description{
 Function to generated weighted Random Forest (RF) models to predict tumor (sub)type labels for new patient samples.

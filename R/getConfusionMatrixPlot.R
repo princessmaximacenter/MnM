@@ -1,28 +1,34 @@
 #' Get confusion matrix information
 #'
 #' This function is designed to extract which tiles of the confusion matrix
-#' do contain reference-prediction information.
+#' do contain reference-prediction information, and which do not.
+
+#' IMPORTANT: The order of the tumor types within the plot will be equal to the order of the
+#' tumors within the _abbreviations_ dataframe. Make sure you specify the
+#' order of the tumor types well within the abbreviations, not only concerning the domains,
+#' but also the subsequent tumor types order and tumor subtypes order.
 #'
-#' @param minorityDir
-#' @param majorityDir
-#' @param abbreviations Dataframe containing the links between the tumor (sub)type,
-#' the abbreviation required in the plot, and the domain.
-#' @param defineTumorWithColor Do you want to have an extra column where the tumors can
-#' be specified with a color?
-#' @param probabilityScore Which probability score do you want to use as a cutoff
+#' @param minorityDir Directory in which the Minority classifier model(s) are stored.
+#' @param majorityDirDirectory in which the Majority classifier model(s) are stored.
+#' @param abbreviations Dataframe containing the links between the tumor subtype and their abbreviations ($abbreviationSubtype),
+#' the tumor types and their abbreviations ($abbreviationTumorType), and the domain.
+#' @param probabilityThreshold Which probability score do you want to use as a cutoff for calling classifications confident or not?
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
-#' for being classified or non-classified?
-#' @import tidyverse dplyr magrittr
-#' @return Dataframe specifying how often certain reference-prediction
-#' combinations are present.
+#' @import caret
+#' @return List containing all tiles that contain classifications with their frequencies ($confusionPlotDF),
+#' which tiles do not contain classifications ($nonAvailableTiles),
+#' what were the abbreviations used as input for generating the  ($abbreviations),
+#' what is the column in the abbreviations that contains the tumor subtype labels ($classColumn),
+#' what is the column in the abbreviations that contains the tumor type labels ($higherClassColumn),
+#' and lastly whether the tiles with classification frequencies were based on tumor type($subtype = F) or subtype level ($subtype = T).
+
 #' @export
 #'
 getConfusionMatrixPlot <- function(minorityDir,
                                    majorityDir,
          abbreviations = NA,
          subtype,
-         defineTumorWithColor = F,
-         probabilityScore = 0.8) {
+         probabilityThreshold) {
 
   `%notin%` <- Negate(`%in%`)
 
@@ -42,7 +48,7 @@ getConfusionMatrixPlot <- function(minorityDir,
 
   if (is.na(abbreviations)[1] & !is.na(domainColumn)[1]) {
 
-    abbreviations <- metaDataRef[, c(domainColumn, classColumn, higherClassColumn)] %>% unique()
+    abbreviations <- metaDataRef[, c(domainColumn, classColumn, higherClassColumn)] %>% base::unique()
     abbreviations$abbreviationSubtype <- abbreviations[,classColumn]
     abbreviations$abbreviationTumorType <- abbreviations[,higherClassColumn]
 
@@ -50,7 +56,7 @@ getConfusionMatrixPlot <- function(minorityDir,
           please generate a dataframe with the following columns and abbreviations within abbreviationSubtype and abbreviationTumorType:")
     print(abbreviations[1:4,])
   } else if (is.na(abbreviations)[1] ) {
-    abbreviations <- metaDataRef[, c(classColumn, higherClassColumn)] %>% unique()
+    abbreviations <- metaDataRef[, c(classColumn, higherClassColumn)] %>% base::unique()
     abbreviations$domainColumn <- " "
     abbreviations$abbreviationSubtype <- abbreviations[,classColumn]
     abbreviations$abbreviationTumorType <- abbreviations[,higherClassColumn]
@@ -95,35 +101,25 @@ getConfusionMatrixPlot <- function(minorityDir,
 
 
 
-  predictionsMMFiltered <- predictionsMM %>% filter(probability1 > probabilityScore)
+  predictionsMMFiltered <- predictionsMM %>% dplyr::filter(probability1 > probabilityThreshold)
 
-
-
-
-
-  #tumorConfusionMatrix <- confusionMatrix(factor(predictionsMMFiltered$predict,
-   #                                              levels = unique(c(predictionsMMFiltered$originalCall, predictionsMMFiltered$predict))),
-    #                                      factor(predictionsMMFiltered$originalCall, levels = unique(c(predictionsMMFiltered$originalCall,
-     #                                                                                                  predictionsMMFiltered$predict))),
-      #                                    dnn = c("Prediction", "Reference"))
-
-  tumorConfusionMatrix <- confusionMatrix(factor(predictionsMMFiltered$predict,
-                                                 levels = unique(c(predictionsMM$originalCall, predictionsMM$predict))),
-                                          factor(predictionsMMFiltered$originalCall, levels = unique(c(predictionsMM$originalCall,
+  tumorConfusionMatrix <- caret::confusionMatrix(factor(predictionsMMFiltered$predict,
+                                                 levels = base::unique(c(predictionsMM$originalCall, predictionsMM$predict))),
+                                          factor(predictionsMMFiltered$originalCall, levels = base::unique(c(predictionsMM$originalCall,
                                                                                                        predictionsMM$predict))),
                                           dnn = c("Prediction", "Reference"))
-  predictionFrequencies <- tumorConfusionMatrix$table %>% as.data.frame() #%>% filter(Freq != 0)
+  predictionFrequencies <- tumorConfusionMatrix$table %>% as.data.frame()
   predictionFrequencies$Prediction <- as.character(predictionFrequencies$Prediction)
   predictionFrequencies$Reference <- as.character(predictionFrequencies$Reference)
-  missingTumors <- predictionFrequencies %>% filter(Reference == Prediction,
+  missingTumors <- predictionFrequencies %>% dplyr::filter(Reference == Prediction,
                                                     Freq == 0)
 
-  predictionFrequencies %<>% filter(Freq != 0)
+  predictionFrequencies %<>% dplyr::filter(Freq != 0)
 
   for (j in seq(1:nrow(missingTumors))) {
 
 
-    if (missingTumors$Reference[j] %notin% unique(predictionsMMFiltered$originalCall)) {
+    if (missingTumors$Reference[j] %notin% base::unique(predictionsMMFiltered$originalCall)) {
       missingTumors <- rbind(missingTumors, data.frame(Prediction = "Not classified",
                                                        Reference = missingTumors$Reference[j],
                                                        Freq = (nrow(predictionsMM[predictionsMM$originalCall == missingTumors$Reference[j], ]) -
@@ -134,24 +130,24 @@ getConfusionMatrixPlot <- function(minorityDir,
   }
 
   for (j in seq(1:nrow(missingTumors))) {
-    missingTumors$Prediction[j] <- abbreviations[abbreviations[,chosenClassColumn] == missingTumors$Prediction[j], "abbreviation", drop = T] %>% unique()
-    missingTumors$Reference[j] <- abbreviations[abbreviations[,chosenClassColumn] == missingTumors$Reference[j], "abbreviation", drop = T] %>% unique()
+    missingTumors$Prediction[j] <- abbreviations[abbreviations[,chosenClassColumn] == missingTumors$Prediction[j], "abbreviation", drop = T] %>% base::unique()
+    missingTumors$Reference[j] <- abbreviations[abbreviations[,chosenClassColumn] == missingTumors$Reference[j], "abbreviation", drop = T] %>% base::unique()
   }
 
 
 
 
-  difPredictions <- unique(predictionFrequencies$Reference) %>% as.character()
+  difPredictions <- base::unique(predictionFrequencies$Reference) %>% as.character()
 
 
-  linkClassAndDomain <- metaDataRef[ , c( chosenClassColumn, domainColumn)] %>% unique
+  linkClassAndDomain <- metaDataRef[ , c( chosenClassColumn, domainColumn)] %>% base::unique()
 
   for (i in seq(1:length(difPredictions))) {
-    total <- predictionFrequencies %>% filter(Reference == difPredictions[i])
+    total <- predictionFrequencies %>% dplyr::filter(Reference == difPredictions[i])
     total$Domain <- linkClassAndDomain[linkClassAndDomain[,chosenClassColumn] == total$Reference[1], domainColumn]
     totalNum <- sum(total$Freq)
     metaTotal <-predictionsMM %>%
-      filter(originalCall == difPredictions[i]) %>%
+      dplyr::filter(originalCall == difPredictions[i]) %>%
       nrow()
     notClassified <- metaTotal - totalNum
 
@@ -180,7 +176,9 @@ getConfusionMatrixPlot <- function(minorityDir,
 
   for (i in seq(1:nrow(linkClassAndDomain))) {
     if (linkClassAndDomain[i, chosenClassColumn] %in% abbreviations[,chosenClassColumn]) {
-      linkClassAndDomain[i, "abbreviation"] <- abbreviations[abbreviations[,chosenClassColumn] == linkClassAndDomain[i,chosenClassColumn], "abbreviation"] %>% unique()
+      linkClassAndDomain[i, "abbreviation"] <-
+        abbreviations[abbreviations[,chosenClassColumn] == linkClassAndDomain[i,chosenClassColumn], "abbreviation"] %>%
+        base::unique()
     }
   }
 
@@ -192,7 +190,7 @@ getConfusionMatrixPlot <- function(minorityDir,
   missingNotClassified <- levels(confusionPlotDF$Prediction)[levels(confusionPlotDF$Prediction) %notin% confusionPlotDF[confusionPlotDF$Prediction == "Not classified","Reference"] ]
   missingNotClassified <- missingNotClassified[missingNotClassified != "Not classified"]
 
-  for (i in seq(1:length(missingNotClassified))) {
+  for (i in seq(1:base::length(missingNotClassified))) {
     missingNotClassifiedDF <- data.frame(Prediction = "Not classified",
                                          Reference = missingNotClassified[i],
                                          Freq = 0,
@@ -204,9 +202,8 @@ getConfusionMatrixPlot <- function(minorityDir,
                                    missingNotClassifiedDF)
     }
   }
-  #confusionPlotDF <- rbind(confusionPlotDF, missingClassifiedDF)
 
-  if (defineTumorWithColor == T) {
+  if (subtype == T) {
     confusionPlotDF$Reference <- factor(confusionPlotDF$Reference,
                                  levels = levels(confusionPlotDF$Prediction))
   } else {
@@ -227,7 +224,7 @@ getConfusionMatrixPlot <- function(minorityDir,
     nonAvailableTiles <- getNonAvailableTiles(predictionsMM = predictionsMM,
                                               abbreviations = abbreviations,
                                               classColumn = chosenClassColumn,
-                                              probabilityScore = probabilityScore)
+                                              probabilityThreshold = probabilityThreshold)
 
   confusionPlotInfo <- list(confusionPlotDF = confusionPlotDF,
                             nonAvailableTiles = nonAvailableTiles,

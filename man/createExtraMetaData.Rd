@@ -2,7 +2,7 @@
 % Please edit documentation in R/createExtraMetaData.R
 \name{createExtraMetaData}
 \alias{createExtraMetaData}
-\title{Create fake metadata entries}
+\title{Create synthetic metadata entries}
 \usage{
 createExtraMetaData(metaDataRef, classesWith2)
 }

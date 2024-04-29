@@ -2,63 +2,69 @@
 % Please edit documentation in R/tenFoldCrossValidationMinority.R
 \name{tenFoldCrossValidationMinority}
 \alias{tenFoldCrossValidationMinority}
-\title{10x cross-validation minority classifier}
+\title{10x cross-validation Minority classifier}
 \usage{
 tenFoldCrossValidationMinority(
   countDataRef,
   metaDataRef,
-  meanExpression = 5,
   classColumn,
   higherClassColumn,
   domainColumn,
-  patientColumn,
-  nModels = 100,
+  sampleColumn,
+  meanExpression = 5,
   nANOVAgenes = 1000,
   maxSamplesPerType = 3,
+  nModels = 100,
   ntree = 500,
-  howManyFeatures = 300,
+  nFeatures = 300,
   whichSeed = 1,
-  outputDir = ".",
+  outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
   proteinCodingGenes
 )
 }
 \arguments{
-\item{countDataRef}{Matrix containing the RNA-transcript per million data. Patients are in the columns,
-different genes in the rows.}
+\item{countDataRef}{Matrix containing the RNA-transcript per million data. Samples are in the columns,
+different RNA-transcripts in the rows.}
 
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
+\item{metaDataRef}{Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.}
 
-\item{meanExpression}{Selection criterion for the genes,
-specifying what the minimum mean expression of a gene should be for it to be included in the F-statistic analysis.}
-
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 
 \item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
 
 \item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
-\item{patientColumn}{Column in the metadata file that contains the patient labels.}
+\item{sampleColumn}{Column in the metadata file that contains the samples.}
 
-\item{nModels}{How many models should be created for the majority voting system?}
+\item{meanExpression}{Selection criterion for the RNA-transcripts,
+specifying what the minimum mean expression of an RNA-transcript should be for it to be included in the F-statistic analysis.
+Default is 5.}
 
-\item{nANOVAgenes}{How many genes should we select using the F-statistic of ANOVA?}
+\item{nANOVAgenes}{How many RNA-transcripts should we select using the F-statistic of ANOVA? Default is 1000.}
 
-\item{maxSamplesPerType}{How many samples should we maximally use per tumor (sub)type?}
+\item{maxSamplesPerType}{How many samples should we maximally use per tumor subtype? Default is 3.}
 
-\item{ntree}{How many trees should we use during the weighted Random Forest (RF) procedure?}
+\item{nModels}{How many models should be created for the Minority classifier? Default is 100.}
 
-\item{howManyFeatures}{How many features should we keep after determining the most important genes using the Random Forest Importance Score?}
+\item{ntree}{How many trees should we use during the weighted Random Forest procedure? Default is 500.}
 
-\item{whichSeed}{For reproducibility, the seed can be specified with this parameter.}
+\item{nFeatures}{How many features should we keep after determining the most important RNA-transcripts using the Random Forest Importance Score?
+Default is 300.}
 
-\item{outputDir}{Directory in which you would like to store the R-object containing the results.}
+\item{whichSeed}{For reproducibility, the seed can be specified with this parameter. Default is 1.}
+
+\item{outputDir}{Directory in which you would like to store the R-object containing the results. Default is today's date.}
+
+\item{proteinCodingGenes}{What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
+Please supply it as a vector. This is needed for ribo-depletion correction model.}
 }
 \value{
 R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),
-the probabilities for each classification ($probabilityList), the metadata file associated to the reference cohort ($metaData),
-the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList)
-and the metadata for the performed run ($metaDataRun).
+the probabilities for each classification ($probabilityList),
+the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
+the metadata file associated to the reference cohort ($metaDataRef)
+and the metadata for the performed Minority classifier run ($metaDataRun).
 }
 \description{
-Setup to automatically run the 10x stratified cross-validation minority classifier.
+Setup to automatically run the 10x stratified cross-validation for the Minority classifier.
 }

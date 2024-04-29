@@ -1,4 +1,4 @@
-#' Create fake metadata entries
+#' Create synthetic metadata entries
 #'
 #' This function is designed to create new metadata entries for
 #' tumor (sub)types that only have two samples.
@@ -25,7 +25,7 @@ createExtraMetaData <- function(metaDataRef,
   for (line in seq(1:nrow(nestedMetaData))) {
     newMetaDataPoint <- as.data.frame(nestedMetaData$newLines[[line]])
     newMetaDataPoint$class <- nestedMetaData$class[[line]]
-    rownames(newMetaDataPoint) <- paste0("Fake", line)
+    rownames(newMetaDataPoint) <- paste0("Synthetic", line)
 
     if(line == 1) {
       newMetaDataDF <- newMetaDataPoint

@@ -1,53 +1,55 @@
-#' Title
+#' Plot the separate accuracies of the Minority classifier, Majority classifier and M&M classifier
 #'
-#' @param fractionCorrectTotalPivoted
+#' @param separateClassifierAccuracies Dataframe obtained from the function 'combineSeparateClassifierAccuracies'.
 #'
-#' @return
+#' @return Plot showing the accuracy for different population frequencies separately for the Minority, Majority and M&M classifier.
 #' @export
 #'
-#' @examples
-plotSeparateClassifierAccuracies <- function(fractionCorrectTotalPivoted) {
+plotSeparateClassifierAccuracies <- function(separateClassifierAccuracies) {
 
 
+  if (require("ungeviz") == F) {
+    remotes::install_github("fwallis/ungeviz")
+  }
 
-  plotSeparateScores <- fractionCorrectTotalPivoted %>%
+  plotSeparateScores <- separateClassifierAccuracies %>%
 
-    ggplot(aes(
+    ggplot2::ggplot(aes(
       x = whichTop,
       y = accuracy,
       col = classifier,
       group = classifier
     )) +
-    geom_hpline(
+    ungeviz::geom_hpline(
       stat = "identity",
       size = 1) +
 
-    theme_classic() +
-    ylim(0, 1) +
+    ggplot2::theme_classic() +
+    ggplot2::ylim(0, 1) +
     labs(x = "Number of patients per tumor type (n)",
          y = "Accuracy") +
 
-    theme(legend.title = element_blank()) +
-    theme(
+    ggplot2::theme(
+      legend.title = element_blank(),
       axis.title.x = element_text(vjust = -1, size = 20),
       axis.title.y = element_text(vjust = 2, size = 20),
 
       axis.text.x = element_text(size = 15,  hjust=1, vjust = 0.05, angle = 90),
       axis.text.y = element_text(size = 15),
       strip.text = element_text(size = 11),
-      legend.position = "none",
+      #legend.position = "none",
       plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "lines")) +
-    facet_grid( ~ nCases) +
-    geom_vline(xintercept = 2.6, linetype = 2)
+    ggplot2::facet_grid( ~ nCases) +
+    ggplot2::geom_vline(xintercept = 2.6, linetype = 2)
 
-  if ("M&M" %in% unique(fractionCorrectTotalPivoted$classifier)){
+  if ("M&M" %in% unique(separateClassifierAccuracies$classifier)){
     plotSeparateScores <- plotSeparateScores +
-      scale_color_manual(values = c("M&M" = "#606ca5",
+      ggplot2::scale_color_manual(values = c("M&M" = "#606ca5",
                                     "Minority Classifier" = "#f8766d",
                                     "Majority Classifier" =  "#00bfc4"))
   } else {
     plotSeparateScores <- plotSeparateScores +
-      scale_color_manual(values = c("Minority Classifier" = "#f8766d",
+      ggplot2::scale_color_manual(values = c("Minority Classifier" = "#f8766d",
                                     "Majority Classifier" =  "#00bfc4"))
 
   }

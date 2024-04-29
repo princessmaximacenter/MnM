@@ -2,24 +2,24 @@
 % Please edit documentation in R/getAnovaResults.R
 \name{getAnovaResults}
 \alias{getAnovaResults}
-\title{Calculate F-statistic ANOVA for gene selection}
+\title{Calculate F-statistic ANOVA for feature selection}
 \usage{
 getAnovaResults(allMaterial, allGenes, classColumn)
 }
 \arguments{
 \item{allMaterial}{Dataframe containing both the cleaned RNA-seq count data and the metadata
-containing the tumor (sub)type labels. This dataframe is a concatenation of the count-data and metadata files used before.}
+containing the tumor subtype labels. This dataframe is a concatenation of the count-data and metadata files used before.}
 
-\item{allGenes}{All genes that should be compared between tumor (sub)types using the ANOVA-setup.}
+\item{allGenes}{All RNA-transcripts that should be compared between tumor subtypes using the ANOVA-setup.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 }
 \value{
 Dataframe containing the genes with their associated F-scores and p-scores from ANOVA.
 }
 \description{
-This function calculates the differences between the gene expression of all tumor (sub)types
-from the reference cohort using an analysis of variance (ANOVA) setup, assuming equal variance.
-In this way, the genes that are most variable between
-the tumor (sub)types can be selected, based on their F-scores.
+This function calculates the differences between the RNA-transcripts expression of all tumor subtypes
+from the training data using an analysis of variance (ANOVA) setup, assuming equal variance.
+In this way, the RNA-transcripts that are most variable between
+the tumor subtypes can be selected, based on their F-scores.
 }

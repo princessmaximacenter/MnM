@@ -2,38 +2,34 @@
 % Please edit documentation in R/newPredictionsMajority.R
 \name{newPredictionsMajority}
 \alias{newPredictionsMajority}
-\title{Predict tumor (sub)type for new samples with Majority Classifier}
+\title{Predict tumor subtype for new samples with Majority classifier}
 \usage{
 newPredictionsMajority(
   createdModelsMajority,
   countDataRef,
   countDataNew,
-  classColumn,
-  outputDir = "./",
+  outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
   saveModel = T
 )
 }
 \arguments{
 \item{createdModelsMajority}{R-object containing the rotations and scalings
-for each reference cohort subset($rotationsAndScalingList),
+for each training data subset ($rotationsAndScalingList),
 the model to correct for the ribodepletion efficacy ($riboModelList),
 which samples were present in each subset ($samplesTrainDefList),
-which genes were considered for transformation in the analysis ($nonZeroGenes),
-the metadata file associated to the reference cohort ($metaData),
+which RNA-transcripts were considered for transformation in the analysis ($nonZeroGenes),
+the metadata file associated to the reference cohort ($metaDataRef),
 and metadata for the performed run ($metaDataRun).}
 
 \item{countDataRef}{Matrix containing the RNA-transcript per million data for the reference cohort.
-Patients are in the columns,
-different genes in the rows.}
+Samples are in the columns, different RNA-transcripts in the rows.}
 
 \item{countDataNew}{Matrix containing the RNA-transcript per million data for the new samples to be classified.
-Patients are in the columns, different genes in the rows.}
+Samples are in the columns, different RNA-transcripts in the rows.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+\item{outputDir}{Directory in which you would like to store the R-object containing the results. Default is today's date.}
 
-\item{outputDir}{Directory in which you would like to store the R-object containing the results.}
-
-\item{saveModel}{Do you want to save the resulting predictions in an R object?}
+\item{saveModel}{Do you want to save the resulting predictions in an R object? Default is TRUE.}
 }
 \value{
 R-object containing the final classifications ($classifications) for the samples,

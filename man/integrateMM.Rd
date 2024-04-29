@@ -12,23 +12,18 @@ integrateMM(minority, majority, subtype, integrate = T)
 \item{majority}{R-object that contains the results from the Majority classifier}
 
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?
-If so, use \emph{subtype = T}. If you want to obtain tumor type predictions instead, use \emph{subtype = F}.
-This is important, as for the cross-validation setup there is a ground truth ($originalCall), while for new predictions there is not.}
-
-\item{substituteNames}{Do you want to substitute some names?}
-
-\item{substituteBy}{What do you want to substitute it by?}
+If so, use \emph{subtype = T}. If you want to obtain tumor type classifications instead, use \emph{subtype = F}.}
 }
 \value{
-If integrate = T: List containing the a dataframe with the final predictions (predictionsMMFinal),
+If integrate = T: List containing the a dataframe with the final classifications (predictionsMMFinal),
 and a list with the probability scores for all classification labels that were assigned to samples (MMProbabilityList).
 
 predictionsMMFinal contains the top 3 final classification labels ($predict{2,3}) with their accompanying probability scores
 ($probability{1,2,3} and the original diagnosis label ($originalCall).
 
-If integrate = F: List containing a dataframe with the final predictions separately for the Minority Classifier ($predictionsMinority)
-and Majority Classifier ($predictionsMajority)
+If integrate = F: List containing a dataframe with the final classifications separately for the Minority Classifier ($predictionsMinority)
+and Majority Classifier ($predictionsMajority). This dataframe has the same setup as predictionsMMFinal.
 }
 \description{
-Function to obtain final predictions for the M&M algorithm by combining the results of the Minority & Majority classifiers.
+Function to obtain final classifications for the M&M algorithm by combining the results of the Minority & Majority classifiers.
 }

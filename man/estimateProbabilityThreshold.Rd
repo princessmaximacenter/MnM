@@ -4,17 +4,23 @@
 \alias{estimateProbabilityThreshold}
 \title{Calcalate metrics to estimate probability score treshold}
 \usage{
-estimateProbabilityThreshold(predictionsMM)
+estimateProbabilityThreshold(predictionsMM, returnPlot, interceptionPoint)
 }
 \arguments{
-\item{predictionsMM}{Dataframe showing the top 3 predictions for the tumor (sub)type,
-together with their probability scores.}
+\item{predictionsMM}{Dataframe showing the top 3 classifications for the tumor (sub)type,
+together with their probability scores and the original pathology label (originalCall)}
+
+\item{returnPlot}{Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?}
+
+\item{interceptionPoint}{At which threshold would you like to draw the line that intersects the sensitivity and specificity lines?}
 }
 \value{
-Dataframe containing the number of true positives ($TP), false positives ($FP),
+If returnPlot = FALSE: Dataframe containing the number of true positives ($TP), false positives ($FP),
 true negatives ($TN) and false negatives ($FN) at different probability score tresholds.
 Calculated from the metrics named above are the sensitivity ($sensitivity),
 specificity ($specificity), precision ($precision) and recall ($recall).
+
+If returnPlot = TRUE: Plot showing the sensitivity and specificity at the different probability score thresholds.
 }
 \description{
 This function calculates the sensitivity, specificity, precision and recall at

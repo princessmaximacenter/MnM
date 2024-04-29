@@ -2,24 +2,25 @@
 % Please edit documentation in R/selectAnovaGenes.R
 \name{selectAnovaGenes}
 \alias{selectAnovaGenes}
-\title{Select most informative genes Minority Classifier}
+\title{Select most informative RNA-transcripts as features for Minority classifier}
 \usage{
 selectAnovaGenes(metaDataRef, countDataRef, nANOVAgenes, classColumn)
 }
 \arguments{
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis for the reference cohort.}
+\item{metaDataRef}{Metadata file containing the links between the samples and the tumor subtype diagnosis for the reference cohort.}
 
-\item{countDataRef}{Matrix containing the RNA-transcript per million data. Patients are in the columns,
-different genes in the rows.}
+\item{countDataRef}{Matrix containing the RNA-transcript per million data. Samples are in the columns,
+different RNA-transcripts in the rows.}
 
-\item{nANOVAgenes}{How many genes should we select using the F-statistic of ANOVA?}
+\item{nANOVAgenes}{How many RNA-transcripts should we select using the F-statistic of ANOVA?}
 
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 }
 \value{
-Vector containing the names of the most interesting genes according to the F-statistic of ANOVA.
+Vector containing the names of the most interesting RNA-transcripts according to the F-statistic of ANOVA.
 }
 \description{
-This function allows for the extraction of the genes that are most differently expressed between the different tumor (sub)types.
-The gene selection is based on an analysis of variance (ANOVA) with equal variances, where the genes with the highest F-scores are selected.
+This function allows for the extraction of the RNA-transcripts that are most differently expressed between the different tumor subtypes.
+The RNA-transcripts selection is based on an analysis of variance (ANOVA) with equal variances,
+where the RNA-transcripts with the highest F-scores are selected.
 }

@@ -1,8 +1,8 @@
 #' Extract importance scores from RF-models
 #'
-#' This function is designed to extract all the mean decreases in accuracy
+#' This function is designed to extract all the mean decreases in accuracy / Gini score
 #' from a performed weighted Random Forest (RF). The mean decreases in accuracy / Gini score
-#' from all different #' genes selected in the ANOVA-procedure is calculated,
+#' from all different RNA-transcripts selected in the ANOVA-procedure is calculated,
 #' for all models within the modelList.
 #'
 #' @param modelList List containing different weighted RF models with importance scores.
@@ -13,9 +13,10 @@
 #' @return Dataframe containing the mean decreases in accuracy / Gini score from removing
 #' different genes during a weighted RF procedure for different models.
 #' The genes are in the rows, the different models in the columns.
-#' @import dplyr tibble
 #'
-createFeatureDF <- function(modelList, whichAccuracyMeasure, nANOVAgenes) {
+createFeatureDF <- function(modelList,
+                            whichAccuracyMeasure,
+                            nANOVAgenes) {
   ##Create an empty dataframe
   empty_df <- data.frame()
 
@@ -23,8 +24,8 @@ createFeatureDF <- function(modelList, whichAccuracyMeasure, nANOVAgenes) {
   for (i in seq_along(modelList)) {
 
     columnValues <- as.data.frame(modelList[[i]][["importance"]]) %>%
-      dplyr::select(all_of(whichAccuracyMeasure)) %>%
-      dplyr::arrange(desc(all_of(whichAccuracyMeasure))) %>%
+      dplyr::select(tidyselect::all_of(whichAccuracyMeasure)) %>%
+      dplyr::arrange(dplyr::desc(tidyselect::all_of(whichAccuracyMeasure))) %>%
       dplyr::slice(1:nANOVAgenes) %>%
       tibble::rownames_to_column(var = "Gene") %>%
       dplyr::mutate(model = i) %>%
@@ -35,10 +36,12 @@ createFeatureDF <- function(modelList, whichAccuracyMeasure, nANOVAgenes) {
   }
 
   #Create create a wide DF for comparing features
-  accuracyValuesDF <- empty_df %>% pivot_wider(names_from = "model")
+  accuracyValuesDF <- empty_df %>% tidyr::pivot_wider(names_from = "model")
 
   #Store columnName as rownames
-  accuracyValuesDF <- accuracyValuesDF %>% remove_rownames %>% column_to_rownames(var="Gene")
+  accuracyValuesDF <- accuracyValuesDF %>%
+    tibble::remove_rownames() %>%
+    tibble::column_to_rownames(var="Gene")
 
   return(accuracyValuesDF)
 }

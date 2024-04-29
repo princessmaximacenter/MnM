@@ -7,28 +7,33 @@
 #' (prediction probability < threshold). A true positive is a classified sample for which the prediction is
 #' correct, a true negative a non-classified sample that had a wrong prediction.
 #'
-#' @param predictionsMM  Dataframe showing the top 3 predictions for the tumor (sub)type,
-#' together with their probability scores.
-#'
-#' @return Dataframe containing the number of true positives ($TP), false positives ($FP),
+#' @param predictionsMM  Dataframe showing the top 3 classifications for the tumor (sub)type,
+#' together with their probability scores and the original pathology label (originalCall)
+#' @param returnPlot Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?
+#' @param interceptionPoint At which threshold would you like to draw the line that intersects the sensitivity and specificity lines?
+#' @return If returnPlot = FALSE: Dataframe containing the number of true positives ($TP), false positives ($FP),
 #' true negatives ($TN) and false negatives ($FN) at different probability score tresholds.
 #'  Calculated from the metrics named above are the sensitivity ($sensitivity),
 #'  specificity ($specificity), precision ($precision) and recall ($recall).
+#'
+#' If returnPlot = TRUE: Plot showing the sensitivity and specificity at the different probability score thresholds.
 #' @export
 #'
 #'
 
-estimateProbabilityThreshold <- function(predictionsMM) {
+estimateProbabilityThreshold <- function(predictionsMM,
+                                         returnPlot,
+                                         interceptionPoint) {
 
   for (cutoff in seq(from = 0, to = 1.01, by = 0.01)) {
-    predictionsMMFiltered <- predictionsMM %>% filter(probability1 > cutoff)
+    predictionsMMFiltered <- predictionsMM %>% dplyr::filter(probability1 > cutoff)
 
-    TP <- predictionsMMFiltered %>% filter(originalCall == predict) %>% nrow()
-    FP <- predictionsMMFiltered %>% filter(originalCall != predict) %>% nrow()
-    TN <- predictionsMM %>% filter(probability1 <= cutoff,
+    TP <- predictionsMMFiltered %>% dplyr::filter(originalCall == predict) %>% nrow()
+    FP <- predictionsMMFiltered %>% dplyr::filter(originalCall != predict) %>% nrow()
+    TN <- predictionsMM %>% dplyr::filter(probability1 <= cutoff,
                                    originalCall != predict) %>% nrow()
-    FN <- predictionsMM %>% filter(probability1 <= cutoff,
-                                   originalCall == predict) %>% nrow()
+    FN <- predictionsMM %>% dplyr::filter(probability1 <= cutoff,
+                                          originalCall == predict) %>% nrow()
 
     #recall <- nrow(predictionsMMFiltered) / nrow(predictionsMM)
     binaryScoreDF <- data.frame(cutoff = cutoff,
@@ -53,5 +58,33 @@ estimateProbabilityThreshold <- function(predictionsMM) {
     (totalbinaryScoreDF$TP + totalbinaryScoreDF$FP + totalbinaryScoreDF$TN + totalbinaryScoreDF$FN)
 
   totalbinaryScoreDF$precision[is.na(totalbinaryScoreDF$precision)] <- 1
-  return(totalbinaryScoreDF)
+
+  if (returnPlot == T) {
+    totalbinaryScoreDFGGPlot <- totalbinaryScoreDF %>% tidyr::pivot_longer(cols = sensitivity:recall,
+                                                            values_to = "counts")
+    thresholdPlot <- totalbinaryScoreDFGGPlot %>% dplyr::filter(name %in% c("sensitivity",
+                                                                 "specificity")) %>%
+      ggplot2::ggplot(
+        aes(x = cutoff,
+            linetype = name,
+            y = counts
+        )) +
+      ggplot2::geom_line() +
+      ggplot2::geom_vline(xintercept = interceptionPoint,
+                 lty = 1,
+                 color = "red") +
+      ggplot2::theme_classic() +
+      ggplot2::ylab("Sensitivity / Specificity") +
+      ggplot2::xlab("Threshold") +
+      ggplot2::theme(legend.title=element_blank(),
+            plot.margin =  unit(c(0.8,0.8,0.8,0.8), "cm")) +
+      ggplot2::scale_linetype_discrete(name = "name", labels = c("Sensitivity","Specificity")) +
+
+      ggplot2::scale_y_continuous(expand = expansion(mult = c(0, 0.02)))
+    return(thresholdPlot)
+
+  } else {
+    return(totalbinaryScoreDF)
+  }
+
 }

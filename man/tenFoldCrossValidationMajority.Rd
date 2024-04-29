@@ -10,32 +10,32 @@ tenFoldCrossValidationMajority(
   classColumn,
   higherClassColumn,
   domainColumn,
-  patientColumn,
+  sampleColumn,
   nModels = 100,
   maxSamplesPerType = 50,
   nFeatures = 2500,
   nComps = 100,
-  maxNeighbours = 25,
+  maxNeighbors = 25,
   whichSeed = 1,
-  outputDir = ".",
+  outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
   proteinCodingGenes
 )
 }
 \arguments{
-\item{countDataRef}{Matrix containing the RNA-transcript per million data. Patients are in the columns,
-different genes in the rows.}
+\item{countDataRef}{Matrix containing the RNA-transcript per million data. Samples are in the columns,
+different RNA-transcripts in the rows.}
 
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
+\item{metaDataRef}{Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 
 \item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
 
 \item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
-\item{patientColumn}{Column in the metadata file that contains the patient labels.}
+\item{sampleColumn}{Column in the metadata file that contains the samples.}
 
-\item{nModels}{How many models should be created for the majority voting system?}
+\item{nModels}{How many models should be created for the Majority classifier?}
 
 \item{maxSamplesPerType}{How many samples should we maximally use per tumor (sub)type?}
 
@@ -43,15 +43,19 @@ different genes in the rows.}
 
 \item{nComps}{How many principal components will be selected after PCA?}
 
-\item{maxNeighbours}{What is the maximum number of neigbours to be used for the weighted \emph{k}-nearest neighbor algorithm?}
+\item{maxNeighbors}{What is the maximum number of neigbours to be used for the weighted \emph{k}-nearest neighbor algorithm?}
 
 \item{whichSeed}{For reproducibility, the seed can be specified with this parameter.}
 
-\item{outputDir}{Directory in which you would like to store the R-object containing the results.}
+\item{outputDir}{Directory in which you would like to store the R-object containing the results. Default is today's date.}
+
+\item{proteinCodingGenes}{What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
+Please supply it as a vector. This is needed for ribo-depletion correction model.}
 }
 \value{
 R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),
-the probabilities for each classification ($probabilityList), the metadata file associated to the reference cohort ($metaData),
+the probabilities for each classification ($probabilityList),
+the metadata file associated to the reference cohort ($metaDataRef),
 and metadata for the performed run ($metaDataRun).
 }
 \description{
