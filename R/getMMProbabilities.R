@@ -14,6 +14,10 @@ getMMProbabilities <- function(majorityProbability,
 
   `%notin%` <- Negate(`%in%`)
   MMProbabilityList <- majorityProbability
+
+  if (base::length(minorityProbability) != base::length(majorityProbability)) {
+    stop("There are different numbers of classifications within the Minority and Majority classifier results. Please make sure the classifiers have been run on the same samples.")
+  }
   for (i in seq(1:base::length(minorityProbability))) {
 
     combineThem <- c(minorityProbability[[i]], majorityProbability[[base::names(minorityProbability[i])]])

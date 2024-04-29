@@ -61,6 +61,7 @@ createScalingsMajority <-  function(countDataRef,
     stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
   }
 
+  rownames(metaDataRef) <- metaDataRef[, sampleColumn]
   # Make sure the metadata and count data are in the right format and same order
   if (nrow(metaDataRef) != ncol(countDataRef)) {
     stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")

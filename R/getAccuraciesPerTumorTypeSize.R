@@ -17,6 +17,7 @@
 #' For the rest, for the confident classifications the average precision ($Precision),
 #' F1 score ($F1) and recall ($Recall) for all tumor entities combined is determined.
 #'@import caret
+#'@export
 getAccuraciesPerTumorTypeSize <- function(predictionsMM,
                                           metaDataRef,
                                           classColumn,

@@ -2,6 +2,7 @@
 
 export(calculateMeanAndSDAccuracy)
 export(calculateSeparateF1)
+export(combineSeedPredictions)
 export(combineSeparateClassifierAccuracies)
 export(createModelsMinority)
 export(createPieChartImage)

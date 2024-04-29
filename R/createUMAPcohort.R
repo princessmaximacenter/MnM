@@ -29,6 +29,7 @@ createUMAPcohort <- function(countDataRef,
                              classColumn,
                              higherClassColumn,
                              domainColumn,
+                             sampleColumn,
                              correctRibo = T,
                              abbreviations = NA,
                              proteinCodingGenes,
@@ -36,7 +37,9 @@ createUMAPcohort <- function(countDataRef,
 
   `%notin%` <- Negate(`%in%`)
 
-   if (classColumn %notin% colnames(metaDataRef)) {
+  if (sampleColumn %notin% colnames(metaDataRef)) {
+    stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
+  }  else if (classColumn %notin% colnames(metaDataRef)) {
     stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
   } else if (higherClassColumn %notin% colnames(metaDataRef)){
     stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
@@ -46,7 +49,9 @@ createUMAPcohort <- function(countDataRef,
 
   if (nrow(metaDataRef) != ncol(countDataRef)) {
     stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
-  } else if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
+  }
+  rownames(metaDataRef) <- metaDataRef[, sampleColumn]
+  if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
     stop("Your input data is not as required. Please make sure your sample IDs are within the row names of the metadata, and in the column names of the count data")
   }
 

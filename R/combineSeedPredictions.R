@@ -20,7 +20,7 @@
 #' MMProbabilityList is a list containing all samples as individual list entries,
 #' with their different probability scores per label.
 #'
-#'
+#' @export
 combineSeedPredictions <- function(
          minorityDir,
          majorityDir,
