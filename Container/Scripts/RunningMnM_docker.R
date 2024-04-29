@@ -46,67 +46,47 @@ countDataRef <- read.table(MnM_config$inputs$reference_count_data, sep = "\t",
                            row.names = 1) %>% as.matrix()
 
 ##Test Cohort
-countDataRef <- read.table(MnM_config$inputs$test_count_data, sep = "\t",
+countDataTest <- read.table(MnM_config$inputs$test_count_data, sep = "\t",
                          row.names = 1) %>% as.matrix()
 
 "Data Prep"
-##Assign biomaterial_id values
-rownames(metaDataRef) <- metaDataRef$biomaterial_id
+## Remove Samples that have less than 3 available samples
+metaDataFiltered <- metaDataRef %>% group_by(tumorSubtype) %>%
+  filter(n() >= 3) %>% ungroup()
 
-## Align matching rows between countDataRef and metaDataRef
-countDataRef <- countDataRef[, rownames(metaDataRef)]
-
-"Temporary Filtering on B-ALL Data to test model (will be removed later)"
-##Select the samples within the metadata from tumor type B-ALL
-selectedSamples <- metaDataRef %>% filter(Disease_sub_class == "B-ALL") %>% rownames()
-
-##Generate a filtered metadata and count data object with only the selected samples.
-metaDataFiltered <- metaDataRef[selectedSamples,] %>% as.data.frame()
-
-countDataFiltered <- countDataRef[,selectedSamples]
+countDataFiltered <- countDataRef[,metaDataFiltered$sampleID]
 
 ## Check whether the same number of samples are present within the metadata and the count data.
 ncol(countDataFiltered) == nrow(metaDataFiltered)
 
 "#Performing classification for new samples"
-model_training = MnM_config$model_training_variables$model_training
-
-
-#update values according to R ya
+model_training = MnM_config$modelsVariables$model_training
+#update values according to R yaml file
 if (model_training) {
   ##createModelsMinority dedicated to generate Minority predictions
   modelsMinority <- createModelsMinority(
     countDataRef = countDataFiltered,
     metaDataRef = metaDataFiltered,
-    patientColumn = "biomaterial_id",
-    meanExpression = 5,
-    classColumn = "Disease_sub_specification1",
-    nModels = 10,
-    nANOVAgenes = 1000,
-    maxSamplesPerType = 3,
-    ntree = 500,
-    howManyFeatures = 300,
-    whichSeed = 1,
-    outputDir = "./Outputs/",
-    proteinDir = "./Inputs/",
-    saveModel = T
+    patientColumn = MnM_config$modelsMinorityVariables$patientColumn,
+    classColumn = MnM_config$modelsMinorityVariables$classColumn,
+    higherClassColumn = MnM_config$modelsMinorityVariables$higherClassColumn,
+    domainColumn = MnM_config$modelsMinorityVariables$domainColumn,
+    nModels = MnM_config$modelsTrainingVariables$nModels,
+    outputDir = MnM_config$modelsTrainingVariables$outputDir,
+    proteinCodingGenes = MnM_config$modelsTrainingVariables$proteinCodingGenes
   )
 
   ##createScalingsMajority dedicated to generate Majority predictions
   modelsMajority <- createScalingsMajority(
     countDataRef = countDataFiltered,
     metaDataRef = metaDataFiltered,
-    patientColumn = "biomaterial_id",
-    classColumn = "Disease_sub_specification1",
-    nModels = 10,
-    maxSamplesPerType = 50,
-    nComps = 100,
-    nFeatures = 2500,
-    maxNeighbours = 25,
-    whichSeed = 1,
-    outputDir = "./Outputs/",
-    proteinDir =  "./Inputs/",
-    saveModel = T
+    sampleColumn = MnM_config$modelsMajorityVariables$sampleColumn,
+    classColumn = MnM_config$modelsMajorityVariables$classColumn,
+    higherClassColumn = MnM_config$modelsMajorityVariables$higherClassColumn,
+    domainColumn = MnM_config$modelsMajorityVariables$domainColumn,
+    nModels = MnM_config$modelsVariables$nModels,
+    outputDir = MnM_config$modelsVariables$outputDir,
+    proteinCodingGenes = MnM_config$modelsVariables$proteinCodingGenes
   )
 
 } else {
@@ -119,29 +99,21 @@ if (model_training) {
 #Add conditional when training model again on new reference cohort
 predictionsTestMinority <- newPredictionsMinority(
                       createdModelsMinority = modelsMinority,
-                      countDataNew = testCounts,
-                      outputDir = "./Outputs/",
-                      saveModel = T)
+                      countDataNew = countDataTest,
+                      outputDir = MnM_config$modelsVariables$outputDir)
 
 predictionsTestMajority <- newPredictionsMajority(
                       createdModelsMajority = modelsMajority,
-                      countDataNew = testCounts,
-                      outputDir = "./Outputs/",
-                      saveModel = T,
-                      countDataRef = countDataFiltered,
-                      classColumn = "Disease_sub_specification1",
-                      nModels = 10) #Default is 100
+                      countDataNew = countDataTest,
+                      outputDir = MnM_config$modelsVariables$outputDir,
+                      countDataRef = countDataFiltered)
 
 "Predictions with Integrated Minority and Majority Classifiers"
 ##Integrate the Minority and Majority classifications, set CV to F
 predictionsMMTestList <- integrateMM(minority = predictionsTestMinority,
-                        predictionsTestMajority,
+                        majority = predictionsTestMajority,
                         metaDataRef = metaDataFiltered,
-                        nModels = 10, #Default 100
-                        subtype = T,
-                        classColumn = "Disease_sub_specification1",
-                        higherClassColumn = "Disease_sub_class",
-                        crossValidation = F)
+                        subtype = T)
 
 "Obtain Final Predictions"
 ##Call predictions from IntegrateMM
@@ -159,11 +131,16 @@ predictionsMMTest <- predictionsMMTest %>%
 
 write.table(predictionsMMTest, "./Outputs/predictionsMMTest.tsv", sep = "\t", row.names = F)
 
+#Construct File Path
+output_file <- file.path(MnM_config$modelsVariables$outputDir, "predictionsTestMinority.rds")
+
 "Export Predictions and Models as R Objects to the Outputs Directory"
 #Save Predictions
-saveRDS(predictionsTestMinority, file = "./Outputs/predictionsTestMinority.rds")
-saveRDS(predictionsTestMajority, file = "./Outputs/redictionsTestMajority.rds")
-saveRDS(predictionsMMTestList, file = "./Outputs/predictionsMMTestList.rds")
+#saveRDS(predictionsTestMinority, file = "./Outputs/predictionsTestMinority.rds")
+saveRDS(predictionsTestMinority, file = file.path(MnM_config$modelsVariables$outputDir, "predictionsTestMinority.rds"))
+saveRDS(predictionsTestMajority, file = file.path(MnM_config$modelsVariables$outputDir, "predictionsTestMajority.rds"))
+saveRDS(predictionsMMTestList, file = file.path(MnM_config$modelsVariables$outputDir, "predictionsMMTestList.rds"))
+
 
 #Save Trained Models
 if(model_training) {

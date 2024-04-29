@@ -1,17 +1,17 @@
 # R Script Configuration
 script:
   name: "MnM Classifier via Docker/Singularity"
-  date: "24-04-2024"
+  date: "11-03-2024"
   project: "Tumor-Classification"
 
 # File Paths
 Inputs:
-  reference_metadata: "/app/Inputs/Classifier_Metadata_Reference_CompleteOverview_022024.tsv"
-  test_metadata: "/app/Inputs/Classifier_Metadata_Test_BALL_022024.tsv"
-  reference_count_data: "/app/Inputs/20230419_countDataTrainingCohortClassifier.tsv"
-  test_count_data: "/app/Inputs/20230928_countDataTestBALL.tsv"
-  majority_model: "/app/SavedModels/modelsMajority.rds"
-  minority_model: "/app/SavedModels/modelsMinority.rds"
+  reference_metadata: "./Inputs/ClassifierMetadataReferenceBALL.csv"
+  test_metadata: "./Inputs/ClassifierMetadataTestBALL.csv"
+  reference_count_data: "./Inputs/countDataReferenceBALL.csv"
+  test_count_data: "./Inputs/countDataTestBALL.csv"
+  majority_model: "./SavedModels/modelsMajority.rds"
+  minority_model: "./SavedModels/modelsMinority.rds"
 
 # Temporary Filtering
 filtering:
@@ -22,8 +22,8 @@ filtering:
 modelsVariables:
   model_training: TRUE
   whichSeed: 1
-  outputDir: "/app/Outputs"
-  proteinCodingGenes: "/app/Inputs"
+  outputDir: "./Outputs"
+  proteinCodingGenes: "./Inputs"
   saveModel: TRUE
   saveRiboModels: FALSE
   nModels: 10
@@ -56,7 +56,7 @@ modelsMajorityVariables:
 
 # Specific values for Predictions
 classifierPredictions:
-  outputDir: "/app/Outputs"
+  outputDir: "./Outputs"
   saveModel: "TRUE"
 
 # Specific values for integrateMM
