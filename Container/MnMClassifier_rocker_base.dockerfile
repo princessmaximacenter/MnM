@@ -37,7 +37,7 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Create a directory for scripts
-RUN mkdir -p /app/Scripts /app/Inputs /app/mnm /app/Outputs /app/SavedModels
+RUN mkdir -p /app/Scripts /app/Inputs /app/MnM /app/Outputs /app/SavedModels
 
 # Copy the "MnM" package from relevant path, not a local directory
 COPY ./MnM /app/MnM
