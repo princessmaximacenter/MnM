@@ -146,7 +146,8 @@ predictionsMMTest$biomaterial_id <- rownames(predictionsMMTest)
 predictionsMMTest <- predictionsMMTest %>%
   select(biomaterial_id, everything())
 
-write.table(predictionsMMTest, "./Outputs/predictionsMMTest.tsv", sep = "\t", row.names = F)
+write.table(predictionsMMTest, file.path(MnM_config$modelsVariables$outputDir, "predictionsMMTest.tsv"),
+            sep = "\t", row.names = F)
 
 "Export Predictions and Models as R Objects to the Outputs Directory"
 #Save Predictions

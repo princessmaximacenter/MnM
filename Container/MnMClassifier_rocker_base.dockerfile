@@ -40,10 +40,13 @@ WORKDIR /app
 RUN mkdir -p /app/Scripts /app/Inputs /app/mnm /app/Outputs /app/SavedModels
 
 # Copy the "MnM" package from relevant path, not a local directory
-COPY ./mnm /app/mnm
+COPY ./MnM /app/MnM
 
 # Via a terminal run, install MnM
-R CMD INSTALL /app/MnM_1.0.0.tar.gz
+#R CMD INSTALL /app/MnM_1.0.0.tar.gz
+
+# Install MnM package from local directory (will be changed to install_github when published)
+RUN R -e 'remotes::install_local("/app/MnM/", dependencies = TRUE, force = TRUE)'
 
 # Copy SavedModels data
 COPY ./SavedModels /app/SavedModels
@@ -55,7 +58,7 @@ COPY ./Inputs /app/Inputs
 COPY ./Scripts/ /app/Scripts/
 
 # Change the execution permission to the wrapper script
-RUN chmod +x /app/Scripts/RunningMnM.R
+RUN chmod +x /app/Scripts/RunningMnM_docker.R
 
 # Run the Wrapper script when the container starts (entry point)
 CMD ["Rscript", "/app/Scripts/RunningMnM.R"]

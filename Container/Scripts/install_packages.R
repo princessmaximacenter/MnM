@@ -22,9 +22,6 @@ packages <- list(
 #Install not working above
 install.packages("kknn")
 
-#Install MnM remotely/locally
-remotes::install_local("~/Downloads/MnM-main/", dependencies = T, force = T)
-
 cat("Environment Variables Prepared\n")
 
 ### Installing Packages ###
