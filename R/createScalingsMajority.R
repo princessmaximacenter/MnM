@@ -1,63 +1,72 @@
 #' Create transformation information Majority Classifier
 #'
-#' This function is used to obtain the PCA-rotations and data scalings around zero
+#' This function is used to obtain the PCA-rotations and data scalings centered around zero
 #' that are generate within the Majority Classifier. These rotations and scalings are needed
 #' to transform new samples as well.
 #'
-#' @param countDataRef Matrix containing the RNA-transcript per million data. Patients are in the columns,
-#' different genes in the rows.
-#' @param metaDataRef Metadata file containing the links between the patients and
-#' the tumor (sub)type diagnosis within the reference cohort.
-#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param countDataRef Matrix containing the RNA-transcript per million data. Samples are in the columns,
+#' different RNA-transcripts in the rows.
+#' @param metaDataRef  Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.
+#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param nModels How many models should be created for the majority voting system?
+#' @param sampleColumn Column in the metadata file that contains the samples.
+#' @param nModels How many models should be created for the Majority classifier?
 #' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
 #' @param nComps How many principal components will be selected after PCA?
-#' @param nFeatures How many of the most variable genes within the dataset should we select for principal component analysis (PCA)?
-#' @param maxNeighbours What is the maximum number of neigbours to be used for the weighted _k_-nearest neighbor algorithm?
+#' @param nFeatures How many of the most variable RNA-transcripts within the dataset should we select for principal component analysis (PCA)?
+#' @param maxNeighbors What is the maximum number of neigbors to be used for the weighted _k_-nearest neighbor algorithm?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
-#' @param outputDir Directory in which you would like to store the R-object containing the results.
-#' @param proteinCodingGenes
-#' @param patientColumn Column in the metadata file that contains the patient labels.
-#' @param saveModel Do you want to save your generated scalings in an R-object? Logical.
-#' @param saveRiboModels Do you want to save the generated model for ribodepletion correction? Logical.
+#' @param outputDir Directory in which you would like to store the R-object containing the results. Default is today's date.
+#' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
+#' Please supply it as a vector. This is needed for ribo-depletion correction model.
+#' @param saveModel Do you want to save your generated results in an R-object (saveModel = TRUE)? Default is TRUE.
 #' @return R-object containing the rotations and scalings
-#' for each reference cohort subset($rotationsAndScalingList),
+#' for each training data subset($rotationsAndScalingList),
 #' the model to correct for the ribodepletion efficacy ($riboModelList),
-#' which samples were present in each subset ($samplesTrainDefList),
-#' which genes were considered for transformation in the analysis ($nonZeroGenes),
-#' the metadata file associated to the reference cohort ($metaData),
+#' which samples were present in each training data subset ($samplesTrainDefList),
+#' which RNA-transcripts were considered for transformation in the analysis ($nonZeroGenes),
+#' the metadata file associated to the reference cohort ($metaDataRef),
 #' and metadata for the performed run ($metaDataRun).
 #'
 #' @export
+#' @import caret
 #'
 createScalingsMajority <-  function(countDataRef,
                                     metaDataRef,
                                     classColumn,
                                     higherClassColumn,
                                     domainColumn,
-                                    patientColumn,
+                                    sampleColumn,
                                     nModels = 100,
                                     maxSamplesPerType = 50,
                                     nComps = 100,
                                     nFeatures = 2500,
-                                    maxNeighbours = 25,
+                                    maxNeighbors = 25,
                                     whichSeed = 1,
-                                    outputDir = "./",
+                                    outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                     proteinCodingGenes,
-                                    saveModel = T,
-                                    saveRiboModels = F
+                                    saveModel = T
 
 ) {
 
   `%notin%` <- Negate(`%in%`)
-  rownames(metaDataRef) <- metaDataRef[, patientColumn]
+  if (sampleColumn %notin% colnames(metaDataRef)) {
+    stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
+  } else if (classColumn %notin% colnames(metaDataRef)) {
+    stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
+  } else if (higherClassColumn %notin% colnames(metaDataRef)){
+    stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
+  } else if (domainColumn %notin% colnames(metaDataRef)) {
+    stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
+  }
+
+  rownames(metaDataRef) <- metaDataRef[, sampleColumn]
   # Make sure the metadata and count data are in the right format and same order
   if (nrow(metaDataRef) != ncol(countDataRef)) {
     stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
   } else if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
-    stop("Your input data is not as required. Please make sure your patient IDs are within the row names of the metadata, and in the column names of the count data")
+    stop("Your input data is not as required. Please make sure your sample IDs are stored in the sampleColumn, and in the column names of the count data")
   }
 
 
@@ -68,22 +77,22 @@ createScalingsMajority <-  function(countDataRef,
 
   # Include a statement to store the classColumn, higherClassColumn and domainColumn
   print(paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
-  print(unique(metaDataRef[,classColumn])[1:3])
+  print(base::unique(metaDataRef[,classColumn])[1:3])
 
   print(paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
-  print(unique(metaDataRef[,higherClassColumn])[1:3])
+  print(base::unique(metaDataRef[,higherClassColumn])[1:3])
 
   print(paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
-  print(unique(metaDataRef[,domainColumn])[1:3])
+  print(base::unique(metaDataRef[,domainColumn])[1:3])
   print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
 
 
 
 
-  tumorEntitiesWithTooFewSamples <- table(metaDataRef[,classColumn])[table(metaDataRef[,classColumn]) < 3] %>% names()
-  if (length(tumorEntitiesWithTooFewSamples) >0) {
+  tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
+  if (base::length(tumorEntitiesWithTooFewSamples) >0) {
 
-    metaDataRef %<>% filter(!!sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
+    metaDataRef %<>% dplyr::filter(!!sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
     print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
     #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
 
@@ -101,8 +110,7 @@ createScalingsMajority <-  function(countDataRef,
     set.seed(whichSeed)
     riboModelList <- riboCorrectCounts(data = countDataRef,
                                        proteinCodingGenes = proteinCodingGenes,
-                                       outputDir = directory,
-                                       saveRiboModels = saveRiboModels
+                                       outputDir = directory
     )
 
   } else {
@@ -118,7 +126,7 @@ createScalingsMajority <-  function(countDataRef,
 
   #zeroVar <- nearZeroVar(dataCV)
   dataLogZeroVar <- t(dataLogRef) %>% as.data.frame(.)
-  zeroVar <- nearZeroVar(dataLogZeroVar)
+  zeroVar <- caret::nearZeroVar(dataLogZeroVar)
 
   dataLogNonZero <- dataLogRef[-zeroVar, ]
   nonZeroGenes <- rownames(dataLogNonZero)
@@ -140,8 +148,7 @@ createScalingsMajority <-  function(countDataRef,
                                                      classColumn = classColumn,
                                                      nModels = nModels,
                                                      nFeatures = nFeatures,
-                                                     nComps = nComps
-  )
+                                                     nComps = nComps)
 
   # Store the settings of the classifier run within the resulting object
   metaDataRun <- data.frame(nModels = nModels,
@@ -149,6 +156,7 @@ createScalingsMajority <-  function(countDataRef,
                             higherClassColumn = higherClassColumn,
                             domainColumn = domainColumn,
                             maxSamplesPerType = maxSamplesPerType,
+                            maxNeighbors = maxNeighbors,
                             nFeatures = nFeatures,
                             nComps = nComps,
                             whichSeed = whichSeed)
@@ -166,7 +174,8 @@ createScalingsMajority <-  function(countDataRef,
     if (!dir.exists(directory)) {
       dir.create(directory) }
 
-    write_rds(createdModelsMajority, file = filename)
+    saveRDS(createdModelsMajority, file = filename)
+    print(paste0("Please find the generated R-object with the created majority models and PCA-transformations within ", filename))
   }
 
   return(createdModelsMajority)

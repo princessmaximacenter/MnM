@@ -1,23 +1,21 @@
-#' Predict tumor (sub)type for new samples with Majority Classifier
+#' Predict tumor subtype for new samples with Majority classifier
 #'
 #' Function to generate predictions for new input samples from their
 #' RNA-seq count data.
 #'
 #' @param createdModelsMajority  R-object containing the rotations and scalings
-#' for each reference cohort subset($rotationsAndScalingList),
+#' for each training data subset ($rotationsAndScalingList),
 #' the model to correct for the ribodepletion efficacy ($riboModelList),
 #' which samples were present in each subset ($samplesTrainDefList),
-#' which genes were considered for transformation in the analysis ($nonZeroGenes),
-#' the metadata file associated to the reference cohort ($metaData),
+#' which RNA-transcripts were considered for transformation in the analysis ($nonZeroGenes),
+#' the metadata file associated to the reference cohort ($metaDataRef),
 #' and metadata for the performed run ($metaDataRun).
 #' @param countDataRef Matrix containing the RNA-transcript per million data for the reference cohort.
-#' Patients are in the columns,
-#' different genes in the rows.
+#' Samples are in the columns, different RNA-transcripts in the rows.
 #' @param countDataNew Matrix containing the RNA-transcript per million data for the new samples to be classified.
-#' Patients are in the columns, different genes in the rows.
-#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
-#' @param outputDir Directory in which you would like to store the R-object containing the results.
-#' @param saveModel Do you want to save the resulting predictions in an R object?
+#' Samples are in the columns, different RNA-transcripts in the rows.
+#' @param outputDir Directory in which you would like to store the R-object containing the results. Default is today's date.
+#' @param saveModel Do you want to save the resulting predictions in an R object? Default is TRUE.
 #'
 #' @return R-object containing the final classifications ($classifications) for the samples,
 #' and the probabilities associated to the different classifications ($probability).
@@ -26,8 +24,7 @@
 newPredictionsMajority <- function(createdModelsMajority,
                                    countDataRef,
                                    countDataNew,
-                                   classColumn,
-                                   outputDir = "./",
+                                   outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                    saveModel = T
 ) {
   # Make sure you have CPM counts
@@ -35,8 +32,10 @@ newPredictionsMajority <- function(createdModelsMajority,
   countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
 
 
-  countDataNew <- predictRiboCounts(riboModel = createdModelsMajority$riboModelList$riboModel, data = countDataNew)
-  countDataRef<- predictRiboCounts(riboModel = createdModelsMajority$riboModelList$riboModel, data = countDataRef)
+  countDataNew <- predictRiboCounts(riboModel = createdModelsMajority$riboModelList$riboModel,
+                                    data = countDataNew)
+  countDataRef<- predictRiboCounts(riboModel = createdModelsMajority$riboModelList$riboModel,
+                                   data = countDataRef)
 
 
   # Log-transform data
@@ -51,11 +50,10 @@ newPredictionsMajority <- function(createdModelsMajority,
                                      dataTrain = dataLogNonZero,
                                      dataTest = dataLogNewNonZero,
                                      metaDataRef = createdModelsMajority$metaDataRef,
-                                     samplesTrainDefList = createdModelsMajority$samplesTrainDefList,
-                                     classColumn = classColumn,
+                                     classColumn = createdModelsMajority$metaDataRun$classColumn,
                                      nModels = createdModelsMajority$metaDataRun$nModels,
                                      testSamples = testSamples,
-                                     maxNeighbours = createdModelsMajority$metaDataRun$maxNeighbours
+                                     maxNeighbors = createdModelsMajority$metaDataRun$maxNeighbors
   )
 
    classificationList <- convertResultToClassification(result = result,
@@ -64,12 +62,13 @@ newPredictionsMajority <- function(createdModelsMajority,
 
    classificationList$metaDataRun <- createdModelsMajority$metaDataRun
 if (saveModel == T) {
-  #directory <- paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"))
+
   if (!dir.exists(outputDir)) {
     dir.create(outputDir) }
 
   filename <- paste0(outputDir, "/majorityClassifierResult.rds")
   saveRDS(classificationList, file = filename)
+  print(paste0("Please find the generated R-object with the classification results within ", filename))
 }
   return(classificationList)
 }

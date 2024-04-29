@@ -19,7 +19,7 @@ precisionsForDomains <- function(
           minorityDir,
           majorityDir,
           subtype,
-          metaDataTest,
+          metaDataTest = NA,
           probabilityThreshold,
           metaDataRef) {
 
@@ -31,9 +31,9 @@ precisionsForDomains <- function(
     selectedDirsMinority <- allDirsMinority[grep("seed", allDirsMinority)]
     selectedDirsMajority <- allDirsMajority[grep("seed", allDirsMajority)]
 
-    print(paste0("Found ",length(selectedDirsMajority), " directories with different cross-validation runs.",
+    print(paste0("Found ",base::length(selectedDirsMajority), " directories with different cross-validation runs.",
                  " Calculating average performance values for all combined."))
-    if (length(selectedDirsMinority) != length(selectedDirsMajority)) {
+    if (base::length(selectedDirsMinority) != base::length(selectedDirsMajority)) {
       stop("The number of models for the minority and majority classifier are not the same.
          Please check your models within the minorityDir and majorityDir that the
          same seeds have been used for the generation of a minority and a majority classifier.")
@@ -68,17 +68,17 @@ precisionsForDomains <- function(
 
       if (classColumn %notin% colnames(metaDataTest)) {
         print("Please note that the wanted column for the tumor subtype labels cannot be found within 'metaDataTest'.")
-        print("Either change the column with the tumor subtype labels to the name: ", classColumn)
+        print(paste0("Either change the column with the tumor subtype labels to the name: ", classColumn))
         stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
       } else if (higherClassColumn %notin% colnames(metaDataTest)) {
 
           print("Please note that the wanted column for the tumor type labels cannot be found within 'metaDataTest'.")
-          print("Either change the column with the tumor type labels to the name: ", higherClassColumn)
+          print(paste0("Either change the column with the tumor type labels to the name: ", higherClassColumn))
           stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
 
       } else if (domainColumn  %notin% colnames(metaDataTest)) {
         print("Please note that the wanted column for the tumor domain labels cannot be found within 'metaDataTest'.")
-        print("Either change the column with the tumor domain labels to the name: ", domainColumn)
+        print(paste0("Either change the column with the tumor domain labels to the name: ", domainColumn))
         stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
       } else {
         print(paste0("Found columns ", classColumn, ", ", higherClassColumn, ", and ", domainColumn, " within metaDataTest specifying the tumor subtype, type and domain."))
@@ -107,16 +107,16 @@ precisionsForDomains <- function(
 
     for (j in seq(1:length(ourDomains))) {
 
-      samplesDomain <- metaData %>% filter(Domain == ourDomains[j]) %>% rownames(.)
-      nSamples <- length(samplesDomain)
-      predictionsMMDomain <- predictionsMMFinal %>% filter(rownames(.) %in% samplesDomain,
+      samplesDomain <- metaData %>% dplyr::filter(Domain == ourDomains[j]) %>% rownames(.)
+      nSamples <- base::length(samplesDomain)
+      predictionsMMDomain <- predictionsMMFinal %>% dplyr::filter(rownames(.) %in% samplesDomain,
                                                            probability1 > probabilityThreshold)
-      correct <- predictionsMMDomain %>% filter(originalCall == predict) %>% nrow()
-      correctAll <- predictionsMMFinal %>% filter(rownames(.) %in% samplesDomain,
+      correct <- predictionsMMDomain %>% dplyr::filter(originalCall == predict) %>% nrow()
+      correctAll <- predictionsMMFinal %>% dplyr::filter(rownames(.) %in% samplesDomain,
                                                   originalCall == predict) %>% nrow()
-      accuracy <-  correctAll / length(samplesDomain)
+      accuracy <-  correctAll / base::length(samplesDomain)
       precision <- correct / nrow(predictionsMMDomain)
-      recall <- nrow(predictionsMMDomain) / length(samplesDomain)
+      recall <- nrow(predictionsMMDomain) / base::length(samplesDomain)
 
       ourDF <- data.frame(Domain = ourDomains[j],
                           nSamples = nSamples,
@@ -132,9 +132,9 @@ precisionsForDomains <- function(
     }
 
       nSamples <- nrow(predictionsMMFinal)
-      predictionsMMFinalFiltered <- predictionsMMFinal %>% filter( probability1 > probabilityThreshold)
-      correct <- predictionsMMFinalFiltered %>% filter(originalCall == predict) %>% nrow()
-      correctAll <- predictionsMMFinal %>% filter(originalCall == predict) %>% nrow()
+      predictionsMMFinalFiltered <- predictionsMMFinal %>% dplyr::filter( probability1 > probabilityThreshold)
+      correct <- predictionsMMFinalFiltered %>% dplyr::filter(originalCall == predict) %>% nrow()
+      correctAll <- predictionsMMFinal %>% dplyr::filter(originalCall == predict) %>% nrow()
       accuracy <- correctAll / nrow(predictionsMMFinal)
       precision <- correct / nrow(predictionsMMFinalFiltered)
       recall <- nrow(predictionsMMFinalFiltered) / nrow(predictionsMMFinal)
@@ -158,8 +158,8 @@ precisionsForDomains <- function(
     }
   }
 
-  meanNumbers <- accuracyDF %>% group_by(Domain) %>%
-    summarise(
+  meanNumbers <- accuracyDF %>% dplyr::group_by(Domain) %>%
+    dplyr::summarise(
       nSamples = mean(nSamples),
       meanAccuracy = mean(accuracy),
       meanPrecision = mean(precision),

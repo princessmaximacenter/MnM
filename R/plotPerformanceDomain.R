@@ -24,14 +24,14 @@ plotPerformanceDomain <- function(precisionDomainTrain,
 
   precisionDomainsTotal$trainOrTest <- factor(precisionDomainsTotal$trainOrTest, levels = c("Train", "Test"))
 
-  precisionDomainsTotalLonger <- precisionDomainsTotal %>% pivot_longer(cols = c(meanPrecision, meanAccuracy, meanRecall),
+  precisionDomainsTotalLonger <- precisionDomainsTotal %>% tidyr::pivot_longer(cols = c(meanPrecision, meanAccuracy, meanRecall),
                                                                                       names_to = "measurementType")
 
 
   precisionDomainsTotalLonger$valuePercent <- paste0(round(precisionDomainsTotalLonger$value *100, digits = 1), "%")
 
 
-  precisionDomainsTotalLonger <- precisionDomainsTotalLonger %>% pivot_longer(cols = c("sdAccuracy", "sdPrecision", "sdRecall"),
+  precisionDomainsTotalLonger <- precisionDomainsTotalLonger %>% tidyr::pivot_longer(cols = c("sdAccuracy", "sdPrecision", "sdRecall"),
                                                                                             names_to = "whichSD",
                                                                                             values_to = "standardDeviation")
 
@@ -40,42 +40,38 @@ plotPerformanceDomain <- function(precisionDomainTrain,
   precisionDomainsTotalLonger$whichSD <- gsub("sd", "", precisionDomainsTotalLonger$whichSD)
 
 
-  precisionDomainsTotalLongerFiltered <- precisionDomainsTotalLonger %>% filter(whichSD == measurementType)
+  precisionDomainsTotalLongerFiltered <- precisionDomainsTotalLonger %>% dplyr::filter(whichSD == measurementType)
 
   precisionPlot <- precisionDomainsTotalLongerFiltered %>%
-    ggplot(
+    ggplot2::ggplot(
       aes(x = trainOrTest,
           y= value,
           label = valuePercent,
           fill = Domain,
           alpha = trainOrTest)) +
-    geom_col(
+    ggplot2::geom_col(
       color = "black") +
     theme_classic() +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.05))
+    ggplot2::scale_y_continuous(expand = expansion(mult = c(0, 0.05))
                        #  limits = c(0,1)
     ) +
-    geom_errorbar(
+    ggplot2::geom_errorbar(
       #data = precisionDomainsTotalLongerFiltered,
       aes(ymin = value - standardDeviation,
           ymax = value + standardDeviation),
       width=.2,
       position=position_dodge(.9),
       col = "black") +
-    scale_fill_manual(values = c("All" = "darkgrey",
-                                 "Hemato" = "#880808",
-                                 "Solid" =  "#D1944A",
-                                 "Neuro" = "#012695")) +
-    facet_grid(measurementType~Domain) +
-    geom_text(position = position_dodge(0.9),
+    ggplot2::facet_grid(measurementType~Domain) +
+    ggplot2::geom_text(position = position_dodge(0.9),
               aes(y = 0.5),
               size = 4,
               color = "white",
               alpha= 1
     ) +
-    scale_alpha_manual(values = c("Train" = 1,
+    ggplot2::scale_alpha_manual(values = c("Train" = 1,
                                   "Test" = 0.7))+
-    theme(axis.title.y = element_blank(),
+    ggplot2::theme(axis.title.y = element_blank(),
           axis.title.x = element_blank(),
           axis.text = element_text(size = 12),
           legend.position = "none",
@@ -84,7 +80,7 @@ plotPerformanceDomain <- function(precisionDomainTrain,
           plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")
 
     ) +
-    geom_text(data = (precisionDomainsTotalLongerFiltered %>% filter(measurementType == "Accuracy",
+    ggplot2::geom_text(data = (precisionDomainsTotalLongerFiltered %>% dplyr::filter(measurementType == "Accuracy",
                                                            whichSD == "Accuracy") ),
               aes(label = paste0("N = ", nSamples), y = 1),
               size = 3.5,

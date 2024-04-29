@@ -7,13 +7,13 @@
 plotMeanSDAccuracy(meanAndSDPlotTrain, meanAndSDPlotTest = NA)
 }
 \arguments{
-\item{meanAndSDPlotTrain}{Dataframe resulting from function calculateMeanAndSDAccuracy, for reference cohort data}
+\item{meanAndSDPlotTrain}{Dataframe resulting from function 'calculateMeanAndSDAccuracy', for reference cohort data.}
 
-\item{meanAndSDPlotTest}{Dataframe resulting from function calculateMeanAndSDAccuracy, for test data}
+\item{meanAndSDPlotTest}{Dataframe resulting from function 'calculateMeanAndSDAccuracy', for test cohort data.}
 }
 \value{
-Plot showing the accuracy for train and test set for the different frequencies
+Plot showing the accuracy for train and test set for the different frequencies.
 }
 \description{
-Note: This function has been replaced with the more
+Plot the results per frequency range of tumor entities
 }

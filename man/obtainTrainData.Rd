@@ -12,18 +12,18 @@ obtainTrainData(
 )
 }
 \arguments{
-\item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis for the reference cohort.}
+\item{metaDataRef}{Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 
-\item{maxSamplesPerType}{How many samples should we maximally use per tumor (sub)type?}
+\item{maxSamplesPerType}{How many samples should we maximally use per tumor subtype?}
 
-\item{nModels}{How many models should be created for the majority voting system?}
+\item{nModels}{How many models should be created for the classifier?}
 }
 \value{
-A list with the specified number of different training data subsets from the reference cohort,
-all with the specified maximum samples per tumor (sub)type.
+A list with the specified number of different training data subsets from the available complete training data,
+all with the specified maximum samples per tumor subtype.
 }
 \description{
-This function is used to generate different training subsets for the majority voting system within the M&M setup.
+This function is used to generate different training subsets for the different models within the M&M setup.
 }

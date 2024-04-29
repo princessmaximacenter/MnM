@@ -2,20 +2,34 @@
 % Please edit documentation in R/plotConfusionMatrix.R
 \name{plotConfusionMatrix}
 \alias{plotConfusionMatrix}
-\title{Create confusion matrix plot with the three domains.}
+\title{Plot tumor type or subtype confusion matrix}
 \usage{
-plotConfusionMatrix(confusionPlotInfo)
+plotConfusionMatrix(
+  domain = NA,
+  confusionPlotInfo,
+  domainColor = NA,
+  colorTiles = "#012695"
+)
 }
 \arguments{
-\item{confusionPlotDF}{Dataframe specifying how often certain reference-prediction
-combinations are present.}
+\item{domain}{Which domain do you want to plot? This name should be available in the
+domain column of the abbreviations. If not specified, plot will be made for all tumor domains.}
 
-\item{nonAvailableTiles}{A dataframe containing the empty tiles for a confusion matrix plot.}
+\item{confusionPlotInfo}{List resulting from running the function 'getConfusionMatrixPlot'.}
+
+\item{domainColor}{If one domain is plotted, which colors should we use for each designated tumor type?
+If not specified, default ggplot colors will be used.}
+
+\item{colorTiles}{Which domain color tiles do we want to use? Only applicable when argument \emph{domain} is specified.}
 }
 \value{
-ggplot object with the confusion matrix of the three domains.
+ggplot object containing the tumor type or subtype CM plot.
 }
 \description{
-This function can plot a confusion matrix both for the tumor type
-and the tumor subtype level.
+Function to plot the confusion matrix (CM) plot within all domains (domain = NA)
+or within a single domain (e.g. domain = "Hemato").
+The CM plots can both be made on the tumor type and subtype level,
+which depends on the information stored within the 'confusionPlotInfo'.
+The CM plot shows the reference-classification combinations for the tumor (sub)types.
+Within tumor subtype CM plots, it is shown which tumor subtypes belong to the same parent tumor type using color coding.
 }

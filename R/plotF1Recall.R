@@ -1,53 +1,145 @@
-#' Plot F1-score and recall for separate tumors
+#' Plot F1-scores and recall per tumor frequency
 #'
-#' @param separateMeanF1 Dataframe obtained from function 'calculateSeparateF1' .
+#' The plotF1Recall function can be used in two ways, to generate different plot types.
+#' One plot shows the tumor population group frequency averages for F1 scores, together with the individual F1-values.
+#' No recall is displayed in this plot.
 #'
-#' @return Plot showing the F1 score and recall per tumor (sub)type together,
+#' The second plot shows the overall F1-scores for both confident and non-confident classifications together with the associated recall rates.
+#' This type of plot can be created by only specifying 'separateMeanF1'.
+#'
+#' @param separateMeanF1 Dataframe obtained from function 'calculateSeparateF1'.
+#' Contains all the calculated F1 scores and associated recall rates per tumor (sub)type.
+#' For this setup, filterOrNot within calculateSeparateF1 should be put to F.
+#' @param dataMeanF1 Dataframe obtained from function 'calculateMeanAndSDAccuracy'.
+#' Contains all the calculated F1 scores and associated recall rates stratified by population frequency.
+#'
+#' @return If dataMeanF1 is not specified: Plot showing the F1 score and recall per tumor (sub)type together,
 #' stratified based on the tumor's population frequency.
+#'
+#' If dataMeanF1 is specified: Plot showing the tumor population group frequency averages for F1 scores,
+#' together with the individual values of the tumor (sub)types that are part of the frequency group.
+#'
 #' @export
 #'
-plotF1Recall <- function(separateMeanF1) {
+plotF1Recall <- function(separateMeanF1,
+                         dataMeanF1 = NA,
+                         whichSeed = 1) {
 
 
-  meanNumbersTrain2 <- separateMeanF1 %>% arrange(nCases, meanF1, meanRecall)
+  if (require("ungeviz") == F) {
+    remotes::install_github("fwallis/ungeviz")
+  }
+
+  set.seed(whichSeed)
+  separateMeanF1 %<>% dplyr::filter(!is.na(meanF1))
+  meanNumbersTrain2 <- separateMeanF1 %>% dplyr::arrange(nCases, meanF1, meanRecall)
   meanNumbersTrain2$tumorType <- factor(meanNumbersTrain2$tumorType,
                                         levels = unique(meanNumbersTrain2$tumorType))
 
+  subtype <- separateMeanF1$subtype[1]
 
-  meanNumbersTrain2 %<>% pivot_longer(cols = c("meanF1", "meanRecall"), values_to = "meanPerformance", names_to = "Splitting")
-  #newDFAccuracyAndThresholdPercentage$value[is.na(newDFAccuracyAndThresholdPercentage$value)]  <- 0
-  meanNumbersTrain2$Splitting <- gsub("mean","", meanNumbersTrain2$Splitting)
+  meanNumbersTrain2 %<>% tidyr::pivot_longer(cols = c("meanF1", "meanRecall"), values_to = "meanPerformance", names_to = "Splitting")
 
+    meanNumbersTrain2$Splitting <- gsub("mean","", meanNumbersTrain2$Splitting)
 
-  meanNumbersTrain2 %>%
-    ggplot(aes(x = tumorType,  y = meanPerformance, label = tumorType))  +
-    theme_classic() +
-    geom_col(position = "dodge", fill = "grey", #fill = "#B3C5E2",
+if (is.na(dataMeanF1)[1]) {
+  recallPlot <- meanNumbersTrain2 %>%
+    ggplot2::ggplot(aes(x = tumorType,  y = meanPerformance, label = tumorType))  +
+    ggplot2::theme_classic() +
+    ggplot2::geom_col(position = "dodge", fill = "grey",
              color = "black") +
-    #geom_text(aes(y = fractionClassified + 0.005),  position = "dodge", angle = 90,
-    #           hjust = 0.01) +
-    facet_grid(Splitting~nCases, scales = "free_x", space = "free_x"
-    ) +
-    # theme(legend.position = "none",
-    #       axis.text.x = element_text(angle = 90,
-    #                                  hjust = 1.0),
-    #       axis.ticks.x = element_blank(),
-    #       axis.title = element_text(size = 14),
-    #       plot.margin =  unit(c(0.8,0.8,0.8,0.8), "cm"),
-
-    theme(axis.title.x = element_text(vjust = -1, size = 20),
+    ggplot2::facet_grid(Splitting~nCases, scales = "free_x", space = "free_x") +
+    ggplot2::theme(axis.title.x = element_text(vjust = -1, size = 20),
           axis.title.y = element_text(vjust = 2, size = 20),
-
           axis.text.x = element_text(size = 15,  hjust=1, vjust = 0.05, angle = 90),
           axis.text.y = element_text(size = 15),
           strip.text = element_text(size = 11),
           legend.position = "none",
           panel.spacing = unit(1.3,"lines")
     ) +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
-    labs(x = "Number of patients per tumor type (n)",
+    ggplot2::scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+    ggplot2::labs(x = "Number of patients per tumor type (n)",
          y = "Performance Unfiltered Data")
+} else {
 
+  dataMeanF1$meanF1Percent <- paste0(round(dataMeanF1$meanF1,3) * 100, "%")
+  dataMeanF1$sdF1[is.na(dataMeanF1$sdF1)] <- 0
+  recallPlot <- dataMeanF1 %>%
+
+    ggplot2::ggplot(
+      aes(x = type,
+          y = meanF1
+      )) +
+    ggplot2::theme_classic() +
+    ggplot2::ylab("Mean F1-score") +
+    ggplot2::geom_rect(aes(
+      xmin = 0,
+      xmax = 2,
+      ymin = -Inf,
+      ymax = Inf,
+      fill = nCases
+    ),
+    alpha = .2
+    ) +
+    ungeviz::geom_hpline(#aes(fill = fraction_type),
+      width = 2,
+      size = 1,
+      stat = "identity",
+      col = "darkgrey",
+      #col = "black",
+      # fill = "grey",
+      position = "stack") +
+    ggplot2::geom_text(#data = dataMeanF1,
+      aes(label = meanF1Percent,
+          y =  meanF1 - sdF1 - 0.04), size = 5) +
+
+    ggplot2::geom_jitter(data = separateMeanF1, aes(y = meanF1),
+                shape = 19, alpha = 0.7) +
+    ggplot2::geom_errorbar(#data = figureDF3,
+      aes(ymin= meanF1 - sdF1, ymax= meanF1 + sdF1), width=.2,
+      position=position_dodge(.9),
+      #col = "#7F7384"
+      col = "black"
+
+    ) +
+    ggplot2::scale_fill_manual(
+      values = c(
+        '#7a5d7e',
+        'lightgrey',
+        '#7a5d7e',
+        'lightgrey',
+        '#7a5d7e',
+        'lightgrey',
+        '#7a5d7e',
+        'lightgrey'
+      )) +
+    ggplot2::facet_grid(~nCases, scales = "free_x", space = "free_x") +
+    ggplot2::labs(x = "Number of patients per tumor type (n)") +
+
+    ggplot2::theme(
+      legend.title = element_blank(),
+      panel.border = element_blank(), panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.title.x = element_text(vjust = -1, size = 20),
+      axis.title.y = element_text(vjust = 2, size = 20),
+
+      axis.text.x = element_text(size = 15,  hjust=1, vjust = 0.05, angle = 90),
+      axis.text.y = element_text(size = 15),
+      strip.text = element_text(size = 11),
+      legend.position = "none",
+      plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "lines")) +
+
+    ggplot2::scale_y_continuous(expand = expansion(mult = c(0.01, 0.02))) +
+    ggplot2::scale_x_discrete(expand = expansion(mult = c(0.1, 0)))
+
+
+}
+  if (subtype == T) {
+    recallPlot <- recallPlot + ggplot2::labs(x = "Number of patients per tumor subtype (n)")
+  }
+
+
+return(recallPlot)
 
 
 }

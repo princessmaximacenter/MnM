@@ -2,17 +2,31 @@
 % Please edit documentation in R/plotF1Recall.R
 \name{plotF1Recall}
 \alias{plotF1Recall}
-\title{Plot F1-score and recall for separate tumors}
+\title{Plot F1-scores and recall per tumor frequency}
 \usage{
-plotF1Recall(separateMeanF1)
+plotF1Recall(separateMeanF1, dataMeanF1 = NA, whichSeed = 1)
 }
 \arguments{
-\item{separateMeanF1}{Dataframe obtained from function 'calculateSeparateF1' .}
+\item{separateMeanF1}{Dataframe obtained from function 'calculateSeparateF1'.
+Contains all the calculated F1 scores and associated recall rates per tumor (sub)type.
+For this setup, filterOrNot within calculateSeparateF1 should be put to F.}
+
+\item{dataMeanF1}{Dataframe obtained from function 'calculateMeanAndSDAccuracy'.
+Contains all the calculated F1 scores and associated recall rates stratified by population frequency.}
 }
 \value{
-Plot showing the F1 score and recall per tumor (sub)type together,
+If dataMeanF1 is not specified: Plot showing the F1 score and recall per tumor (sub)type together,
 stratified based on the tumor's population frequency.
+
+If dataMeanF1 is specified: Plot showing the tumor population group frequency averages for F1 scores,
+together with the individual values of the tumor (sub)types that are part of the frequency group.
 }
 \description{
-Plot F1-score and recall for separate tumors
+The plotF1Recall function can be used in two ways, to generate different plot types.
+One plot shows the tumor population group frequency averages for F1 scores, together with the individual F1-values.
+No recall is displayed in this plot.
+}
+\details{
+The second plot shows the overall F1-scores for both confident and non-confident classifications together with the associated recall rates.
+This type of plot can be created by only specifying 'separateMeanF1'.
 }

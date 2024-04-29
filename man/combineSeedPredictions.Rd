@@ -11,18 +11,20 @@ combineSeedPredictions(minorityDir, majorityDir, subtype = F)
 
 \item{majorityDir}{Directory in which the majority model(s) are stored.}
 
-\item{subtype}{Do you want to combine the classifications on the subtype level?}
-
-\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
-
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+\item{subtype}{Do you want to combine the classifications on the subtype level (subtype = TRUE)?}
 }
 \value{
-List containing the a dataframe with the final predictions (predictionsMMFinal),
-and a list with the probability scores for all classification labels that were assigned to samples (MMProbabilityList).
+List containing the a dataframe with the final classifications (predictionsMMFinal),
+a list with the probability scores for all classification labels that were assigned to samples (MMProbabilityList),
+the metadata used for the creation of the Minority and Majority models ($metaDataRef),
+and the chosen settings of the Minority classifier ($metaDataRun)
+to keep track of the column for the tumor subtype, tumor type and domain labels.
 
-predictionsMMFinal contains the top 3 final predictions ($predict{2,3}) with their accompanying probability scores
+predictionsMMFinal contains the top 3 final classifications ($predict{2,3}) with their accompanying probability scores
 ($probability{1,2,3} and the original diagnosis label ($originalCall).
+
+MMProbabilityList is a list containing all samples as individual list entries,
+with their different probability scores per label.
 }
 \description{
 To check for algorithm stability, cross-validation setups can be run multiple times

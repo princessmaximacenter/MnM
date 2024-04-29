@@ -14,8 +14,8 @@ createPieChartImage(
   storeLocation = ".",
   saveImage = F,
   textSizeClass = 0.5,
-  textSizeSubspec = 0.5,
-  plotColors,
+  textSizeSubspec = 0.45,
+  plotColors = NA,
   includeNumbers = T
 )
 }
@@ -34,17 +34,17 @@ Please make sure that the higherClassColumn name is used as column name within a
 and classColumn name for the tumor subtype labels.}
 
 \item{whichDomain}{Which domain do you want to plot? This name should be present in the
-Domain column of the domainColumn of the metadata.}
+domainColumn of the metadata.}
 
-\item{storeLocation}{Where do you want to store your generated image?}
+\item{storeLocation}{Where do you want to store your generated image? Default is within working directory.}
 
-\item{saveImage}{Do you want to save your image? Boolean (T/F) input.}
+\item{saveImage}{Do you want to save your image? Default is FALSE.}
 
-\item{textSizeClass}{What size should the letters have for the tumor type?}
+\item{textSizeClass}{What size should the letters have for the tumor type? Default is 0.5.}
 
-\item{textSizeSubspec}{What size should the letters have for the tumor subtype?}
+\item{textSizeSubspec}{What size should the letters have for the tumor subtype? Default is 0.45.}
 
-\item{plotColors}{Which colors do you want to use to color your plot?}
+\item{plotColors}{Which colors do you want to use to color your plot? If not specified, default colors from RColorBrewer palette spectral will be used.}
 
 \item{includeNumbers}{Do you want to show the numbers for the pie chart on the outer edge?
 Default is includeNumbers = TRUE.}
@@ -58,13 +58,10 @@ within each domain.
 \description{
 Function to automatically generate a pie-chart for the samples that belong to
 one of the tumor domains within the dataset. Required are dedicated dataframes
-to specify the names that you would like to use for the different tumor (sub)types,
+to specify the names that you would like to use for the different tumor types and subtypes,
 as usually their full names are too lengthy to fit on the plot.
 }
 \details{
-Also, the colors you want to use within the plot need to be specified,
+Also, the colors you want to use within the plot could be specified,
 so that the sheer amount of tumor types does not cause a decreased visibility.
-
-If you're not sure on which colors to use, check the loadColors function for
-potential combinations of colors.
 }

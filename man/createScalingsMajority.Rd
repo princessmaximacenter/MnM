@@ -10,63 +10,62 @@ createScalingsMajority(
   classColumn,
   higherClassColumn,
   domainColumn,
-  patientColumn,
+  sampleColumn,
   nModels = 100,
   maxSamplesPerType = 50,
   nComps = 100,
   nFeatures = 2500,
-  maxNeighbours = 25,
+  maxNeighbors = 25,
   whichSeed = 1,
-  outputDir = "./",
+  outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
   proteinCodingGenes,
-  saveModel = T,
-  saveRiboModels = F
+  saveModel = T
 )
 }
 \arguments{
-\item{countDataRef}{Matrix containing the RNA-transcript per million data. Patients are in the columns,
-different genes in the rows.}
+\item{countDataRef}{Matrix containing the RNA-transcript per million data. Samples are in the columns,
+different RNA-transcripts in the rows.}
 
-\item{metaDataRef}{Metadata file containing the links between the patients and
-the tumor (sub)type diagnosis within the reference cohort.}
+\item{metaDataRef}{Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 
 \item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
 
 \item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
-\item{patientColumn}{Column in the metadata file that contains the patient labels.}
+\item{sampleColumn}{Column in the metadata file that contains the samples.}
 
-\item{nModels}{How many models should be created for the majority voting system?}
+\item{nModels}{How many models should be created for the Majority classifier?}
 
 \item{maxSamplesPerType}{How many samples should we maximally use per tumor (sub)type?}
 
 \item{nComps}{How many principal components will be selected after PCA?}
 
-\item{nFeatures}{How many of the most variable genes within the dataset should we select for principal component analysis (PCA)?}
+\item{nFeatures}{How many of the most variable RNA-transcripts within the dataset should we select for principal component analysis (PCA)?}
 
-\item{maxNeighbours}{What is the maximum number of neigbours to be used for the weighted \emph{k}-nearest neighbor algorithm?}
+\item{maxNeighbors}{What is the maximum number of neigbors to be used for the weighted \emph{k}-nearest neighbor algorithm?}
 
 \item{whichSeed}{For reproducibility, the seed can be specified with this parameter.}
 
-\item{outputDir}{Directory in which you would like to store the R-object containing the results.}
+\item{outputDir}{Directory in which you would like to store the R-object containing the results. Default is today's date.}
 
-\item{saveModel}{Do you want to save your generated scalings in an R-object? Logical.}
+\item{proteinCodingGenes}{What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
+Please supply it as a vector. This is needed for ribo-depletion correction model.}
 
-\item{saveRiboModels}{Do you want to save the generated model for ribodepletion correction? Logical.}
+\item{saveModel}{Do you want to save your generated results in an R-object (saveModel = TRUE)? Default is TRUE.}
 }
 \value{
 R-object containing the rotations and scalings
-for each reference cohort subset($rotationsAndScalingList),
+for each training data subset($rotationsAndScalingList),
 the model to correct for the ribodepletion efficacy ($riboModelList),
-which samples were present in each subset ($samplesTrainDefList),
-which genes were considered for transformation in the analysis ($nonZeroGenes),
-the metadata file associated to the reference cohort ($metaData),
+which samples were present in each training data subset ($samplesTrainDefList),
+which RNA-transcripts were considered for transformation in the analysis ($nonZeroGenes),
+the metadata file associated to the reference cohort ($metaDataRef),
 and metadata for the performed run ($metaDataRun).
 }
 \description{
-This function is used to obtain the PCA-rotations and data scalings around zero
+This function is used to obtain the PCA-rotations and data scalings centered around zero
 that are generate within the Majority Classifier. These rotations and scalings are needed
 to transform new samples as well.
 }

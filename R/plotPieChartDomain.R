@@ -5,7 +5,7 @@
 #' @param data Dataframe containing the fractions, angles and positions of the different labels,
 #' with the labels being present on both the classColumn and higherClassColumn level.
 #' @param domain Which domain do you want to plot? This name should be present in the
-#' Domain column of the domainColumn of the metadata.
+#' domainColumn of the metadata.
 #' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param domainColumn Column in the metadata file that contains the domain labels.
@@ -13,10 +13,9 @@
 #' @param textSizeSubspec What size should the letters have for the tumor subtype?
 #' @param freqSameTumorType How many subtypes belong to one tumor type? In order of the tumor types.
 #' @param plotColors Which colors do you want to use to color your plot?
-#' @param saveImage Do you want to save your image? Boolean (T/F) input.
+#' @param saveImage Do you want to save your image?
 #' @param storeLocation Where do you want to save the image?
 #' @param includeNumbers Do you want to show the numbers for the pie chart on the outer edge?
-#' Default is includeNumbers = TRUE.
 #' @return Piechart of how many samples are present within the dataset belonging to a
 #' certain tumor type, and to a certain tumor subtype.
 #' The piechart is generated for one domain, as there are many different tumor types and subtypes
@@ -27,33 +26,29 @@ plotPieChartDomain <- function(data,
                                classColumn,
                                higherClassColumn,
                                domainColumn,
-                               textSizeClass = 0.5,
-                               textSizeSubspec = 0.45,
+                               textSizeClass,
+                               textSizeSubspec,
                                freqSameTumorType,
                                plotColors,
-                               saveImage = T,
+                               saveImage,
                                storeLocation,
-                               includeNumbers = T) {
+                               includeNumbers) {
 
-
-  #n <- length(table(data[,higherClassColumn]))
 
   for (i in seq(1:length(freqSameTumorType))) {
-    extraCols <- rep(plotColors[i], freqSameTumorType[i])
+    extraCols <- base::rep(plotColors[i], freqSameTumorType[i])
     if (i == 1) {
       myColours <- extraCols
     } else {
       myColours <- c(myColours, extraCols)
     }
   }
-  #filename <- paste0(storeLocation,
-  #                   strftime(as.Date(gsub("'", "", Sys.Date())), "%m_%d_%Y"), "_tumortypePie_",domain,".pdf")
   filename <- storeLocation
   if (saveImage == T) {
     pdf(file = filename ) }
   par(mar=c(0,0,0,0))
   if (includeNumbers == T) {
-  tumorTypeSubtypePie(data %>% group_by(!!sym(classColumn)) %>% select(counts) %>% deframe(),#sapply(unique(data[,classColumn]), function(x) sum(data$counts[data[,classColumn] == x])),
+  tumorTypeSubtypePie(data %>% dplyr::group_by(!!rlang::sym(classColumn)) %>% dplyr::select(counts) %>% tibble::deframe(),#sapply(unique(data[,classColumn]), function(x) sum(data$counts[data[,classColumn] == x])),
        init.angle = 0,
        labels = data$counts,
        border = F,
@@ -62,16 +57,16 @@ plotPieChartDomain <- function(data,
        col=NULL)
   par(new=T)}
 
-  tumorTypeSubtypePie(data %>% group_by(!!sym(classColumn)) %>% select(counts) %>% deframe(),
+  tumorTypeSubtypePie(data %>% dplyr::group_by(!!rlang::sym(classColumn)) %>% dplyr::select(counts) %>% tibble::deframe(),
        init.angle = 0,
-       labels = rep("",length(data[,classColumn])),
+       labels = rep("",base::length(data[,classColumn])),
        radius=0.95,
        col=myColours,
        border = "white")
 
   par(new=T)
 
-  tumorTypeSubtypePie(data %>% group_by(!!sym(classColumn)) %>% select(counts) %>% deframe(), # 2
+  tumorTypeSubtypePie(data %>% dplyr::group_by(!!rlang::sym(classColumn)) %>% dplyr::select(counts) %>% tibble::deframe(), # 2
        init.angle = 0,
        radius=0.38,
        border = F,
@@ -79,14 +74,14 @@ plotPieChartDomain <- function(data,
        col=NULL)
   par(new=T)
 
-  tumorTypeSubtypePie(sapply(unique(data[,higherClassColumn]), function(x) sum(data$counts[data[,higherClassColumn] == x])), # White border around subclass
+  tumorTypeSubtypePie(sapply(base::unique(data[,higherClassColumn]), function(x) sum(data$counts[data[,higherClassColumn] == x])), # White border around subclass
        init.angle = 0,
-       labels = rep("",length(unique(data[,higherClassColumn]))),
+       labels = rep("",base::length(base::unique(data[,higherClassColumn]))),
        border = "white",radius=0.38,
        col=plotColors)
   par(new=T)
 
-  tumorTypeSubtypePie(sapply(unique(data[,higherClassColumn]),
+  tumorTypeSubtypePie(sapply(base::unique(data[,higherClassColumn]),
               function(x) sum(data$counts[data[,higherClassColumn] == x])),
        init.angle = 0,
        radius=0.25,
@@ -95,7 +90,7 @@ plotPieChartDomain <- function(data,
        col=NULL) # 4
   par(new=T)
 
-  tumorTypeSubtypePie(sapply(unique(data[,domainColumn]),
+  tumorTypeSubtypePie(sapply(base::unique(data[,domainColumn]),
               function(x) sum(data$counts[data[,domainColumn] == x])),
        init.angle = 0,
        labels = rep("",3),
