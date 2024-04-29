@@ -12,13 +12,14 @@ Inputs:
   test_count_data: "./Inputs/countDataTestBALL.csv"
   majority_model: "./SavedModels/modelsMajority.rds"
   minority_model: "./SavedModels/modelsMinority.rds"
-  proteinCodingGenes: "/Inputs/proteinCodingGenesGencode31.csv"
 
 # Model Training values
 modelsVariables:
   model_training: TRUE
+  filter_samples: FALSE
   whichSeed: 1
   outputDir: "./Outputs"
+  proteinCodingGenes: "./Inputs/proteinCodingGenesGencode31.csv"
   saveModel: TRUE
   saveRiboModels: FALSE
   nModels: 10
@@ -53,10 +54,3 @@ modelsMajorityVariables:
 classifierPredictions:
   outputDir: "./Outputs"
   saveModel: "TRUE"
-
-# Specific values for integrateMM
-integrateMM:
-  nModels: 10
-  subtype: TRUE
-  higherClassColumn: "Disease_sub_class"
-  crossValidation: FALSE

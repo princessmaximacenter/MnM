@@ -32,7 +32,7 @@ if (is.null(opt$input)) {
 MnM_config <- read_yaml(opt$input)
 
 "Load YAML File for Variable Use"
-MnM_config <- read_yaml("/app/Inputs/RunningMnM_variables_docker_inputs.yaml")
+MnM_config <- read_yaml("/app/Inputs/RunningMnM_variables_inputs.yaml")
 
 "Loading Metadata"
 ##Metadata for Reference Cohort

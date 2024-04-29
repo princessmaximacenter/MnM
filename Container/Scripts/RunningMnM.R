@@ -32,7 +32,7 @@ if (is.null(opt$input)) {
 MnM_config <- read_yaml(opt$input)
 
 "Load YAML File for Variable Use"
-MnM_config <- read_yaml("~//Downloads/DataTutorial/Inputs/RunningMnM_InputVariables_cp.yaml.yml")
+MnM_config <- read_yaml("~/Downloads/DataTutorial/Inputs/RunningMnM_InputVariables_cp.yaml")
 
 "Loading Metadata"
 ##Metadata for Reference Cohort

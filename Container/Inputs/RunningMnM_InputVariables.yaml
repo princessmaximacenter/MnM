@@ -1,7 +1,7 @@
 # R Script Configuration
 script:
   name: "MnM Classifier via Docker/Singularity"
-  date: "24-04-2024"
+  date: "29-04-2024"
   project: "Tumor-Classification"
 
 # File Paths
@@ -12,7 +12,6 @@ Inputs:
   test_count_data: "/app/Inputs/20230928_countDataTestBALL.tsv"
   majority_model: "/app/SavedModels/modelsMajority.rds"
   minority_model: "/app/SavedModels/modelsMinority.rds"
-  proteinCodingGenes: "/app/proteinCodingGenesGencode31.csv"
 
 # Model Training values
 modelsVariables:
@@ -20,6 +19,7 @@ modelsVariables:
   filter_samples: FALSE
   whichSeed: 1
   outputDir: "/app/Outputs"
+  proteinCodingGenes: "/app/proteinCodingGenesGencode31.csv"
   saveModel: TRUE
   saveRiboModels: FALSE
   nModels: 10
@@ -54,10 +54,3 @@ modelsMajorityVariables:
 classifierPredictions:
   outputDir: "/app/Outputs"
   saveModel: "TRUE"
-
-# Specific values for integrateMM
-integrateMM:
-  nModels: 10
-  subtype: TRUE
-  higherClassColumn: "Disease_sub_class"
-  crossValidation: FALSE
