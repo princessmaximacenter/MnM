@@ -6,10 +6,10 @@ script:
 
 # File Paths
 Inputs:
-  reference_metadata: "/app/Inputs/ClassifierMetadataReferenceBALL.tsv"
-  test_metadata: "/app/Inputs/ClassifierMetadataTestBALL.tsv"
-  reference_count_data: "/app/Inputs/countDataReferenceBALL.tsv"
-  test_count_data: "/app/Inputs/countDataTestBALL.tsv"
+  reference_metadata: "/app/Inputs/ClassifierMetadataReferenceBALL.csv"
+  test_metadata: "/app/Inputs/ClassifierMetadataTestBALL.csv"
+  reference_count_data: "/app/Inputs/countDataReferenceBALL.csv"
+  test_count_data: "/app/Inputs/countDataTestBALL.csv"
   majority_model: "/app/SavedModels/modelsMajority.rds"
   minority_model: "/app/SavedModels/modelsMinority.rds"
 
