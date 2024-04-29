@@ -24,15 +24,13 @@ opt_parser <- OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
 
 ## Check if the input filename is provided
-# if (is.null(opt$input)) {
-#   stop("Error: Input YAML filename is missing. Use -i or --input flag to specify the filename.")
-# }
-#
-# "Load YAML File for variable use"
-# MnM_config <- read_yaml(opt$input)
+if (is.null(opt$input)) {
+  stop("Error: Input YAML filename is missing. Use -i or --input flag to specify the filename.")
+}
 
-"Load YAML File for Variable Use"
-MnM_config <- read_yaml("~/Downloads/DataTutorial/Inputs/RunningMnM_InputVariables_cp.yaml")
+"Load YAML File for variable use (Via Command Line)"
+MnM_config <- read_yaml(opt$input)
+#MnM_config <- read_yaml("./Inputs/RunningMnM_InputVariables_cp.yaml")
 
 "Loading Metadata"
 ##Metadata for Reference Cohort
