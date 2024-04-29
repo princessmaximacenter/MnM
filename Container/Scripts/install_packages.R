@@ -15,10 +15,15 @@ packages <- list(
   kknn = "1.3.1",
   glmnet = "4.1-8",
   yaml = "2.3.8",
-  optparse = "1.7.4"
+  optparse = "1.7.4",
+  remotes = "2.5.0"
 )
 
+#Install not working above
 install.packages("kknn")
+
+#Install MnM remotely/locally
+remotes::install_local("~/Downloads/MnM-main/", dependencies = T, force = T)
 
 cat("Environment Variables Prepared\n")
 

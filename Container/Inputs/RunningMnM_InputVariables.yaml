@@ -12,27 +12,23 @@ Inputs:
   test_count_data: "/app/Inputs/20230928_countDataTestBALL.tsv"
   majority_model: "/app/SavedModels/modelsMajority.rds"
   minority_model: "/app/SavedModels/modelsMinority.rds"
-
-# Temporary Filtering
-filtering:
-  disease_subclass: "B-ALL"
-  remove_temporary: true
+  proteinCodingGenes: "/app/proteinCodingGenesGencode31.csv"
 
 # Model Training values
 modelsVariables:
   model_training: TRUE
+  filter_samples: FALSE
   whichSeed: 1
   outputDir: "/app/Outputs"
-  proteinCodingGenes: "/app/Inputs"
   saveModel: TRUE
   saveRiboModels: FALSE
   nModels: 10
 
 # Specific values for createModelsMinority
 modelsMinorityVariables:
-  patientColumn: "biomaterial_id"
-  classColumn: "Disease_sub_specification1"
-  higherClassColumn: "Disease_sub_class"
+  sampleColumn: "sampleID"
+  classColumn: "tumorSubtype"
+  higherClassColumn: "tumorType"
   domainColumn: "Domain"
   #Default Values, can be modified
   nANOVAgenes: 1000
@@ -43,9 +39,9 @@ modelsMinorityVariables:
 
 # Specific values for createScalingsMajority
 modelsMajorityVariables:
-  sampleColumn: "sample_id"
-  classColumn: "tumor_subtype"
-  higherClassColumn: "tumor_type"
+  sampleColumn: "sampleID"
+  classColumn: "tumorSubtype"
+  higherClassColumn: "tumorType"
   domainColumn: "Domain"
   #Default Values, can be modified
   maxSamplesPerType: 50

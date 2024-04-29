@@ -10,6 +10,7 @@ library("yaml")
 library("optparse") # Library for parsing command-line options
 #Load MnM Package
 library("MnM")
+library("remotes")
 
 # Define command-line options
 option_list <- list(
@@ -35,58 +36,75 @@ MnM_config <- read_yaml("/app/Inputs/RunningMnM_variables_docker_inputs.yaml")
 
 "Loading Metadata"
 ##Metadata for Reference Cohort
-metaDataRef <- read.table(MnM_config$inputs$reference_metadata, sep = "\t", row.names = 1)
+metaDataRef <- read.table(MnM_config$Inputs$reference_metadata, sep = "\t", row.names = 1)
 
 ##Metadata for Test Cohort
-metaDataTest <- read.table(MnM_config$inputs$test_metadata, sep = "\t", row.names = 1)
+metaDataTest <- read.table(MnM_config$Inputs$test_metadata, sep = "\t", row.names = 1)
 
 "Loading Count Data"
 ##Reference Cohort
-countDataRef <- read.table(MnM_config$inputs$reference_count_data, sep = "\t",
+countDataRef <- read.table(MnM_config$Inputs$reference_count_data, sep = "\t",
                            row.names = 1) %>% as.matrix()
 
 ##Test Cohort
-countDataTest <- read.table(MnM_config$inputs$test_count_data, sep = "\t",
+countDataTest <- read.table(MnM_config$Inputs$test_count_data, sep = "\t",
                          row.names = 1) %>% as.matrix()
 
 "Data Prep"
-## Remove Samples that have less than 3 available samples
-metaDataFiltered <- metaDataRef %>% group_by(tumorSubtype) %>%
-  filter(n() >= 3) %>% ungroup()
+## Remove Samples that have less than 3 available samples (if applicable)
+filter_samples = MnM_config$modelsVariables$filter_samples
 
-countDataFiltered <- countDataRef[,metaDataFiltered$sampleID]
+if (filter_samples){
+  metaDataFiltered <- metaDataRef %>% group_by(tumorSubtype) %>%
+    filter(n() >= 3) %>% ungroup()
 
-## Check whether the same number of samples are present within the metadata and the count data.
-ncol(countDataFiltered) == nrow(metaDataFiltered)
+  countDataFiltered <- countDataRef[,metaDataFiltered$sampleID]
+
+  ## Check whether the same number of samples are present within the metadata and the count data.
+  ncol(countDataFiltered) == nrow(metaDataFiltered)
+
+
+} else {
+  #Reassign Column Values
+  countDataRef <- countDataRef[, metaDataRef$sampleID]
+  ncol(countDataRef) == nrow(metaDataRef)
+}
 
 "#Performing classification for new samples"
+#Input Protein Coding Genes
+proteinCodingGenes <- read.csv(MnM_config$modelsVariables$proteinCodingGenes, header = T) %>%
+  as.vector() %>% deframe
+
+#Set Variable for model training to true or false
 model_training = MnM_config$modelsVariables$model_training
+
+
 #update values according to R yaml file
 if (model_training) {
   ##createModelsMinority dedicated to generate Minority predictions
   modelsMinority <- createModelsMinority(
-    countDataRef = countDataFiltered,
-    metaDataRef = metaDataFiltered,
-    patientColumn = MnM_config$modelsMinorityVariables$patientColumn,
+    countDataRef = countDataRef,
+    metaDataRef = metaDataRef,
     classColumn = MnM_config$modelsMinorityVariables$classColumn,
     higherClassColumn = MnM_config$modelsMinorityVariables$higherClassColumn,
     domainColumn = MnM_config$modelsMinorityVariables$domainColumn,
+    sampleColumn = MnM_config$modelsMinorityVariables$sampleColumn,
     nModels = MnM_config$modelsTrainingVariables$nModels,
     outputDir = MnM_config$modelsTrainingVariables$outputDir,
-    proteinCodingGenes = MnM_config$modelsTrainingVariables$proteinCodingGenes
+    proteinCodingGenes = proteinCodingGenes
   )
 
   ##createScalingsMajority dedicated to generate Majority predictions
   modelsMajority <- createScalingsMajority(
-    countDataRef = countDataFiltered,
-    metaDataRef = metaDataFiltered,
+    countDataRef = countDataRef,
+    metaDataRef = metaDataRef,
     sampleColumn = MnM_config$modelsMajorityVariables$sampleColumn,
     classColumn = MnM_config$modelsMajorityVariables$classColumn,
     higherClassColumn = MnM_config$modelsMajorityVariables$higherClassColumn,
     domainColumn = MnM_config$modelsMajorityVariables$domainColumn,
     nModels = MnM_config$modelsVariables$nModels,
     outputDir = MnM_config$modelsVariables$outputDir,
-    proteinCodingGenes = MnM_config$modelsVariables$proteinCodingGenes
+    proteinCodingGenes = proteinCodingGenes
   )
 
 } else {
