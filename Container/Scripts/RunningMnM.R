@@ -124,13 +124,12 @@ predictionsTestMajority <- newPredictionsMajority(
                       createdModelsMajority = modelsMajority,
                       countDataNew = countDataTest,
                       outputDir = MnM_config$modelsVariables$outputDir,
-                      countDataRef = countDataFiltered)
+                      countDataRef = countDataRef)
 
 "Predictions with Integrated Minority and Majority Classifiers"
 ##Integrate the Minority and Majority classifications, set CV to F
 predictionsMMTestList <- integrateMM(minority = predictionsTestMinority,
                         majority = predictionsTestMajority,
-                        metaDataRef = metaDataFiltered,
                         subtype = T)
 
 "Obtain Final Predictions"
@@ -138,11 +137,11 @@ predictionsMMTestList <- integrateMM(minority = predictionsTestMinority,
 predictionsMMTest <- predictionsMMTestList$predictionsMMFinal
 
 ##Match diagnostic label to samples
-predictionsMMTest$originalCall <- metaDataTest[rownames(predictionsMMTest),"Disease_sub_specification1"]
+predictionsMMTest$originalCall <- metaDataTest[rownames(predictionsMMTest),"tumorSubtype"]
 
 "Export Final Predictions Table"
 # Add biomaterial_id column using row names
-predictionsMMTest$biomaterial_id <- rownames(predictionsMMTest)
+predictionsMMTest$MnM_config$modelsMajorityVariables$sampleColumn <- rownames(predictionsMMTest)
 # Reorder columns
 predictionsMMTest <- predictionsMMTest %>%
   select(biomaterial_id, everything())
@@ -157,6 +156,6 @@ saveRDS(predictionsMMTestList, file = "./Outputs/predictionsMMTestList.rds")
 
 #Save Trained Models
 if(model_training) {
-  saveRDS(modelsMinority, file = "./Outputs/modelsMinority.rds")
-  saveRDS(modelsMajority, file = "./Outputs/modelsMajority.rds")
+  saveRDS(modelsMajority, file = file.path(MnM_config$modelsVariables$outputDir, "modelsMinority.rds"))
+  saveRDS(modelsMajority, file = file.path(MnM_config$modelsVariables$outputDir, "modelsMajority.rds"))
 }
