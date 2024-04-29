@@ -30,7 +30,6 @@ if (is.null(opt$input)) {
 
 "Load YAML File for Variable Use (Via Command Line)"
 MnM_config <- read_yaml(opt$input)
-#MnM_config <- read_yaml("/app/Inputs/RunningMnM_variables_inputs.yaml")
 
 "Loading Metadata"
 ##Metadata for Reference Cohort
@@ -149,7 +148,6 @@ write.table(predictionsMMTest, file.path(MnM_config$modelsVariables$outputDir, "
 
 "Export Predictions and Models as R Objects to the Outputs Directory"
 #Save Predictions
-#saveRDS(predictionsTestMinority, file = "./Outputs/predictionsTestMinority.rds")
 saveRDS(predictionsTestMinority, file = file.path(MnM_config$modelsVariables$outputDir, "predictionsTestMinority.rds"))
 saveRDS(predictionsTestMajority, file = file.path(MnM_config$modelsVariables$outputDir, "predictionsTestMajority.rds"))
 saveRDS(predictionsMMTestList, file = file.path(MnM_config$modelsVariables$outputDir, "predictionsMMTestList.rds"))
