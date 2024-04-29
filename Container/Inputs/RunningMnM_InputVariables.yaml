@@ -19,7 +19,7 @@ modelsVariables:
   filter_samples: FALSE
   whichSeed: 1
   outputDir: "/app/Outputs"
-  proteinCodingGenes: "/app/proteinCodingGenesGencode31.csv"
+  proteinCodingGenes: "/app/Inputs/proteinCodingGenesGencode31.csv"
   saveModel: TRUE
   saveRiboModels: FALSE
   nModels: 10
