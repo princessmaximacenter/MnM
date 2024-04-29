@@ -23,13 +23,13 @@ option_list <- list(
 opt_parser <- OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
 
-# Check if the input filename is provided
-if (is.null(opt$input)) {
-  stop("Error: Input YAML filename is missing. Use -i or --input flag to specify the filename.")
-}
-
-# Load YAML file for variable use
-MnM_config <- read_yaml(opt$input)
+# # Check if the input filename is provided
+# if (is.null(opt$input)) {
+#   stop("Error: Input YAML filename is missing. Use -i or --input flag to specify the filename.")
+# }
+#
+# # Load YAML file for variable use
+# MnM_config <- read_yaml(opt$input)
 
 "Load YAML File for Variable Use"
 MnM_config <- read_yaml("/app/Inputs/RunningMnM_variables_inputs.yaml")
