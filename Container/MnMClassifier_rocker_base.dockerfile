@@ -55,11 +55,5 @@ COPY ./Inputs /app/Inputs
 # Copy all .R files from the local Scripts directory into the container's /app/scripts directory
 COPY ./Scripts/ /app/Scripts/
 
-# Change the execution permission to the wrapper script
-RUN chmod +x /app/Scripts/RunningMnM_docker.R
-
-# Run the Wrapper script when the container starts (Temporarily Commented out)
-#CMD ["Rscript", "/app/Scripts/RunningMnM_docker.R"]
-
 #Create an entrypoint to run from terminal
 ENTRYPOINT [ "/bin/bash", "-c" ]
