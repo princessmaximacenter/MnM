@@ -7,12 +7,13 @@
 #' @param digits number of decimals the vector needs to be rounded to.
 #'
 #' @return vector with rounded doubles with _digits_ decimals.
+#' @import utils
 #'
 smartRound <- function(x, digits = 0) {
   up <- 10 ^ digits
   x <- x * up
   y <- floor(x)
-  indices <- tail(order(x-y), round(sum(x)) - sum(y))
+  indices <- utils::tail(order(x-y), base::round(base::sum(x)) - base::sum(y))
   y[indices] <- y[indices] + 1
   y / up
 }

@@ -8,7 +8,7 @@
 #' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param sampleColumn Column in the metadata file that contains the samples.
+#' @param sampleColumn Column in the metadata file that contains the sample identifiers.
 #' @param nModels How many models should be created for the Minority classifier?
 #' Default is 100.
 #' @param meanExpression Selection criterion for the RNA-transcripts,
@@ -93,8 +93,8 @@ createModelsMinority <-  function(countDataRef,
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
   if (base::length(tumorEntitiesWithTooFewSamples) >0) {
 
-    metaDataRef %<>% dplyr::filter(!!sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
-    print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
+    metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
+    base::print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
     #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
 
   }

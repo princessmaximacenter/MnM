@@ -16,6 +16,10 @@ changeSubtypeNameToType(
 
 \item{linkClassAndHigherClass}{dataframe containing the link between the tumor subtypes and the tumor types.
 The dataframe is automatically generated in previous functions from the metadata.}
+
+\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+
+\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
 }
 \value{
 List of all the samples containing the probabilities for the different \emph{tumor type} predictions from the Minority or Majority classifier.

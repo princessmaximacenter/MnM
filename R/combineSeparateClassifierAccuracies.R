@@ -25,16 +25,16 @@ combineSeparateClassifierAccuracies <- function(minorityDir,
                                              returnPlot = T
                                              ) {
 
-  if (require("ungeviz") == F) {
+  if (base::requireNamespace("ungeviz") == F) {
     remotes::install_github("fwallis/ungeviz")
   }
 
 
 
-  allDirsMinority <- list.dirs(minorityDir, recursive = F)
-  allDirsMajority <- list.dirs(majorityDir, recursive = F)
-  selectedDirsMinority <- allDirsMinority[grep("seed", allDirsMinority)]
-  selectedDirsMajority <- allDirsMajority[grep("seed", allDirsMajority)]
+  allDirsMinority <- base::list.dirs(minorityDir, recursive = F)
+  allDirsMajority <- base::list.dirs(majorityDir, recursive = F)
+  selectedDirsMinority <- allDirsMinority[base::grep("seed", allDirsMinority)]
+  selectedDirsMajority <- allDirsMajority[base::grep("seed", allDirsMajority)]
 
   if (base::length(selectedDirsMinority) != base::length(selectedDirsMajority)) {
     stop("The number of models for the minority and majority classifier are not the same.
@@ -116,7 +116,7 @@ if (returnPlot == T) {
 
   plotSeparateScores <- plotSeparateClassifierAccuracies(fractionCorrectTotalPivoted)
   if (subtype == T) {
-    plotSeparateScores <- plotSeparateScores + xlab("Number of patients per tumor subtype (n)")
+    plotSeparateScores <- plotSeparateScores + ggplot2::xlab("Number of patients per tumor subtype (n)")
   }
 
  return(plotSeparateScores)

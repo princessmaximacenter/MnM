@@ -33,7 +33,7 @@ different RNA-transcripts in the rows.}
 
 \item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
-\item{sampleColumn}{Column in the metadata file that contains the samples.}
+\item{sampleColumn}{Column in the metadata file that contains the sample identifiers.}
 
 \item{nModels}{How many models should be created for the Majority classifier?}
 

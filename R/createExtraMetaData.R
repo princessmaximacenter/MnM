@@ -17,28 +17,28 @@ createExtraMetaData <- function(metaDataRef,
                                 classesWith2
 ) {
 
-  nestedMetaData <- metaDataRef %>% filter(class %in% classesWith2) %>%
-    group_by(class) %>%
-    nest(.) %>%
-    mutate(newLines = map(data, ~ .x[1,]))
+  nestedMetaData <- metaDataRef %>% dplyr::filter(class %in% classesWith2) %>%
+    dplyr::group_by(class) %>%
+    tidyr::nest(.) %>%
+    dplyr::mutate(newLines = purrr::map(data, ~ .x[1,]))
 
   for (line in seq(1:nrow(nestedMetaData))) {
-    newMetaDataPoint <- as.data.frame(nestedMetaData$newLines[[line]])
+    newMetaDataPoint <- base::as.data.frame(nestedMetaData$newLines[[line]])
     newMetaDataPoint$class <- nestedMetaData$class[[line]]
-    rownames(newMetaDataPoint) <- paste0("Synthetic", line)
+    base::rownames(newMetaDataPoint) <- base::paste0("Synthetic", line)
 
     if(line == 1) {
       newMetaDataDF <- newMetaDataPoint
     } else {
-      newMetaDataDF <- rbind(newMetaDataDF, newMetaDataPoint)
+      newMetaDataDF <- base::rbind(newMetaDataDF, newMetaDataPoint)
     }
   }
 
-  col_order <- colnames(metaDataRef)
+  col_order <- base::colnames(metaDataRef)
   newMetaDataDF <- newMetaDataDF[ , col_order]
 
 
-  metaDataExtra <- rbind(metaDataRef, newMetaDataDF)
+  metaDataExtra <- base::rbind(metaDataRef, newMetaDataDF)
 
   return(metaDataExtra)
 }

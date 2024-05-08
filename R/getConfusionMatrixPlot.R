@@ -9,7 +9,7 @@
 #' but also the subsequent tumor types order and tumor subtypes order.
 #'
 #' @param minorityDir Directory in which the Minority classifier model(s) are stored.
-#' @param majorityDirDirectory in which the Majority classifier model(s) are stored.
+#' @param majorityDir in which the Majority classifier model(s) are stored.
 #' @param abbreviations Dataframe containing the links between the tumor subtype and their abbreviations ($abbreviationSubtype),
 #' the tumor types and their abbreviations ($abbreviationTumorType), and the domain.
 #' @param probabilityThreshold Which probability score do you want to use as a cutoff for calling classifications confident or not?

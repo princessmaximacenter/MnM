@@ -28,8 +28,6 @@ Please specify which tumor type you would like to visualize within this paramete
 
 \item{useLabels}{Do you want to supply labels within the plot?
 If that would be desired, fill out the tumor type that you would like to visualize at 'tumorType' (for example: "B-ALL").}
-
-\item{useManualColors}{Do you want to supply the colors to be used within the UMAP for the labels?}
 }
 \value{
 ggplot with only the datapoints of the selected domain,

@@ -34,7 +34,7 @@ different RNA-transcripts in the rows.}
 
 \item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
-\item{sampleColumn}{Column in the metadata file that contains the samples.}
+\item{sampleColumn}{Column in the metadata file that contains the sample identifiers.}
 
 \item{meanExpression}{Selection criterion for the RNA-transcripts,
 specifying what the minimum mean expression of an RNA-transcript should be for it to be included in the F-statistic analysis.

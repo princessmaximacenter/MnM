@@ -65,7 +65,7 @@ estimateProbabilityThreshold <- function(predictionsMM,
     thresholdPlot <- totalbinaryScoreDFGGPlot %>% dplyr::filter(name %in% c("sensitivity",
                                                                  "specificity")) %>%
       ggplot2::ggplot(
-        aes(x = cutoff,
+        ggplot2::aes(x = cutoff,
             linetype = name,
             y = counts
         )) +
@@ -76,11 +76,11 @@ estimateProbabilityThreshold <- function(predictionsMM,
       ggplot2::theme_classic() +
       ggplot2::ylab("Sensitivity / Specificity") +
       ggplot2::xlab("Threshold") +
-      ggplot2::theme(legend.title=element_blank(),
-            plot.margin =  unit(c(0.8,0.8,0.8,0.8), "cm")) +
+      ggplot2::theme(legend.title= ggplot2::element_blank(),
+            plot.margin =  ggplot2::unit(c(0.8,0.8,0.8,0.8), "cm")) +
       ggplot2::scale_linetype_discrete(name = "name", labels = c("Sensitivity","Specificity")) +
 
-      ggplot2::scale_y_continuous(expand = expansion(mult = c(0, 0.02)))
+      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.02)))
     return(thresholdPlot)
 
   } else {

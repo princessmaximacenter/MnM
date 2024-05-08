@@ -18,6 +18,7 @@
 #'The total amount of samples within each frequency range ($meanSamples) is also specified.
 #' Lastly, it's specified whether a cross-validation (Train) or test (Test) type was used.
 #' @export
+#' @import stats
 #'
 calculateMeanAndSDAccuracy <- function(
   minorityDir,
@@ -66,21 +67,21 @@ calculateMeanAndSDAccuracy <- function(
     higherClassColumn <- minority$metaDataRun$higherClassColumn
 
     if (!is.na(metaDataTest)[1]) {
-      print("Checking the performance for the test set based on values provided in dataframe 'metaDataTest'.")
+      base::print("Checking the performance for the test set based on values provided in dataframe 'metaDataTest'.")
 
       if (classColumn %notin% colnames(metaDataTest)) {
-        print("Please note that the wanted column for the tumor subtype labels cannot be found within 'metaDataTest'.")
-        print("Either change the column with the tumor subtype labels to the name: ", classColumn)
+        base::print("Please note that the wanted column for the tumor subtype labels cannot be found within 'metaDataTest'.")
+        base::print("Either change the column with the tumor subtype labels to the name: ", classColumn)
         stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
       } else if (higherClassColumn %notin% colnames(metaDataTest)) {
 
-        print("Please note that the wanted column for the tumor type labels cannot be found within 'metaDataTest'.")
-        print("Either change the column with the tumor type labels to the name: ", higherClassColumn)
+        base::print("Please note that the wanted column for the tumor type labels cannot be found within 'metaDataTest'.")
+        base::print("Either change the column with the tumor type labels to the name: ", higherClassColumn)
         stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
       } else {
-        print(paste0("Found columns ", classColumn, " and ", higherClassColumn, " within metaDataTest specifying the tumor subtype, and tumor type."))
+        base::print(base::paste0("Found columns ", classColumn, " and ", higherClassColumn, " within metaDataTest specifying the tumor subtype, and tumor type."))
 
-        print("No original call found, adding it from metaDataTest")
+        base::print("No original call found, adding it from metaDataTest")
       }
 
     }
@@ -92,9 +93,9 @@ calculateMeanAndSDAccuracy <- function(
 
     predictionsMMFinal <- predictionsMMFinalList$predictionsMMFinal
     if (crossValidation == F & subtype == F) {
-      predictionsMMFinal$originalCall <- metaDataTest[rownames(predictionsMMFinal), higherClassColumn]
+      predictionsMMFinal$originalCall <- metaDataTest[base::rownames(predictionsMMFinal), higherClassColumn]
       } else if (crossValidation == F) {
-      predictionsMMFinal$originalCall <- metaDataTest[rownames(predictionsMMFinal), classColumn]
+      predictionsMMFinal$originalCall <- metaDataTest[base::rownames(predictionsMMFinal), classColumn]
       }
 
 
@@ -123,25 +124,25 @@ calculateMeanAndSDAccuracy <- function(
   meanNumbers <- accuracyDF %>%
     dplyr::group_by(nCases) %>%
     dplyr::summarise(
-      meanFractionCorrect = mean(fractionCorrect),
-      meanFractionCorrectFiltered = mean(fractionCorrectFiltered),
-      meanFractionIncorrect = mean(1 - fractionCorrect),
-      meanFractionIncorrectFiltered = mean(1 - fractionCorrectFiltered),
-      sdFractionCorrect = sd(fractionCorrect),
-      sdFractionCorrectFiltered = sd(fractionCorrectFiltered),
-      meanCasesFiltered = round(mean(nSamplesFiltered), digits = 0),
-      meanPrecision = mean(Precision),
-      meanF1 = mean(F1),
-      meanFractionCorrect2 = mean(fractionCorrect2),
-      meanFractionCorrect3 = mean(fractionCorrect3),
-      sdFractionCorrect2 = sd(fractionCorrect2),
-      sdFractionCorrect3 = sd(fractionCorrect3),
-      meanRecall = mean(Recall),
-      medianF1 = median(F1),
-      sdPrecision = sd(Precision),
-      sdF1 = sd(F1),
-      sdRecall = sd(Recall),
-      meanSamples = mean(nSamples)
+      meanFractionCorrect = base::mean(fractionCorrect),
+      meanFractionCorrectFiltered = base::mean(fractionCorrectFiltered),
+      meanFractionIncorrect = base::mean(1 - fractionCorrect),
+      meanFractionIncorrectFiltered = base::mean(1 - fractionCorrectFiltered),
+      sdFractionCorrect = stats::sd(fractionCorrect),
+      sdFractionCorrectFiltered = stats::sd(fractionCorrectFiltered),
+      meanCasesFiltered = base::round(base::mean(nSamplesFiltered), digits = 0),
+      meanPrecision = base::mean(Precision),
+      meanF1 = base::mean(F1),
+      meanFractionCorrect2 = base::mean(fractionCorrect2),
+      meanFractionCorrect3 = base::mean(fractionCorrect3),
+      sdFractionCorrect2 = stats::sd(fractionCorrect2),
+      sdFractionCorrect3 = stats::sd(fractionCorrect3),
+      meanRecall = base::mean(Recall),
+      medianF1 = stats::median(F1),
+      sdPrecision = stats::sd(Precision),
+      sdF1 = stats::sd(F1),
+      sdRecall = stats::sd(Recall),
+      meanSamples = base::mean(nSamples)
     )
 
   if (crossValidation == T) {

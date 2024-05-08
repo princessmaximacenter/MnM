@@ -13,11 +13,11 @@
 #' @param useLabels Do you want to supply labels within the plot?
 
 #' If that would be desired, fill out the tumor type that you would like to visualize at 'tumorType' (for example: "B-ALL").
-#' @param useManualColors Do you want to supply the colors to be used within the UMAP for the labels?
-#'
+
 #' @return ggplot with only the datapoints of the selected domain,
 #' color coded by the tumor type (subtype = F) or tumor subtype (subtype = T).
 #' @export
+#' @import remotes
 #'
 plotCohortUMAP <- function(dataUMAPList,
                                 domain = NA,
@@ -42,7 +42,7 @@ plotCohortUMAP <- function(dataUMAPList,
       domainTumorTypes <- abbreviations %>% dplyr::filter(Domain == domain) %>% dplyr::select(abbreviationTumorType) %>% unique() %>% tibble::deframe()
     } else {
       umapDomain$abbreviation <- umapDomain$abbreviationSubtype
-      if (!is.na(tumorType)[1]) {
+      if (!base::is.na(tumorType)[1]) {
         umapDomain <- umapDomain %>% dplyr::filter(subclass == tumorType)
       }
       domainTumorTypes <- abbreviations %>% dplyr::filter(Domain == domain) %>% dplyr::select(abbreviationSubtype) %>% unique() %>% tibble::deframe()
@@ -56,34 +56,35 @@ plotCohortUMAP <- function(dataUMAPList,
   dataLogUMAPlabels <- umapDomain %>% dplyr::filter(!(duplicated(abbreviation)))
 
   dataLogUMAPlabels %<>% dplyr::arrange(subclass)
-  dataLogUMAPlabels$abbreviation <- factor(dataLogUMAPlabels$abbreviation, levels = unique(dataLogUMAPlabels$abbreviation))
+  dataLogUMAPlabels$abbreviation <- base::factor(dataLogUMAPlabels$abbreviation, levels = unique(dataLogUMAPlabels$abbreviation))
 
 
   umapCohortTumorType <- umapDomain %>%
-    ggplot2::ggplot(aes(x = UMAP1,
+    ggplot2::ggplot(
+      ggplot2::aes(x = UMAP1,
                y = UMAP2
     )) +
     ggplot2::theme_classic() +
     ggplot2::labs(color = "Tumor Type") +
-    ggplot2::theme(axis.ticks = element_blank(),
-          axis.text = element_blank(),
-          panel.background = element_blank(),
-          panel.border = element_rect(colour = "black", fill=NA, linewidth =0.7),
-          legend.key = element_blank(),
-          legend.background = element_blank(),
-          axis.title = element_text(size = 14),
-          axis.title.x = element_text(vjust = -1.8),
-          axis.title.y = element_text(vjust = 2),
+    ggplot2::theme(axis.ticks = ggplot2::element_blank(),
+          axis.text = ggplot2::element_blank(),
+          panel.background = ggplot2::element_blank(),
+          panel.border = ggplot2::element_rect(colour = "black", fill=NA, linewidth =0.7),
+          legend.key = ggplot2::element_blank(),
+          legend.background = ggplot2::element_blank(),
+          axis.title = ggplot2::element_text(size = 14),
+          axis.title.x = ggplot2::element_text(vjust = -1.8),
+          axis.title.y = ggplot2::element_text(vjust = 2),
           legend.position = "none",
-          plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")) +
-    ggplot2::geom_point(aes(color = abbreviation),
+          plot.margin = ggplot2::unit(c(0.8,0.8,0.8,0.8), "cm")) +
+    ggplot2::geom_point(ggplot2::aes(color = abbreviation),
                shape = 19,
-               key_glyph = draw_key_point)
+               key_glyph = ggplot2::draw_key_point())
 
   if (useLabels == T) {
     umapCohortTumorType <- umapCohortTumorType +
       ggrepel::geom_label_repel(data = dataLogUMAPlabels,
-                       aes(color = abbreviation,
+                                ggplot2::aes(color = abbreviation,
                            label = abbreviation),
                        max.overlaps = 40,
                        size=4,
@@ -97,7 +98,7 @@ plotCohortUMAP <- function(dataUMAPList,
 
   if (!is.na(plotColors)[1]) {
     umapCohortTumorType <- umapCohortTumorType +
-      scale_color_manual(values = plotColors,
+      ggplot2::scale_color_manual(values = plotColors,
                          breaks = domainTumorTypes)
 
 

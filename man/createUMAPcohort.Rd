@@ -10,6 +10,7 @@ createUMAPcohort(
   classColumn,
   higherClassColumn,
   domainColumn,
+  sampleColumn,
   correctRibo = T,
   abbreviations = NA,
   proteinCodingGenes,
@@ -29,6 +30,8 @@ the tumor (sub)type diagnosis within the reference cohort.}
 
 \item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
 
+\item{sampleColumn}{Column in the metadata file that contains the sample identifiers.}
+
 \item{correctRibo}{Do you want to perform a correction for the ribodepletion protocol on your dataset?}
 
 \item{abbreviations}{Optional. Dataframe containing the links between the tumor (sub)type,
@@ -43,9 +46,8 @@ Please supply it as a vector. This is needed for ribo-depletion correction model
 List containing the UMAP-transformed datapoints ($dataUMAP), the abbreviations used to name the UMAP-transformed datapoints, and the ribodepletion correction model ($riboModelList).
 }
 \description{
-Function to create the data required for plotting an UMAP of the reference cohort,
-and paving the way for transforming new samples into the same sample space by
-saving the transformation-model and ribo-depletion correction model.
+Function to create the data required for plotting an UMAP of the reference cohort
+and ribo-depletion correction model.
 }
 \details{
 Please note that the tumor domain, type and subtype all need to be specified within the metadata.
