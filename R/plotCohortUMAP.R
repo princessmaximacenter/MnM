@@ -79,7 +79,7 @@ plotCohortUMAP <- function(dataUMAPList,
           plot.margin = ggplot2::unit(c(0.8,0.8,0.8,0.8), "cm")) +
     ggplot2::geom_point(ggplot2::aes(color = abbreviation),
                shape = 19,
-               key_glyph = ggplot2::draw_key_point())
+               key_glyph = ggplot2::draw_key_point)
 
   if (useLabels == T) {
     umapCohortTumorType <- umapCohortTumorType +
