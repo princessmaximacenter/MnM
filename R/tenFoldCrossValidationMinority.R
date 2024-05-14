@@ -52,23 +52,23 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
   if (sampleColumn %notin% base::colnames(metaDataRef)) {
     base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
-  } else if (classColumn %notin% colnames(metaDataRef)) {
+  } else if (classColumn %notin% base::colnames(metaDataRef)) {
     base::stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
   } else if (higherClassColumn %notin% base::colnames(metaDataRef)){
     stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
   } else if (domainColumn %notin% base::colnames(metaDataRef)) {
     stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
   }
-  rownames(metaDataRef) <- metaDataRef[, sampleColumn]
+  base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
   # Make sure the metadata and count data are in the right format and same order
   if (base::nrow(metaDataRef) != base::ncol(countDataRef)) {
     base::stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
   } else if (base::all(base::rownames(metaDataRef) %notin% base::colnames(countDataRef))) {
-    stop("Your input data is not as required. Please make sure your sample IDs are within the row names of the metadata, and in the column names of the count data")
+    base::stop("Your input data is not as required. Please make sure your sample IDs are within the row names of the metadata, and in the column names of the count data")
   }
 
-  if (is.numeric(countDataRef) != T) {
-    stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.
+  if (base::is.numeric(countDataRef) != T) {
+    base::stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.
          Non-available measurements are not allowed.")
 
   }
