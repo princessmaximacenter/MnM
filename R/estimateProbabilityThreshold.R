@@ -2,17 +2,17 @@
 #'
 #' This function calculates the sensitivity, specificity, precision and recall at
 #' different probability score thresholds for sample classification.
-#' A sample is classified as positive when it receives a classification (prediction probability > threshold).
+#' A sample is classified as positive when it receives a classification (classification probability > threshold).
 #' On the contrary, a sample is classified as negative when it does not receive a classification
-#' (prediction probability < threshold). A true positive is a classified sample for which the prediction is
-#' correct, a true negative a non-classified sample that had a wrong prediction.
+#' (prediction probability < threshold). A true positive is a classified sample for which the classification is
+#' correct, a true negative a non-classified sample that had a wrong classification
 #'
 #' @param predictionsMM  Dataframe showing the top 3 classifications for the tumor (sub)type,
 #' together with their probability scores and the original pathology label (originalCall)
 #' @param returnPlot Do you want to obtain the data or (FALSE) or get the resulting plot (TRUE)?
 #' @param interceptionPoint At which threshold would you like to draw the line that intersects the sensitivity and specificity lines?
 #' @return If returnPlot = FALSE: Dataframe containing the number of true positives ($TP), false positives ($FP),
-#' true negatives ($TN) and false negatives ($FN) at different probability score tresholds.
+#' true negatives ($TN) and false negatives ($FN) at different probability score thresholds.
 #'  Calculated from the metrics named above are the sensitivity ($sensitivity),
 #'  specificity ($specificity), precision ($precision) and recall ($recall).
 #'

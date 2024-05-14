@@ -20,11 +20,22 @@ newPredictionsMinority <- function(createdModelsMinority, countDataNew,
                                    saveModel = T) {
   # Find the predictions for the test data
   # PREPARE DATA
-  countDataNew <- apply(countDataNew,2,function(x) (x/sum(x))*1E6)
+  if (saveModel == T) {
+    #directory <- outputDir
+
+    if (!dir.exists(outputDir)) {
+      checkDirectory <- base::tryCatch(base::dir.create(outputDir))
+      if (checkDirectory == F) {
+        stop("The directory you want the classification to be saved in cannot be created due to an error in the directory path. Please check the spelling of your specified outputDir.")
+      }
+    }
+  }
+
+  countDataNew <- base::apply(countDataNew,2,function(x) (x/base::sum(x))*1E6)
 
   countDataNew <- predictRiboCounts(riboModel = createdModelsMinority$riboModelList$riboModel, data = countDataNew)
 
-  dataLogNew <- log(countDataNew + 1) %>% t() %>% as.data.frame()
+  dataLogNew <- base::log(countDataNew + 1) %>% base::t() %>% base::as.data.frame()
   dataLogNew <- dataLogNew[ , createdModelsMinority$reducedFeatures, drop = F]
 
   # Also create test data and specify which biomaterial IDs are in there
@@ -32,7 +43,7 @@ newPredictionsMinority <- function(createdModelsMinority, countDataNew,
 
   result <- predictTest(modelList = createdModelsMinority$modelList, testData = dataLogNew)
 
-  print("Finished with predicting results")
+  base::print("Finished with classifying results")
 
 
   classificationList <- convertResultToClassification(result = result,
@@ -42,11 +53,13 @@ newPredictionsMinority <- function(createdModelsMinority, countDataNew,
   classificationList$metaDataRun <- createdModelsMinority$metaDataRun
   if (saveModel == T) {
     #directory <- outputDir
-    filename <- paste0(outputDir, "/minorityClassifierResult.rds")
-    if (!dir.exists(outputDir)) {
-      dir.create(outputDir) }
-  saveRDS(classificationList, file = filename)
-  print(paste0("Please find the generated R-object with the classification results within ", filename))
+    #filename <- paste0(outputDir, "/minorityClassifierResult.rds")
+    #if (!dir.exists(outputDir)) {
+      #dir.create(outputDir) }
+    filename <- base::paste0(outputDir, "/minorityClassifierResult.rds")
+
+    base::saveRDS(classificationList, file = filename)
+  base::print(base::paste0("Please find the generated R-object with the classification results within ", filename))
   }
   return(classificationList)
 }

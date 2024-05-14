@@ -1,4 +1,4 @@
-#' Plot piechart per domain as cohort overview
+#' Plot pie-chart per domain as cohort overview
 #'
 #' Function to automatically generate a pie-chart for the samples that belong to
 #' one of the tumor domains within the dataset. Required are dedicated dataframes
@@ -22,13 +22,14 @@
 #' and tumor type labels with their appropriate abbreviations (abbreviationTumorType).
 #' Please make sure that the higherClassColumn name is used as column name within abbreviations for the tumor type labels,
 #' and classColumn name for the tumor subtype labels.
-#' @param plotColors Which colors do you want to use to color your plot? If not specified, default colors from RColorBrewer palette spectral will be used.
+#' @param plotColors Which colors do you want to use to color your plot? If not specified,
+#' default colors from RColorBrewer palette spectral will be used.
 #' @param includeNumbers  Do you want to show the numbers for the pie chart on the outer edge?
 #' Default is includeNumbers = TRUE.
 #'
-#' @return Piechart of how many samples are present within the dataset belonging to a
+#' @return Pie-chart of how many samples are present within the dataset belonging to a
 #' certain tumor type, and to a certain tumor subtype.
-#' The piechart is generated for one domain, as there are many different tumor types and subtypes
+#' The pie-chart is generated for one domain, as there are many different tumor types and subtypes
 #' within each domain.
 #' @export
 #' @import RColorBrewer

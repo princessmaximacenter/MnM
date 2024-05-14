@@ -1,4 +1,4 @@
-#' Plot the separate accuracies of the Minority classifier, Majority classifier and M&M classifier
+#' Plot the separate accuracy of the Minority classifier, Majority classifier and M&M classifier
 #'
 #' @param separateClassifierAccuracies Dataframe obtained from the function 'combineSeparateClassifierAccuracies'.
 #'

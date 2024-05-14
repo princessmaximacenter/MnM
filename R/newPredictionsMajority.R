@@ -27,6 +27,18 @@ newPredictionsMajority <- function(createdModelsMajority,
                                    outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                    saveModel = T
 ) {
+
+  if (saveModel == T) {
+    #directory <- outputDir
+
+    if (!dir.exists(outputDir)) {
+      checkDirectory <- base::tryCatch(base::dir.create(outputDir))
+      if (checkDirectory == F) {
+        stop("The directory you want the classification to be saved in cannot be created due to an error in the directory path. Please check the spelling of your specified outputDir.")
+      }
+    }
+  }
+
   # Make sure you have CPM counts
   countDataNew <- apply(countDataNew,2,function(x) (x/sum(x))*1E6)
   countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)

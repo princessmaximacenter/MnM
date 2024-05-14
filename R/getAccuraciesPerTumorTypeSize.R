@@ -1,4 +1,4 @@
-#' Obtain accuracies per tumor (sub)type sample size
+#' Obtain accuracy per tumor (sub)type sample size
 #'
 #' @param predictionsMM Dataframe showing the top 3 classifications for the tumor (sub)type, together with their probability scores.
 #' @param metaDataRef Metadata-file for the reference cohort containing the tumor (sub)type labels.

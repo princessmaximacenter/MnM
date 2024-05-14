@@ -25,22 +25,22 @@ obtainPredictionMajorityClassifier <- function(rotationsAndScalingsList,
                                      maxNeighbors = 25,
                                      nModels = 100
 ) {
-  for (i in seq(1:nModels)) {
-    print(paste0("Working on model ", i))
+  for (i in base::seq(1:nModels)) {
+    base::print(base::paste0("Working on model ", i))
     rotations <- rotationsAndScalingsList[["prList"]][[i]]$rotation
     varFeatures <- rotationsAndScalingsList[["scaleFeaturesList"]][[i]]$varFeatures
     meanGenes <- rotationsAndScalingsList[["scaleFeaturesList"]][[i]]$meanGenes
     sdGenes <- rotationsAndScalingsList[["scaleFeaturesList"]][[i]]$sdGenes
 
     # Rotate the training data
-    rotatedTrainData <- rotationsAndScalingsList[["prList"]][[i]]$x %>% as.data.frame()
-    testSamples <- colnames(dataTest)
-    rotatedTestSamples <- t((dataTest[varFeatures,]-meanGenes[varFeatures])/sdGenes[varFeatures]) %*% rotations %>%
-      as.data.frame()
+    rotatedTrainData <- rotationsAndScalingsList[["prList"]][[i]]$x %>% base::as.data.frame()
+    testSamples <- base::colnames(dataTest)
+    rotatedTestSamples <- base::t((dataTest[varFeatures,]-meanGenes[varFeatures])/sdGenes[varFeatures]) %*% rotations %>%
+      base::as.data.frame()
 
-    rotatedTrainData$class <- as.factor(metaDataRef[rownames(rotatedTrainData),classColumn])
+    rotatedTrainData$class <- base::as.factor(metaDataRef[base::rownames(rotatedTrainData),classColumn])
 
-    rotatedTrainDataK <- rotatedTrainData[grep("\\.",rownames(rotatedTrainData),invert=T),]
+    rotatedTrainDataK <- rotatedTrainData[base::grep("\\.",base::rownames(rotatedTrainData),invert=T),]
 
     kTrain <- kknn::train.kknn(class~., rotatedTrainDataK,
                          distance = 1,
@@ -54,13 +54,13 @@ obtainPredictionMajorityClassifier <- function(rotationsAndScalingsList,
                   scale= T,
                   k= kTrain$best.parameters$k)
 
-    prediction <- as.character(model$fitted.values)
+    prediction <- base::as.character(model$fitted.values)
 
     if (i == 1) {
-      result <- data.frame(fold1 = prediction)
-      rownames(result) <- testSamples
+      result <- base::data.frame(fold1 = prediction)
+      base::rownames(result) <- testSamples
     } else {
-      result[, paste0("fold", i)] <- prediction
+      result[, base::paste0("fold", i)] <- prediction
     }
   }
 

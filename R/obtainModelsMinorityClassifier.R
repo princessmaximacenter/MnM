@@ -15,25 +15,25 @@ obtainModelsMinorityClassifier <- function(dataTrain,
                                            nModels = 100,
                                            ntree = 500
 ) {
-  modelList <- list()
+  modelList <- base::list()
 
-  for (i in seq(1:nModels)) {
-    print(paste("Working on model", i))
+  for (i in base::seq(1:nModels)) {
+    base::print(base::paste("Working on model", i))
     trainSamples <- samplesTrainDefList[[i]]
 
-    train.data <- dataTrain[rownames(dataTrain) %in% trainSamples,]
+    train.data <- dataTrain[base::rownames(dataTrain) %in% trainSamples,]
 
-    train.category <- as.character(train.data$class)
+    train.category <- base::as.character(train.data$class)
     train.data %<>% dplyr::select(-c("class"))
 
     # Determine class weights for the weighted RF
     classesVal <- base::table(train.category)
     probabilityClasses <- 1/classesVal
-    classwt <- as.numeric(probabilityClasses)
+    classwt <- base::as.numeric(probabilityClasses)
 
     # Generate RF model on training subset
     model <- randomForest::randomForest(x = train.data,
-                          y = as.factor(train.category),
+                          y = base::as.factor(train.category),
                           importance = T,
                           ntree = ntree,
                           proximity = F,

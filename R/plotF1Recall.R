@@ -1,6 +1,6 @@
 #' Plot F1-scores and recall per tumor frequency
 #'
-#' The plotF1Recall function can be used in two ways, to generate different plot types.
+#' The 'plotF1Recall' function can be used in two ways, to generate different plot types.
 #' One plot shows the tumor population group frequency averages for F1 scores, together with the individual F1-values.
 #' No recall is displayed in this plot.
 #'

@@ -48,22 +48,22 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
 ) {
 
-  `%notin%` <- Negate(`%in%`)
+  `%notin%` <- base::Negate(`%in%`)
 
-  if (sampleColumn %notin% colnames(metaDataRef)) {
-    stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
+  if (sampleColumn %notin% base::colnames(metaDataRef)) {
+    base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
   } else if (classColumn %notin% colnames(metaDataRef)) {
-    stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
-  } else if (higherClassColumn %notin% colnames(metaDataRef)){
+    base::stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
+  } else if (higherClassColumn %notin% base::colnames(metaDataRef)){
     stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
-  } else if (domainColumn %notin% colnames(metaDataRef)) {
+  } else if (domainColumn %notin% base::colnames(metaDataRef)) {
     stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
   }
   rownames(metaDataRef) <- metaDataRef[, sampleColumn]
   # Make sure the metadata and count data are in the right format and same order
-  if (nrow(metaDataRef) != ncol(countDataRef)) {
-    stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
-  } else if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
+  if (base::nrow(metaDataRef) != base::ncol(countDataRef)) {
+    base::stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
+  } else if (base::all(base::rownames(metaDataRef) %notin% base::colnames(countDataRef))) {
     stop("Your input data is not as required. Please make sure your sample IDs are within the row names of the metadata, and in the column names of the count data")
   }
 
@@ -72,6 +72,15 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
          Non-available measurements are not allowed.")
 
   }
+
+
+    if (!base::dir.exists(outputDir)) {
+      checkDirectory <- base::tryCatch(base::dir.create(outputDir))
+      if (checkDirectory == F) {
+        base::stop("The directory you want the classification to be saved in cannot be created due to an error in the directory path. Please check the spelling of your specified outputDir.")
+      }
+    }
+
 
   # Include a statement to store the classColumn, higherClassColumn and domainColumn
   print(paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))

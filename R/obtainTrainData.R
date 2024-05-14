@@ -12,17 +12,17 @@
 #'
 obtainTrainData <- function(metaDataRef, classColumn, maxSamplesPerType = 50, nModels = 100) {
 
-  samplesTrainDefList <- list()
-  metaDataRef[, classColumn] <- as.factor(metaDataRef[, classColumn])
+  samplesTrainDefList <- base::list()
+  metaDataRef[, classColumn] <- base::as.factor(metaDataRef[, classColumn])
 
   typesInFold <- base::table(metaDataRef[, classColumn])
-  typeProbs <- 1/sqrt(typesInFold)
+  typeProbs <- 1/base::sqrt(typesInFold)
 
   for ( j in c(1:nModels)){
     #set.seed(j)
     samplesTrainDef <- c()
 
-    samplesTrain <- base::unique(base::sample(rownames(metaDataRef),
+    samplesTrain <- base::unique(base::sample(base::rownames(metaDataRef),
                                   prob=typeProbs[metaDataRef[ , classColumn]],
                                   replace = T))
 
@@ -36,7 +36,7 @@ obtainTrainData <- function(metaDataRef, classColumn, maxSamplesPerType = 50, nM
     if (base::length(rownames(missingType)) > 0) {
       missingTumors <- base::unique(missingType[,classColumn])
 
-      for(i in seq(1:base::length(missingTumors))) {
+      for(i in base::seq(1:base::length(missingTumors))) {
         currentTumorType <- missingType[missingType[ , classColumn] == missingTumors[i],]
         samplesTrain <- c(samplesTrain, base::sample(rownames(currentTumorType), size = 1))
       }

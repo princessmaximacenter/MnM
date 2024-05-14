@@ -11,23 +11,23 @@
 #'
 obtainProbabilities <- function(classifierResults) {
 
-  depth <- function(this) ifelse(is.list(this), 1L + max(sapply(this, depth)), 0L)
+  depth <- function(this) ifelse(is.list(this), 1L + base::max(base::sapply(this, depth)), 0L)
   probabilityList <- classifierResults$probabilityList
 
   if (depth(probabilityList) == 2) {
-    for (i in seq(1:length(probabilityList))) {
-      nModels <- sum(probabilityList[[1]][[1]])
+    for (i in base::seq(1:base::length(probabilityList))) {
+      nModels <- base::sum(probabilityList[[1]][[1]])
       if (i == 1) {
 
-        probabilities <- lapply(probabilityList[[i]], function(x) x / nModels)
+        probabilities <- base::lapply(probabilityList[[i]], function(x) x / nModels)
       } else {
-        probabilities <- c(probabilities, lapply(probabilityList[[i]], function(x) x / nModels))
+        probabilities <- c(probabilities, base::lapply(probabilityList[[i]], function(x) x / nModels))
       }
     }
   } else {
-    nModels <- sum(probabilityList[[1]])
+    nModels <- base::sum(probabilityList[[1]])
 
-    probabilities <- lapply(classifierResults$probabilityList, function(x) x / nModels)
+    probabilities <- base::lapply(classifierResults$probabilityList, function(x) x / nModels)
   }
 
   return(probabilities)
