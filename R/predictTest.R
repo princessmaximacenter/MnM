@@ -14,9 +14,9 @@ predictTest <- function(modelList, testData) {
     prediction <- stats:: predict(model, newdata=testData)
 
     if (i == 1) {
-      result <- data.frame(fold1 = prediction)
+      result <- base::data.frame(fold1 = prediction)
     } else {
-      result[, paste0("fold", i)] <- prediction
+      result[, base::paste0("fold", i)] <- prediction
     }
   }
 

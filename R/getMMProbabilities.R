@@ -12,7 +12,7 @@
 getMMProbabilities <- function(majorityProbability,
                                minorityProbability) {
 
-  `%notin%` <- Negate(`%in%`)
+  `%notin%` <- base::Negate(`%in%`)
   MMProbabilityList <- majorityProbability
 
   if (base::length(minorityProbability) != base::length(majorityProbability)) {
@@ -26,14 +26,14 @@ getMMProbabilities <- function(majorityProbability,
     combinedThings <- c()
     tumors <- c()
 
-    for (item in seq(from = 1, to = (base::length(combineThem) - 1))) {
+    for (item in base::seq(from = 1, to = (base::length(combineThem) - 1))) {
       nextItem <- item + 1
       if ((base::names(combineThem)[item] == base::names(combineThem)[nextItem]) &
           (base::names(combineThem)[item] %notin% tumors)) {
         combinedThings <- c(combinedThings, ((combineThem[item] + combineThem[nextItem]) / 2))
         tumors <- c(tumors, base::names(combineThem)[item])
       } else {
-        if (names(combineThem)[item] %notin% tumors) {
+        if (base::names(combineThem)[item] %notin% tumors) {
           combinedThings <- c(combinedThings, combineThem[item] / 10 )
         }
         if (nextItem == base::length(combineThem) &

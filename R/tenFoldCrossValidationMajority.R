@@ -45,15 +45,15 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 ) {
 
 
-  `%notin%` <- Negate(`%in%`)
+  `%notin%` <- base::Negate(`%in%`)
 
-  if (sampleColumn %notin% colnames(metaDataRef)) {
+  if (sampleColumn %notin% base::colnames(metaDataRef)) {
     stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
-  } else if (classColumn %notin% colnames(metaDataRef)) {
+  } else if (base::classColumn %notin% base::colnames(metaDataRef)) {
     stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
-  } else if (higherClassColumn %notin% colnames(metaDataRef)){
+  } else if (higherClassColumn %notin% base::colnames(metaDataRef)){
     stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
-  } else if (domainColumn %notin% colnames(metaDataRef)) {
+  } else if (domainColumn %notin% base::colnames(metaDataRef)) {
     stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
   }
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
@@ -83,7 +83,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 
 
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
-  if (length(tumorEntitiesWithTooFewSamples) >0) {
+  if (base::length(tumorEntitiesWithTooFewSamples) >0) {
 
     metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
     base::print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
