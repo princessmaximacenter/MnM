@@ -30,19 +30,19 @@ plotF1Recall <- function(separateMeanF1,
     remotes::install_github("fwallis/ungeviz")
   }
 
-  set.seed(whichSeed)
+  base::set.seed(whichSeed)
   separateMeanF1 %<>% dplyr::filter(!is.na(meanF1))
   meanNumbersTrain2 <- separateMeanF1 %>% dplyr::arrange(nCases, meanF1, meanRecall)
-  meanNumbersTrain2$tumorType <- factor(meanNumbersTrain2$tumorType,
+  meanNumbersTrain2$tumorType <- base::factor(meanNumbersTrain2$tumorType,
                                         levels = unique(meanNumbersTrain2$tumorType))
 
   subtype <- separateMeanF1$subtype[1]
 
   meanNumbersTrain2 %<>% tidyr::pivot_longer(cols = c("meanF1", "meanRecall"), values_to = "meanPerformance", names_to = "Splitting")
 
-    meanNumbersTrain2$Splitting <- gsub("mean","", meanNumbersTrain2$Splitting)
+    meanNumbersTrain2$Splitting <- base::gsub("mean","", meanNumbersTrain2$Splitting)
 
-if (is.na(dataMeanF1)[1]) {
+if (base::is.na(dataMeanF1)[1]) {
   recallPlot <- meanNumbersTrain2 %>%
     ggplot2::ggplot(ggplot2::aes(x = tumorType,  y = meanPerformance, label = tumorType))  +
     ggplot2::theme_classic() +

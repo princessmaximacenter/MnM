@@ -88,11 +88,13 @@ createPieChartImage <- function(metaDataRef,
  #   abbreviationCombi %<>% dplyr::filter(!!dplyr::sym(domainColumn) == whichDomain)
 #  }
 
-namesDomain <- abbreviations %>% dplyr::filter(!!dplyr::sym(domainColumn) == whichDomain) %>%
+namesDomain <- abbreviations %>% dplyr::filter(!!dplyr::sym(domainColumn) == whichDomain,
+                                               !!dplyr::sym(higherClassColumn) %in% base::unique(metaDataRef[,higherClassColumn])) %>%
   dplyr::select(abbreviationTumorType) %>% base::unique() %>%
   tibble::deframe()
 
-namesSubtype <- abbreviations %>% dplyr::filter(!!dplyr::sym(domainColumn) == whichDomain) %>%
+namesSubtype <- abbreviations %>% dplyr::filter(!!dplyr::sym(domainColumn) == whichDomain,
+                                                !!dplyr::sym(classColumn) %in% base::unique(metaDataRef[,classColumn])) %>%
   dplyr::select(abbreviationSubtype) %>% base::unique() %>%
   tibble::deframe()
 pieChartDF <- pieDF[pieDF[,domainColumn] == whichDomain,]

@@ -48,6 +48,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   `%notin%` <- base::Negate(`%in%`)
 
   if (sampleColumn %notin% base::colnames(metaDataRef)) {
+<<<<<<< HEAD
     base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
   } else if (classColumn %notin% base::colnames(metaDataRef)) {
     base::stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
@@ -55,6 +56,15 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
     base::stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
   } else if (domainColumn %notin% base::colnames(metaDataRef)) {
     base::stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
+=======
+    stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
+  } else if (base::classColumn %notin% base::colnames(metaDataRef)) {
+    stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
+  } else if (higherClassColumn %notin% base::colnames(metaDataRef)){
+    stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
+  } else if (domainColumn %notin% base::colnames(metaDataRef)) {
+    stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
+>>>>>>> 3f181144414dbecd32f65aca741a12a0afc899a7
   }
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
   # Make sure the metadata and count data are in the right format and same order

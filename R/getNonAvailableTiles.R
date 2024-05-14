@@ -20,18 +20,19 @@ getNonAvailableTiles <- function(predictionsMM,
 
   predictionsMMFiltered <- predictionsMM %>% dplyr::filter(probability1 > probabilityThreshold)
 
-  tumorConfusionMatrix <- caret::confusionMatrix(factor(predictionsMMFiltered$predict,
-                                                 levels = unique(c(predictionsMM$originalCall, predictionsMM$predict))),
-                                          factor(predictionsMMFiltered$originalCall, levels = unique(c(predictionsMM$originalCall, predictionsMM$predict))),
+  tumorConfusionMatrix <- caret::confusionMatrix(base::factor(predictionsMMFiltered$predict,
+                                                 levels = base::unique(c(predictionsMM$originalCall, predictionsMM$predict))),
+                                                 base::factor(predictionsMMFiltered$originalCall,
+                                                              levels = base::unique(c(predictionsMM$originalCall, predictionsMM$predict))),
                                           dnn = c("Prediction", "Reference"))
-  predictionFrequencies <- tumorConfusionMatrix$table %>% as.data.frame()
+  predictionFrequencies <- tumorConfusionMatrix$table %>% base::as.data.frame()
   nonAvailableTiles <- predictionFrequencies %>% dplyr::filter(Freq == 0, Prediction != Reference)
 
   nonAvailableTiles$Domain <- NA
-  nonAvailableTiles$Prediction <- as.character(nonAvailableTiles$Prediction)
-  nonAvailableTiles$Reference <- as.character(nonAvailableTiles$Reference)
+  nonAvailableTiles$Prediction <- base::as.character(nonAvailableTiles$Prediction)
+  nonAvailableTiles$Reference <- base::as.character(nonAvailableTiles$Reference)
 
-  for (i in seq(1:nrow(nonAvailableTiles))) {
+  for (i in base::seq(1:base::nrow(nonAvailableTiles))) {
 
     if (nonAvailableTiles$Prediction[i] %in% abbreviations[, classColumn]) {
       nonAvailableTiles$Prediction[i] <- abbreviations[abbreviations[,classColumn] == nonAvailableTiles$Prediction[i], "abbreviation"] %>% base::unique()

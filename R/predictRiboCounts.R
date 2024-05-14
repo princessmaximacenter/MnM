@@ -17,18 +17,18 @@ predictRiboCounts <- function(riboModel, data) {
   meanGenes <- riboModel$meanGenes
   varGenes <- riboModel$varGenes
   dataSub <- data[highMeanGenes, , drop = F]
-  normalizedData <- apply(dataSub,2,function(x) (x -meanGenes[highMeanGenes])/varGenes[highMeanGenes])
+  normalizedData <- base::apply(dataSub,2,function(x) (x -meanGenes[highMeanGenes])/varGenes[highMeanGenes])
 
-  predictProteinCoding <- 1-(relevantCoefficients[1] + t(normalizedData[base::names(relevantCoefficients)[-1], , drop = F]) %*% relevantCoefficients[-1])
+  predictProteinCoding <- 1-(relevantCoefficients[1] + base::t(normalizedData[base::names(relevantCoefficients)[-1], , drop = F]) %*% relevantCoefficients[-1])
 
   # Divide counts for each sample by the percentage of protein coding sequence.
   # The less protein coding reads, the higher the scale-up of eventual reads.
 
-  data <- sapply(c(1:ncol(data)),function(x) smartRound(data[,x]/predictProteinCoding[x],digits =3))
-  colnames(data) <- colnames(normalizedData)
+  data <- base::sapply(c(1:base::ncol(data)),function(x) smartRound(data[,x]/predictProteinCoding[x],digits =3))
+  base::colnames(data) <- base::colnames(normalizedData)
 
   # After scaling-up samples with limited numbers of protein coding reads,
   # the most important ribosomal RNAs are removed from the dataset.
-  data <- data[!(rownames(data) %in% base::names(relevantCoefficients)[-1]), , drop = F]
+  data <- data[!(base::rownames(data) %in% base::names(relevantCoefficients)[-1]), , drop = F]
   return(data)
 }

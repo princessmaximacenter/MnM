@@ -12,7 +12,7 @@
 smartRound <- function(x, digits = 0) {
   up <- 10 ^ digits
   x <- x * up
-  y <- floor(x)
+  y <- base::floor(x)
   indices <- utils::tail(order(x-y), base::round(base::sum(x)) - base::sum(y))
   y[indices] <- y[indices] + 1
   y / up
