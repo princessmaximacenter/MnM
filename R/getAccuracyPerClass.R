@@ -9,18 +9,18 @@ getAccuracyPerClass <- function(predictions) {
   classes <- predictions[, "originalCall"] %>% unique()
 
 
-  for (i in seq(1:length(classes))) {
+  for (i in base::seq(1:base::length(classes))) {
     predictionsFiltered <- predictions %>% dplyr::filter(originalCall == classes[i])
     correct <- predictionsFiltered %>% dplyr::filter(originalCall == predict)
 
-    accuracyDF <- data.frame(
-      accuracy = nrow(correct) / nrow(predictionsFiltered))
+    accuracyDF <- base::data.frame(
+      accuracy = base::nrow(correct) / base::nrow(predictionsFiltered))
 
     rownames(accuracyDF) <- classes[i]
     if (i == 1) {
       accuracyDFTotal <- accuracyDF
     } else {
-      accuracyDFTotal <- rbind(accuracyDFTotal,
+      accuracyDFTotal <- base::rbind(accuracyDFTotal,
                                accuracyDF)
     }
   }

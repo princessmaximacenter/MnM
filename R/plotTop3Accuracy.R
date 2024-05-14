@@ -17,7 +17,7 @@ plotTop3Accuracy <- function(meanAndSDPlotTrain,
   meanAndSDPlotTrain$trainOrTest <- "Reference cohort"
   meanAndSDPlotTest$trainOrTest <- "Test cohort"
   subtype <- meanAndSDPlotTrain$subtype[1]
-  top23 <- rbind(meanAndSDPlotTrain, meanAndSDPlotTest)
+  top23 <- base::rbind(meanAndSDPlotTrain, meanAndSDPlotTest)
   top23$trainOrTest <- base::factor(top23$trainOrTest, levels = c("Reference cohort", "Test cohort"))
 
   top23Longer <- top23 %>% tidyr::pivot_longer(cols = c("meanFractionCorrect",

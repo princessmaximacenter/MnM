@@ -27,22 +27,22 @@ plotConfusionMatrix <- function(domain = NA,
   abbreviations <- confusionPlotInfo$abbreviations
   nonAvailableTiles <- confusionPlotInfo$nonAvailableTiles
 
-  if (is.na(domain)) {
+  if (base::is.na(domain)) {
     DomainDF <- confusionPlotDF
     nonAvailableTilesDomain <- nonAvailableTiles
   } else {
 
     DomainDF <- confusionPlotDF %>% dplyr::filter(Domain == domain)
     abbreviationsDomain <- abbreviations %>% dplyr::filter(Domain == domain,
-                                                           abbreviation %in% as.character(base::unique(c(DomainDF$Reference, DomainDF$Prediction))) )
+                                                           abbreviation %in% base::as.character(base::unique(c(DomainDF$Reference, DomainDF$Prediction))) )
     abbreviationsExtra <- abbreviations %>% dplyr::filter(Domain != domain,
-                                                          abbreviation %in% as.character(base::unique(c(DomainDF$Reference, DomainDF$Prediction))),
+                                                          abbreviation %in% base::as.character(base::unique(c(DomainDF$Reference, DomainDF$Prediction))),
                                                           Domain != "Not classified")
     domainSubtypes <- c("Not classified", base::unique(abbreviationsDomain$abbreviation), base::unique(abbreviationsExtra$abbreviation))
     #domainSubtypes <- c(unique(abbreviationsDomain$abbreviation))
-    DomainDF$Prediction <- as.character(DomainDF$Prediction) %>% factor(. , levels = domainSubtypes)
+    DomainDF$Prediction <- base::as.character(DomainDF$Prediction) %>% base::factor(. , levels = domainSubtypes)
 
-    DomainDF$Reference <- as.character(DomainDF$Reference) %>% factor(. , levels = domainSubtypes)
+    DomainDF$Reference <- base::as.character(DomainDF$Reference) %>% base::factor(. , levels = domainSubtypes)
     #  DomainDF$Reference <- factor(DomainDF$Reference,
     #                               levels = domainSubtypes)
 
@@ -50,14 +50,14 @@ plotConfusionMatrix <- function(domain = NA,
 
     nonAvailableTilesDomain <- nonAvailableTiles %>% dplyr::filter(Reference %in% domainSubtypes,
                                                                    Prediction %in% domainSubtypes)
-    nonAvailableTilesDomain$Prediction <- as.character(nonAvailableTilesDomain$Prediction) %>%
-      factor(., levels = domainSubtypes)
+    nonAvailableTilesDomain$Prediction <- base::as.character(nonAvailableTilesDomain$Prediction) %>%
+      base::factor(., levels = domainSubtypes)
 
-    nonAvailableTilesDomain$Reference <- as.character(nonAvailableTilesDomain$Reference) %>%
-      factor(., levels = domainSubtypes)
+    nonAvailableTilesDomain$Reference <- base::as.character(nonAvailableTilesDomain$Reference) %>%
+      base::factor(., levels = domainSubtypes)
 
 
-    notClassifiedDF <- data.frame(
+    notClassifiedDF <- base::data.frame(
       Prediction = domainSubtypes,
       Reference = "Not classified",
       Freq = 0,
@@ -66,7 +66,7 @@ plotConfusionMatrix <- function(domain = NA,
 
     notClassifiedDF[,"TumorType"] <- NA
 
-    for (i in seq(1:nrow(notClassifiedDF))) {
+    for (i in base::seq(1:base::nrow(notClassifiedDF))) {
       if (notClassifiedDF$Prediction[i] %in% abbreviationsDomain[,"abbreviation"] & confusionPlotInfo$subtype == T) {
         notClassifiedDF$TumorType[i] <- abbreviationsDomain[abbreviationsDomain[,"abbreviation"] == notClassifiedDF$Prediction[i], confusionPlotInfo$higherClassColumn]
       }
@@ -74,10 +74,10 @@ plotConfusionMatrix <- function(domain = NA,
 
     namesDomain <- base::unique(notClassifiedDF$TumorType)
 
-    notClassifiedDF$TumorType <- factor(notClassifiedDF$TumorType, levels = namesDomain)
+    notClassifiedDF$TumorType <- base::factor(notClassifiedDF$TumorType, levels = namesDomain)
   }
 
-  if (!is.na(domain)) {
+  if (!base::is.na(domain)) {
     confusionPlot <- ggplot2::ggplot(data = DomainDF,
                                      ggplot2::aes(y = Prediction,
                                                           x = Reference,

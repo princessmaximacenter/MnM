@@ -48,7 +48,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
 ) {
 
-  `%notin%` <- Negate(`%in%`)
+  `%notin%` <- base::Negate(`%in%`)
 
   if (sampleColumn %notin% colnames(metaDataRef)) {
     stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")

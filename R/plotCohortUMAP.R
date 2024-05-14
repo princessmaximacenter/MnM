@@ -33,19 +33,27 @@ plotCohortUMAP <- function(dataUMAPList,
 
   dataUMAP <- dataUMAPList$dataUMAP
 
-  if (!is.na(domain)) {
+  if (!base::is.na(domain)) {
     umapDomain <- dataUMAP %>% dplyr::filter(Domain == domain)
-    abbreviations <- dataUMAPList$abbreviations %>% dplyr::filter(abbreviationSubtype %in% unique(umapDomain$abbreviationSubtype))
+    abbreviations <- dataUMAPList$abbreviations %>% dplyr::filter(abbreviationSubtype %in% base::unique(umapDomain$abbreviationSubtype))
 
     if (subtype == F) {
       umapDomain$abbreviation <- umapDomain$abbreviationTumorType
-      domainTumorTypes <- abbreviations %>% dplyr::filter(Domain == domain) %>% dplyr::select(abbreviationTumorType) %>% unique() %>% tibble::deframe()
+      domainTumorTypes <- abbreviations %>%
+        dplyr::filter(Domain == domain) %>%
+        dplyr::select(abbreviationTumorType) %>%
+        base::unique() %>%
+        tibble::deframe()
     } else {
       umapDomain$abbreviation <- umapDomain$abbreviationSubtype
       if (!base::is.na(tumorType)[1]) {
         umapDomain <- umapDomain %>% dplyr::filter(subclass == tumorType)
       }
-      domainTumorTypes <- abbreviations %>% dplyr::filter(Domain == domain) %>% dplyr::select(abbreviationSubtype) %>% unique() %>% tibble::deframe()
+      domainTumorTypes <- abbreviations %>%
+        dplyr::filter(Domain == domain) %>%
+        dplyr::select(abbreviationSubtype) %>%
+        base::unique() %>%
+        tibble::deframe()
 
     }
   } else {
@@ -56,7 +64,8 @@ plotCohortUMAP <- function(dataUMAPList,
   dataLogUMAPlabels <- umapDomain %>% dplyr::filter(!(duplicated(abbreviation)))
 
   dataLogUMAPlabels %<>% dplyr::arrange(subclass)
-  dataLogUMAPlabels$abbreviation <- base::factor(dataLogUMAPlabels$abbreviation, levels = unique(dataLogUMAPlabels$abbreviation))
+  dataLogUMAPlabels$abbreviation <- base::factor(dataLogUMAPlabels$abbreviation,
+                                                 levels = base::unique(dataLogUMAPlabels$abbreviation))
 
 
   umapCohortTumorType <- umapDomain %>%
@@ -96,12 +105,10 @@ plotCohortUMAP <- function(dataUMAPList,
       )
   }
 
-  if (!is.na(plotColors)[1]) {
+  if (!base::is.na(plotColors)[1]) {
     umapCohortTumorType <- umapCohortTumorType +
       ggplot2::scale_color_manual(values = plotColors,
                          breaks = domainTumorTypes)
-
-
   }
 
   return(umapCohortTumorType)

@@ -36,7 +36,7 @@ plotPieChartDomain <- function(data,
                                includeNumbers) {
 
 
-  for (i in seq(1:length(freqSameTumorType))) {
+  for (i in base::seq(1:base::length(freqSameTumorType))) {
     extraCols <- base::rep(plotColors[i], freqSameTumorType[i])
     if (i == 1) {
       myColours <- extraCols
@@ -97,8 +97,8 @@ plotPieChartDomain <- function(data,
        col=NULL) # 4
   graphics::par(new=T)
 
-  tumorTypeSubtypePie(sapply(base::unique(data[,domainColumn]),
-              function(x) sum(data$counts[data[,domainColumn] == x])),
+  tumorTypeSubtypePie(base::sapply(base::unique(data[,domainColumn]),
+              function(x) base::sum(data$counts[data[,domainColumn] == x])),
        init.angle = 0,
        labels = rep("",3),
        border = F,

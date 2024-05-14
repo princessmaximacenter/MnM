@@ -22,7 +22,7 @@ plotMeanSDAccuracy <- function(meanAndSDPlotTrain,
   } else {
     meanAndSDPlot <- meanAndSDPlotTrain
   }
-  meanAndSDPlot$fractionCorrectPercent <- paste0(round(meanAndSDPlot$meanFractionCorrectFiltered * 100, 1), "%")
+  meanAndSDPlot$fractionCorrectPercent <- base::paste0(base::round(meanAndSDPlot$meanFractionCorrectFiltered * 100, 1), "%")
 
   precisionPlot <- ggplot2::ggplot(meanAndSDPlot,
                                    ggplot2::aes(x = type,

@@ -18,10 +18,10 @@ riboCorrectCounts <- function(data,
                               saveRiboModels = F){
   # We look at the protein coding fraction within each patient sample
   # Starting data is the CPM-corrected count data
-  proteinCodingFraction <- apply(data[proteinCodingGenes[proteinCodingGenes %in% rownames(data)],],2,sum)/1E6
+  proteinCodingFraction <- base::apply(data[proteinCodingGenes[proteinCodingGenes %in% base::rownames(data)],],2,base::sum)/1E6
 
   # We calculate the mean gene expression
-  meanGenes <- apply(data,1,mean)
+  meanGenes <- base::apply(data,1,mean)
 
   # We only select the 5000 genes with the highest expression
   highMeanGenes <- base::names(meanGenes)[base::order(meanGenes,decreasing = T)][c(1:5000)]
@@ -30,44 +30,44 @@ riboCorrectCounts <- function(data,
   meanGenes <- meanGenes[highMeanGenes]
 
   # Then we calculate the variance of the genes with the highest expression
-  varGenes <- apply(data[highMeanGenes,],1,var)
+  varGenes <- base::apply(data[highMeanGenes,],1,stats::var)
 
-  normalizedData <- apply(data,2,function(x) (x[highMeanGenes]-meanGenes)/varGenes)
+  normalizedData <- base::apply(data,2,function(x) (x[highMeanGenes]-meanGenes)/varGenes)
 
   set.seed(1)
   # Do cross-validation for glmnet, generalized linear model, Lasso and Elastic-Net Regularized
-  modelCV <- glmnet::cv.glmnet(x = t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian")
+  modelCV <- glmnet::cv.glmnet(x = base::t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian")
 
 
-  model <- glmnet::glmnet(x = t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian",lambda = modelCV$lambda.1se)
+  model <- glmnet::glmnet(x = base::t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian",lambda = modelCV$lambda.1se)
 
-  allCoefficients <- as.matrix(coef(model))[which(as.matrix(coef(model)) > 0),]
+  allCoefficients <- base::as.matrix(coef(model))[base::which(as.matrix(coef(model)) > 0),]
   relevantCoefficients <- c(allCoefficients[1],allCoefficients[-1][allCoefficients[-1] > 0.01])
 
-  predictProteinCoding <- 1-(relevantCoefficients[1] + t(normalizedData[base::names(relevantCoefficients)[-1],]) %*% relevantCoefficients[-1])
+  predictProteinCoding <- 1-(relevantCoefficients[1] + base::t(normalizedData[base::names(relevantCoefficients)[-1],]) %*% relevantCoefficients[-1])
 
   # Divide counts for each sample by the percentage of protein coding sequence.
   # The less protein coding reads, the higher the scale-up of eventual reads.
-  data <- sapply(c(1:ncol(data)),function(x) smartRound(data[,x]/predictProteinCoding[x],digits =3))
-  colnames(data) <- colnames(normalizedData)
+  data <- base::sapply(c(1:base::ncol(data)),function(x) smartRound(data[,x]/predictProteinCoding[x],digits =3))
+  base::colnames(data) <- base::colnames(normalizedData)
 
   # After scaling-up samples with limited numbers of protein coding reads,
   # the most important ribosomal RNAs are removed from the dataset.
-  data <- data[!(rownames(data) %in% base::names(relevantCoefficients)[-1]),]
+  data <- data[!(base::rownames(data) %in% base::names(relevantCoefficients)[-1]),]
 
   #
-  modelList <- list("relevantCoefficients"=relevantCoefficients,
+  modelList <- base::list("relevantCoefficients"=relevantCoefficients,
                     "meanGenes"=meanGenes,
                     "varGenes"=varGenes)
 
 
-  riboModelList <- list("counts"=data,"riboModel"=modelList)
+  riboModelList <- base::list("counts"=data,"riboModel"=modelList)
   if(saveRiboModels == T) {
     directory <- outputDir
-    filename <- paste0(directory, "modelListRiboCounts.rds")
-    if (!dir.exists(directory)) {
-      dir.create(directory) }
-    saveRDS(riboModelList, file = filename)
+    filename <- base::paste0(directory, "modelListRiboCounts.rds")
+    if (!base::dir.exists(directory)) {
+      base::dir.create(directory) }
+    base::saveRDS(riboModelList, file = filename)
   }
   return(riboModelList)
 }

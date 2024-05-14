@@ -25,20 +25,20 @@ reduceFeatures <- function(dataTrain,
                            nANOVAgenes) {
 
   modelList <- list()
-  nModels <- min(nModels, 100)
-  for (i in seq(1:nModels)) {
+  nModels <- base::min(nModels, 100)
+  for (i in base::seq(1:nModels)) {
     samplesTrainDef <- samplesTrainDefList[[i]]
 
-    train.data <- dataTrain[rownames(dataTrain) %in% samplesTrainDef,]
+    train.data <- dataTrain[base::rownames(dataTrain) %in% samplesTrainDef,]
 
-    train.category <- as.character(train.data$class)
+    train.category <- base::as.character(train.data$class)
 
     train.data %<>% dplyr::select(-c("class"))
 
     classesVal <- base::table(train.category)
     probabilityClasses <- 1/classesVal
 
-    classwt <- as.numeric(probabilityClasses)
+    classwt <- base::as.numeric(probabilityClasses)
 
     model <- randomForest::randomForest(x = train.data, y = as.factor(train.category),
                           importance = T, ntree = ntree,
@@ -50,11 +50,11 @@ reduceFeatures <- function(dataTrain,
                                       whichAccuracyMeasure = "MeanDecreaseAccuracy",
                                       nANOVAgenes=nANOVAgenes)
 
-  meanAccuracyValuesDF <- apply(accuracyValuesDF, 1, mean)
+  meanAccuracyValuesDF <- base::apply(accuracyValuesDF, 1, base::mean)
 
   topFeatures <- meanAccuracyValuesDF %>%
     base::sort(decreasing = T) %>%
-    head(n = nFeatures)
+    utils::head(n = nFeatures)
 
   topFeaturesNamesAccuracy <- base::names(topFeatures)
 
