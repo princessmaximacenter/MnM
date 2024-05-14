@@ -22,7 +22,7 @@ createExtraMetaData <- function(metaDataRef,
     tidyr::nest(.) %>%
     dplyr::mutate(newLines = purrr::map(data, ~ .x[1,]))
 
-  for (line in seq(1:nrow(nestedMetaData))) {
+  for (line in base::seq(1:base::nrow(nestedMetaData))) {
     newMetaDataPoint <- base::as.data.frame(nestedMetaData$newLines[[line]])
     newMetaDataPoint$class <- nestedMetaData$class[[line]]
     base::rownames(newMetaDataPoint) <- base::paste0("Synthetic", line)
@@ -34,8 +34,7 @@ createExtraMetaData <- function(metaDataRef,
     }
   }
 
-  col_order <- base::colnames(metaDataRef)
-  newMetaDataDF <- newMetaDataDF[ , col_order]
+  newMetaDataDF <- newMetaDataDF[ , base::colnames(metaDataRef)]
 
 
   metaDataExtra <- base::rbind(metaDataRef, newMetaDataDF)

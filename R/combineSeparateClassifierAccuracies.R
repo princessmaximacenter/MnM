@@ -37,19 +37,19 @@ combineSeparateClassifierAccuracies <- function(minorityDir,
   selectedDirsMajority <- allDirsMajority[base::grep("seed", allDirsMajority)]
 
   if (base::length(selectedDirsMinority) != base::length(selectedDirsMajority)) {
-    stop("The number of models for the minority and majority classifier are not the same.
+    base::stop("The number of models for the minority and majority classifier are not the same.
          Please check your models within the minorityDir and majorityDir that the
          same seeds have been used for the generation of a minority and a majority classifier.")
   } else if (!base::all.equal(selectedDirsMajority, selectedDirsMinority) ) {
-    stop("Please make sure you run the crossvalidation with the same seed for complementary classifications,
+    base::stop("Please make sure you run the crossvalidation with the same seed for complementary classifications,
          and store them in the same directory.")
   }
 
-  for (i in seq(1:base::length(selectedDirsMajority))) {
-    minorityDoc <- paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
-    majorityDoc <- paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
-    minority <- readRDS(minorityDoc)
-    majority <- readRDS(majorityDoc)
+  for (i in base::seq(1:base::length(selectedDirsMajority))) {
+    minorityDoc <- base::paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
+    majorityDoc <- base::paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
+    minority <- base::readRDS(minorityDoc)
+    majority <- base::readRDS(majorityDoc)
     classColumn <- minority$metaDataRun$classColumn
     higherClassColumn <- minority$metaDataRun$higherClassColumn
 
@@ -82,20 +82,21 @@ combineSeparateClassifierAccuracies <- function(minorityDir,
   }
 
   fractionsCorrectMM$classifier <- "M&M"
-  fractionsCorrectCombi <- rbind(fractionsCorrectMM, fractionsCorrectTotal)
+  fractionsCorrectCombi <- base::rbind(fractionsCorrectMM, fractionsCorrectTotal)
 
-  colnames(fractionsCorrectCombi) <- sub("fractionCorrect3", "Top3", colnames(fractionsCorrectCombi))
-  colnames(fractionsCorrectCombi) <- sub("fractionCorrect2", "Top2", colnames(fractionsCorrectCombi))
-  colnames(fractionsCorrectCombi) <- sub("fractionCorrect", "Top1", colnames(fractionsCorrectCombi))
+  colnames(fractionsCorrectCombi) <- base::sub("fractionCorrect3", "Top3", base::colnames(fractionsCorrectCombi))
+  colnames(fractionsCorrectCombi) <- base::sub("fractionCorrect2", "Top2", base::colnames(fractionsCorrectCombi))
+  colnames(fractionsCorrectCombi) <- base::sub("fractionCorrect", "Top1", base::colnames(fractionsCorrectCombi))
 
-  fractionsCorrectCombi$classifier <- factor(fractionsCorrectCombi$classifier, levels = c("M&M", "Majority Classifier", "Minority Classifier"))
+  fractionsCorrectCombi$classifier <- base::factor(fractionsCorrectCombi$classifier,
+                                                   levels = c("M&M", "Majority Classifier", "Minority Classifier"))
   fractionsCorrectCombi$seed <- i
 
   if (i == 1) {
     fractionsCorrectTotalCombi <- fractionsCorrectCombi
 
   } else {
-    fractionsCorrectTotalCombi <- rbind(fractionsCorrectTotalCombi,
+    fractionsCorrectTotalCombi <- base::rbind(fractionsCorrectTotalCombi,
                                         fractionsCorrectCombi
                                         )
   }

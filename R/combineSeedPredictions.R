@@ -27,24 +27,24 @@ combineSeedPredictions <- function(
          subtype = F
          ) {
 
-  allDirsMinority <- list.dirs(minorityDir, recursive = F)
-  allDirsMajority <- list.dirs(majorityDir, recursive = F)
-  selectedDirsMinority <- allDirsMinority[grep("seed", allDirsMinority)]
-  selectedDirsMajority <- allDirsMajority[grep("seed", allDirsMajority)]
+  allDirsMinority <- base::list.dirs(minorityDir, recursive = F)
+  allDirsMajority <- base::list.dirs(majorityDir, recursive = F)
+  selectedDirsMinority <- allDirsMinority[base::grep("seed", allDirsMinority)]
+  selectedDirsMajority <- allDirsMajority[base::grep("seed", allDirsMajority)]
 
-  if (length(selectedDirsMinority) != length(selectedDirsMajority)) {
-    stop("The number of models for the minority and majority classifier are not the same.
+  if (base::length(selectedDirsMinority) != base::length(selectedDirsMajority)) {
+    base::stop("The number of models for the minority and majority classifier are not the same.
          Please check your models within the minorityDir and majorityDir")
-  } else if (!identical(sub(majorityDir, "", selectedDirsMajority), sub(minorityDir, "", selectedDirsMinority)) ) {
-    stop(paste("It seems that classifications from the minority and majority classifier have not been run using the same seed.",
+  } else if (!base::identical(base::sub(majorityDir, "", selectedDirsMajority), base::sub(minorityDir, "", selectedDirsMinority)) ) {
+    base::stop(base::paste("It seems that classifications from the minority and majority classifier have not been run using the same seed.",
         "\nPlease make sure you run the crossvalidation with the same seed for complementary classifications."))
   }
 
-for (i in seq(1:length(selectedDirsMajority))) {
-  minorityDoc <- paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
-  majorityDoc <- paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
-  minority <- readRDS(minorityDoc)
-  majority <- readRDS(majorityDoc)
+for (i in base::seq(1:base::length(selectedDirsMajority))) {
+  minorityDoc <- base::paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
+  majorityDoc <- base::paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
+  minority <- base::readRDS(minorityDoc)
+  majority <- base::readRDS(majorityDoc)
 
   if (i == 1) {
     classColumn <- minority$metaDataRun$classColumn
@@ -75,15 +75,15 @@ for (i in seq(1:length(selectedDirsMajority))) {
     MMProbabilityListFinal <- MMProbabilityList
 
   } else {
-    MMProbabilityListFinal <- setNames(mapply(c, MMProbabilityListFinal[keys], MMProbabilityList[keys]), keys)
+    MMProbabilityListFinal <- stats::setNames(base::mapply(c, MMProbabilityListFinal[keys], MMProbabilityList[keys]), keys)
   }
 }
 MMProbabilityListFinalFinal <- MMProbabilityListFinal
-for (i in seq(1:length(MMProbabilityListFinal))) {
-  MMProbabilityListFinalFinal[[i]] <- tapply(MMProbabilityListFinal[[i]], names(MMProbabilityListFinal[[i]]), sum)
+for (i in base::seq(1:base::length(MMProbabilityListFinal))) {
+  MMProbabilityListFinalFinal[[i]] <- base::tapply(MMProbabilityListFinal[[i]], base::names(MMProbabilityListFinal[[i]]), base::sum)
 }
 
-MMProbabilityListFinalFinal <- lapply(MMProbabilityListFinalFinal, function(x) x / length(selectedDirsMinority))
+MMProbabilityListFinalFinal <- base::lapply(MMProbabilityListFinalFinal, function(x) x / base::length(selectedDirsMinority))
 
 if (subtype == T) {
 predictionsMMFinal <- getTopClassifications(minority = minority,
@@ -97,7 +97,7 @@ predictionsMMFinal <- getTopClassifications(minority = minority,
                                                subtype = subtype)
 
 }
-predictionsList <- list(predictionsMMFinal = predictionsMMFinal,
+predictionsList <- base::list(predictionsMMFinal = predictionsMMFinal,
                         MMProbabilityList = MMProbabilityListFinalFinal,
                         metaDataRef = minority$metaDataRef,
                         metaDataRun = minority$metaDataRun)

@@ -18,12 +18,12 @@ createFeatureDF <- function(modelList,
                             whichAccuracyMeasure,
                             nANOVAgenes) {
   ##Create an empty dataframe
-  empty_df <- data.frame()
+  empty_df <- base::data.frame()
 
   #Recursively extract column values from ModelList
-  for (i in seq_along(modelList)) {
+  for (i in base::seq_along(modelList)) {
 
-    columnValues <- as.data.frame(modelList[[i]][["importance"]]) %>%
+    columnValues <- base::as.data.frame(modelList[[i]][["importance"]]) %>%
       dplyr::select(tidyselect::all_of(whichAccuracyMeasure)) %>%
       dplyr::arrange(dplyr::desc(tidyselect::all_of(whichAccuracyMeasure))) %>%
       dplyr::slice(1:nANOVAgenes) %>%
@@ -32,7 +32,7 @@ createFeatureDF <- function(modelList,
       dplyr::rename(value = whichAccuracyMeasure)
 
     #Append to Dataframe
-    empty_df <- rbind(empty_df, columnValues)
+    empty_df <- base::rbind(empty_df, columnValues)
   }
 
   #Create create a wide DF for comparing features

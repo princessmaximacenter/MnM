@@ -32,17 +32,17 @@ extractIndividualValuesF1 <- function(predictionsMM,
     predictionsMMFiltered <- predictionsMM
   }
 
-  tumorConfusionMatrix <- caret::confusionMatrix(factor(predictionsMMFiltered$predict,
+  tumorConfusionMatrix <- caret::confusionMatrix(base::factor(predictionsMMFiltered$predict,
                                                  levels = base::unique(c(predictionsMMFiltered$originalCall))),
-                                          factor(predictionsMMFiltered$originalCall,
+                                                 base::factor(predictionsMMFiltered$originalCall,
                                                  levels =  base::unique(c(predictionsMMFiltered$originalCall))),
                                           dnn = c("Prediction", "Reference"))
 
-  subsets <- c("3 <= n <= 5", paste( nCases[-c(base::length(nCases))],"< n <=",nCases[-c(1)])[-1], "n > 100")
+  subsets <- c("3 <= n <= 5", base::paste( nCases[-c(base::length(nCases))],"< n <=",nCases[-c(1)])[-1], "n > 100")
 
-  for ( i in 1:(length(nCases))){
+  for ( i in 1:(base::length(nCases))){
 
-    if ( i == length(nCases)){
+    if ( i == base::length(nCases)){
       # Select tumors within a certain block (1-3, 4-5, 6-10, etc.)
       moreThanNCases <-  patientsPerTumor > nCases[i]
     } else {
@@ -51,39 +51,39 @@ extractIndividualValuesF1 <- function(predictionsMM,
     }
     # Find their names
 
-    selectionMoreThanNCases <- names(patientsPerTumor[moreThanNCases])
+    selectionMoreThanNCases <- base::names(patientsPerTumor[moreThanNCases])
 
     subsetResultTest <- predictionsMM %>% dplyr::filter(originalCall %in% selectionMoreThanNCases)
 
     filteredResultTest <- subsetResultTest %>% dplyr::filter(probability1 > probabilityThreshold)
 
     tumorConfusionMatrixSelection <- tumorConfusionMatrix$byClass %>%
-      as.data.frame() %>%
-      dplyr::filter(rownames(.) %in% paste0("Class: ", selectionMoreThanNCases))
+      base::as.data.frame() %>%
+      dplyr::filter(base::rownames(.) %in% base::paste0("Class: ", selectionMoreThanNCases))
 
-    tumorConfusionMatrixSelection$F1[is.na(tumorConfusionMatrixSelection$F1)] <- 0
-    tumorConfusionMatrixSelection$Precision[is.na(tumorConfusionMatrixSelection$Precision)] <- 0
-    filteredResultTest[,"originalCall"] <- factor(filteredResultTest[,"originalCall"], levels = selectionMoreThanNCases)
+    tumorConfusionMatrixSelection$F1[base::is.na(tumorConfusionMatrixSelection$F1)] <- 0
+    tumorConfusionMatrixSelection$Precision[base::is.na(tumorConfusionMatrixSelection$Precision)] <- 0
+    filteredResultTest[,"originalCall"] <- base::factor(filteredResultTest[,"originalCall"], levels = selectionMoreThanNCases)
     recall <- base::table(filteredResultTest[,"originalCall"]) /
       patientsPerTumor[base::names(patientsPerTumor) %in% base::names(base::table(filteredResultTest[,"originalCall"]))]
 
 
-    Precision <- tumorConfusionMatrixSelection[paste0("Class: ", names(recall)),"Precision"]
+    Precision <- tumorConfusionMatrixSelection[paste0("Class: ", base::names(recall)),"Precision"]
     #Recall[i] <- mean(tumorConfusionMatrixSelection$Recall)
-    F1 <- tumorConfusionMatrixSelection[paste0("Class: ", names(recall)),"F1"]
+    F1 <- tumorConfusionMatrixSelection[base::paste0("Class: ", base::names(recall)),"F1"]
     Sensitivity <- tumorConfusionMatrixSelection[paste0("Class: ", names(recall)),"Sensitivity"]
-    ourDF <- data.frame(nCases = subsets[i],
-                        tumorType = names(recall),
+    ourDF <- base::data.frame(nCases = subsets[i],
+                        tumorType = base::names(recall),
                         Precision = Precision,
                         F1 = F1,
-                        Recall = as.numeric(recall),
+                        Recall = base::as.numeric(recall),
                         Sensitivity = Sensitivity
                         )
 
     if (i == 1) {
       totalDF <- ourDF
     } else {
-      totalDF <- rbind(totalDF, ourDF)
+      totalDF <- base::rbind(totalDF, ourDF)
     }
   }
 

@@ -16,14 +16,14 @@ changeSubtypeNameToType <- function(probabilities,
                                     higherClassColumn
                                     ) {
 
-  for (i in seq(1:base::length(probabilities))) {
+  for (i in base::seq(1:base::length(probabilities))) {
 
-    allNames <- base::names(probabilities[[i]]) %>% unlist(., use.names = F)
+    allNames <- base::names(probabilities[[i]]) %>% base::unlist(., use.names = F)
 
     #firstTry <- unlist(firstTry, use.names = F)
     allNamesFinal <- c()
 
-    for (j in seq(1:base::length(allNames))) {
+    for (j in base::seq(1:base::length(allNames))) {
       allNamesFinal[j] <- linkClassAndHigherClass[allNames[j] == linkClassAndHigherClass[,classColumn], higherClassColumn]
     }
     base::names(probabilities[[i]]) <- allNamesFinal
@@ -31,8 +31,8 @@ changeSubtypeNameToType <- function(probabilities,
 
   # Sum the predictions that lead to the same tumor type
   probabilitiesFinal <- probabilities
-  for (i in seq(1:base::length(probabilities))) {
-    probabilitiesFinal[[i]] <- tapply(probabilities[[i]], names(probabilities[[i]]), sum)
+  for (i in base::seq(1:base::length(probabilities))) {
+    probabilitiesFinal[[i]] <- base::tapply(probabilities[[i]], base::names(probabilities[[i]]), base::sum)
   }
 
   return(probabilitiesFinal)

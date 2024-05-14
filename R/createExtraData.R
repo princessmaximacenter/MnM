@@ -25,9 +25,9 @@ createExtraData <- function(countDataRef,
   createData <- subsetCountData %>%
     dplyr::group_by(class) %>%
     tidyr::nest(.) %>%
-    dplyr::mutate(meanDataPoint = purrr::map(data, ~ apply(.x, 2, mean)))
+    dplyr::mutate(meanDataPoint = purrr::map(data, ~ base::apply(.x, 2, base::mean)))
 
-  for (line in seq(1:base::nrow(createData))) {
+  for (line in base::seq(1:base::nrow(createData))) {
 
     newDataPoint <- base::data.frame(createData$meanDataPoint[[line]])
     base::colnames(newDataPoint) <- createData$class[line]

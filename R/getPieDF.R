@@ -17,21 +17,21 @@ getPieDF <- function(metaDataRef,
                      ) {
   pieDF <- metaDataRef[!base::duplicated(metaDataRef[, c(classColumn,higherClassColumn)]),]
   pieDF$counts <- NA
-  for (tumorType in unique(metaDataRef[,higherClassColumn])) {
-    pieDF[pieDF[,higherClassColumn] == tumorType,"counts"] <- table(metaDataRef[metaDataRef[,higherClassColumn] == tumorType, classColumn])[pieDF[pieDF[,higherClassColumn] == tumorType, classColumn]]
+  for (tumorType in base::unique(metaDataRef[,higherClassColumn])) {
+    pieDF[pieDF[,higherClassColumn] == tumorType,"counts"] <- base::table(metaDataRef[metaDataRef[,higherClassColumn] == tumorType, classColumn])[pieDF[pieDF[,higherClassColumn] == tumorType, classColumn]]
 
   }
-  pieDF$fraction <- pieDF$counts/sum(pieDF$counts)
+  pieDF$fraction <- pieDF$counts/base::sum(pieDF$counts)
 
   #pieDF <- pieDF[order(pieDF$Domain,pieDF[,highestClassColumn],pieDF[,higherClassColumn],pieDF[, classColumn]),]
 
-  pieDF$ymax <- cumsum(pieDF$fraction)
+  pieDF$ymax <- base::cumsum(pieDF$fraction)
 
-  pieDF$ymin <- c(0,cumsum(pieDF$fraction)[-nrow(pieDF)])
+  pieDF$ymin <- c(0,base::cumsum(pieDF$fraction)[-base::nrow(pieDF)])
 
 
   #pieDF$abbreviation <- NA
-  for (i in seq(1:nrow(pieDF))) {
+  for (i in base::seq(1:base::nrow(pieDF))) {
     pieDF[,classColumn][i] <- abbreviations[(abbreviations[,classColumn] == pieDF[,classColumn][i]) & (abbreviations[,higherClassColumn] == pieDF[,higherClassColumn][i]),"abbreviationSubtype"]
     pieDF[,higherClassColumn][i] <- abbreviations[abbreviations[,higherClassColumn] == pieDF[,higherClassColumn][i],"abbreviationTumorType"] %>% base::unique()
 

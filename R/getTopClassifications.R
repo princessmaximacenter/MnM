@@ -16,10 +16,10 @@ getTopClassifications <- function(minority,
                                    subtype) {
 
 
-  if ("originalCall" %in% colnames(minority$classifications)) {
+  if ("originalCall" %in% base::colnames(minority$classifications)) {
   predictions <- minority$classifications[base::names(MMProbabilityList), c("predict", "originalCall")]
   if(subtype == F) {
-    predictions$originalCall <- minority$metaDataRef[rownames(predictions), higherClassColumn]
+    predictions$originalCall <- minority$metaDataRef[base::rownames(predictions), higherClassColumn]
   }
   } else {
     predictions <- minority$classifications[, "predict", drop = F]
@@ -31,9 +31,9 @@ getTopClassifications <- function(minority,
   predictions$predict3 <- NA
   predictions$probability3 <- NA
 
-  for (i in seq(1:base::length(MMProbabilityList))) {
+  for (i in base::seq(1:base::length(MMProbabilityList))) {
     allProbs <- MMProbabilityList[[i]]
-    numbersProbs <- as.vector(allProbs)
+    numbersProbs <- base::as.vector(allProbs)
     names(numbersProbs) <- base::names(allProbs)
     numbersProbs <- base::sort(numbersProbs, decreasing = T)
     highestProbability <- numbersProbs[1]

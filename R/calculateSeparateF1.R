@@ -24,58 +24,58 @@ calculateSeparateF1 <- function(
 
 
 
-  `%notin%` <- Negate(`%in%`)
-  allDirsMinority <- list.dirs(minorityDir, recursive = F)
-  allDirsMajority <- list.dirs(majorityDir, recursive = F)
-  selectedDirsMinority <- allDirsMinority[grep("seed", allDirsMinority)]
-  selectedDirsMajority <- allDirsMajority[grep("seed", allDirsMajority)]
+  `%notin%` <- base::Negate(`%in%`)
+  allDirsMinority <- base::list.dirs(minorityDir, recursive = F)
+  allDirsMajority <- base::list.dirs(majorityDir, recursive = F)
+  selectedDirsMinority <- allDirsMinority[base::grep("seed", allDirsMinority)]
+  selectedDirsMajority <- allDirsMajority[base::grep("seed", allDirsMajority)]
 
-  if (length(selectedDirsMinority) != length(selectedDirsMajority)) {
-    stop("The number of models for the minority and majority classifier are not the same.
-         Please check your models within the minorityDir and majorityDir")
-  } else if (!identical(sub(majorityDir, "", selectedDirsMajority), sub(minorityDir, "", selectedDirsMinority)) ) {
-    stop(paste("It seems that classifications from the minority and majority classifier have not been run using the same seed.",
-               "\nPlease make sure you run the crossvalidation with the same seed for complementary classifications."))
+  if (base::length(selectedDirsMinority) != base::length(selectedDirsMajority)) {
+    base::stop(base::paste("The number of models for the minority and majority classifier are not the same.",
+         "Please check your models within the minorityDir and majorityDir"))
+  } else if (!base::identical(base::sub(majorityDir, "", selectedDirsMajority), base::sub(minorityDir, "", selectedDirsMinority)) ) {
+    base::stop(base::paste("It seems that classifications from the minority and majority classifier have not been run using the same seed.",
+               "Please make sure you run the crossvalidation with the same seed for complementary classifications."))
   }
 
-  if (length(grep("crossValidation", list.files(paste0(selectedDirsMajority, "/")))) > 0) {
+  if (base::length(base::grep("crossValidation", base::list.files(paste0(selectedDirsMajority, "/")))) > 0) {
     crossValidation <- T
   } else {
     crossValidation <- F
   }
 
-  for (i in seq(1:length(selectedDirsMajority))) {
+  for (i in base::seq(1:base::length(selectedDirsMajority))) {
     if (crossValidation == T) {
-    minorityDoc <- paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
-    majorityDoc <- paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
+    minorityDoc <- base::paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
+    majorityDoc <- base::paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
     } else {
-      minorityDoc <- paste0(minorityDir, "/minorityClassifierResult.rds")
-      majorityDoc <- paste0(majorityDir, "/majorityClassifierResult.rds")
+      minorityDoc <- base::paste0(minorityDir, "/minorityClassifierResult.rds")
+      majorityDoc <- base::paste0(majorityDir, "/majorityClassifierResult.rds")
 
     }
-    minority <- readRDS(minorityDoc)
-    majority <- readRDS(majorityDoc)
+    minority <- base::readRDS(minorityDoc)
+    majority <- base::readRDS(majorityDoc)
 
     if (i == 1) {
     classColumn <- minority$metaDataRun$classColumn
     higherClassColumn <- minority$metaDataRun$higherClassColumn
 
-    if (!is.na(metaDataTest)[1]) {
-      print("Checking the performance for the test set based on values provided in dataframe 'metaDataTest'.")
+    if (!base::is.na(metaDataTest)[1]) {
+      base::print("Checking the performance for the test set based on values provided in dataframe 'metaDataTest'.")
 
-      if (classColumn %notin% colnames(metaDataTest)) {
-        print("Please note that the wanted column for the tumor subtype labels cannot be found within 'metaDataTest'.")
-        print(paste0("Either change the column with the tumor subtype labels to the name: ", classColumn))
-        stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
-      } else if (higherClassColumn %notin% colnames(metaDataTest)) {
+      if (classColumn %notin% base::colnames(metaDataTest)) {
+        base::print("Please note that the wanted column for the tumor subtype labels cannot be found within 'metaDataTest'.")
+        base::print(base::paste0("Either change the column with the tumor subtype labels to the name: ", classColumn))
+        base::stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
+      } else if (higherClassColumn %notin% base::colnames(metaDataTest)) {
 
-        print("Please note that the wanted column for the tumor type labels cannot be found within 'metaDataTest'.")
-        print(paste0("Either change the column with the tumor type labels to the name: ", higherClassColumn))
-        stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
+        base::print("Please note that the wanted column for the tumor type labels cannot be found within 'metaDataTest'.")
+        base::print(base::paste0("Either change the column with the tumor type labels to the name: ", higherClassColumn))
+        base::stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
       } else {
-        print(paste0("Found columns ", classColumn, " and ", higherClassColumn, " within metaDataTest specifying the tumor subtype, and tumor type."))
+        base::print(base::paste0("Found columns ", classColumn, " and ", higherClassColumn, " within metaDataTest specifying the tumor subtype, and tumor type."))
 
-        print("No original call found, adding it from metaDataTest")
+        base::print("No original call found, adding it from metaDataTest")
       }
     }
 
@@ -87,9 +87,9 @@ calculateSeparateF1 <- function(
     predictionsMMFinal <- predictionsMMFinalList$predictionsMMFinal
     if (crossValidation == F ) {
       if (subtype == F) {
-        predictionsMMFinal$originalCall <- metaDataTest[rownames(predictionsMMFinal), higherClassColumn]
+        predictionsMMFinal$originalCall <- metaDataTest[base::rownames(predictionsMMFinal), higherClassColumn]
       } else {
-        predictionsMMFinal$originalCall <- metaDataTest[rownames(predictionsMMFinal), classColumn]
+        predictionsMMFinal$originalCall <- metaDataTest[base::rownames(predictionsMMFinal), classColumn]
       }
     }
 
@@ -113,17 +113,17 @@ calculateSeparateF1 <- function(
     if (i == 1) {
       accuracyDF <- fractionsCorrect
     } else {
-      accuracyDF <- rbind(accuracyDF, fractionsCorrect)
+      accuracyDF <- base::rbind(accuracyDF, fractionsCorrect)
     }
   }
-  accuracyDF$nCases <- factor(accuracyDF$nCases, levels = unique(accuracyDF$nCases))
+  accuracyDF$nCases <- base::factor(accuracyDF$nCases, levels = base::unique(accuracyDF$nCases))
   meanNumbers <- accuracyDF %>%
     dplyr::group_by(nCases, tumorType) %>%
     dplyr::summarise(
-      meanPrecision = mean(Precision),
-      meanF1 = mean(F1),
-      meanRecall = mean(Recall),
-      meanSensitivity = mean(Sensitivity)
+      meanPrecision = base::mean(Precision),
+      meanF1 = base::mean(F1),
+      meanRecall = base::mean(Recall),
+      meanSensitivity = base::mean(Sensitivity)
     )
 
   if (crossValidation == T) {

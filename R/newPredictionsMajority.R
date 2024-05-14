@@ -75,9 +75,6 @@ newPredictionsMajority <- function(createdModelsMajority,
    classificationList$metaDataRun <- createdModelsMajority$metaDataRun
 if (saveModel == T) {
 
-  if (!dir.exists(outputDir)) {
-    dir.create(outputDir) }
-
   filename <- paste0(outputDir, "/majorityClassifierResult.rds")
   saveRDS(classificationList, file = filename)
   print(paste0("Please find the generated R-object with the classification results within ", filename))

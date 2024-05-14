@@ -37,38 +37,38 @@ createUMAPcohort <- function(countDataRef,
 
   `%notin%` <- Negate(`%in%`)
 
-  if (sampleColumn %notin% colnames(metaDataRef)) {
-    stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
-  }  else if (classColumn %notin% colnames(metaDataRef)) {
-    stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
-  } else if (higherClassColumn %notin% colnames(metaDataRef)){
-    stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
-  } else if (domainColumn %notin% colnames(metaDataRef)) {
-    stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
+  if (sampleColumn %notin% base::colnames(metaDataRef)) {
+    base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
+  }  else if (classColumn %notin% base::colnames(metaDataRef)) {
+    base::stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
+  } else if (higherClassColumn %notin% base::colnames(metaDataRef)){
+    base::stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
+  } else if (domainColumn %notin% base::colnames(metaDataRef)) {
+    base::stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
   }
 
-  if (nrow(metaDataRef) != ncol(countDataRef)) {
+  if (base::nrow(metaDataRef) != base::ncol(countDataRef)) {
     stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
   }
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
-  if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
+  if (base::all(base::rownames(metaDataRef) %notin% base::colnames(countDataRef))) {
     stop("Your input data is not as required. Please make sure your sample IDs are within the row names of the metadata, and in the column names of the count data")
   }
 
-  if (is.numeric(countDataRef) != T) {
+  if (base::is.numeric(countDataRef) != T) {
     stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix. Non-available measurements are not allowed.")
 
   }
 
-  if (is.na(abbreviations)[1]) {
+  if (base::is.na(abbreviations)[1]) {
 
     abbreviations <- metaDataRef[, c(domainColumn, classColumn, higherClassColumn)] %>% base::unique()
     abbreviations$abbreviationSubtype <- abbreviations[,classColumn]
     abbreviations$abbreviationTumorType <- abbreviations[,higherClassColumn]
 
-    print(paste("You have not supplied any abbreviations (abbreviations). If you would like to use abbreviations,",
+    base::print(base::paste("You have not supplied any abbreviations (abbreviations). If you would like to use abbreviations,",
                 " please generate a dataframe with the following columns and abbreviations within abbreviationSubtype and abbreviationTumorType:"))
-    print(abbreviations[1:4,])
+    base::print(abbreviations[1:4,])
   }
 
   if (correctRibo == T) {
@@ -82,7 +82,7 @@ createUMAPcohort <- function(countDataRef,
   countDataRef <- riboModelList$counts
   }
   # Log-transform data
-  dataLogRef <- log(countDataRef +1) %>% base::t() %>% base::as.data.frame()
+  dataLogRef <- base::log(countDataRef +1) %>% base::t() %>% base::as.data.frame()
   abbreviations %<>% dplyr::filter(!!dplyr::sym(classColumn) %in% base::unique(metaDataRef[, classColumn]),
                             !!dplyr::sym(higherClassColumn) %in% base::unique(metaDataRef[, higherClassColumn])
                             )
@@ -110,7 +110,7 @@ createUMAPcohort <- function(countDataRef,
 
 
   #dataUMAP <- cbind(dataUMAP, dataLogRef[, c("subclass","Domain", "abbreviation"), drop = F])
-  dataUMAPList <- list(dataUMAP = dataUMAP,
+  dataUMAPList <- base::list(dataUMAP = dataUMAP,
                        abbreviations = abbreviations)
 
   if (correctRibo == T) {

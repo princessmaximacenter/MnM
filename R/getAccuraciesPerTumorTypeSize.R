@@ -31,7 +31,7 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
   nSamples <- c()
   nSamplesFiltered <- c()
   errorsFiltered <- c()
-  patientsPerTumor <- table(metaDataRef[,classColumn])
+  patientsPerTumor <- base::table(metaDataRef[,classColumn])
   sensitivity <- c()
   specificity <- c()
   Precision <- c()
@@ -39,9 +39,10 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
   F1 <- c()
 
   predictionsMMFiltered <- predictionsMM %>% dplyr::filter(probability1 > probabilityThreshold)
-  tumorConfusionMatrix <- caret::confusionMatrix(factor(predictionsMMFiltered$predict,
+  tumorConfusionMatrix <- caret::confusionMatrix(base::factor(predictionsMMFiltered$predict,
                                                  levels = base::unique(c(predictionsMMFiltered$originalCall))),
-                                          factor(predictionsMMFiltered$originalCall, levels =  base::unique(c(predictionsMMFiltered$originalCall))),
+                                                 base::factor(predictionsMMFiltered$originalCall,
+                                                 levels =  base::unique(c(predictionsMMFiltered$originalCall))),
                                           dnn = c("Prediction", "Reference"))
   # Need to add the tumors that are not in the metadata, but are in the test set
 
@@ -79,7 +80,7 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
     fractionCorrect[i] <- (subsetResultTest %>%
                              dplyr::filter(predict == originalCall) %>% base::nrow(.)) / base::nrow(subsetResultTest)
     fractionCorrect2[i] <- (subsetResultTest %>%
-                           dplyr::filter(predict == originalCall | predict2 == originalCall) %>% nrow(.)) / nrow(subsetResultTest)
+                           dplyr::filter(predict == originalCall | predict2 == originalCall) %>% base::nrow(.)) / base::nrow(subsetResultTest)
     fractionCorrect3[i] <- (subsetResultTest %>%
                            dplyr::filter(predict == originalCall | predict2 == originalCall |
                                     predict3 == originalCall) %>% base::nrow(.)) / base::nrow(subsetResultTest)
@@ -94,25 +95,25 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
 
   nCases  <- c("3 <= n <= 5", base::paste( nCases[-c(base::length(nCases))],"< n <=",nCases[-c(1)])[-1], "n > 100")
   if (rounding == T) {
-    fractionsCorrect <- data.frame(nSamples = nSamples,
+    fractionsCorrect <- base::data.frame(nSamples = nSamples,
                                                      nSamplesFiltered = nSamplesFiltered,
-                                                     fraction = round(nSamplesFiltered / nSamples, 2),
-                                                     fractionCorrect = round(fractionCorrect,2),
-                                                     fractionCorrect2 = round(fractionCorrect2, 2),
-                                                     fractionCorrect3 = round(fractionCorrect3, 2),
-                                                     fractionCorrectFiltered = round(fractionCorrectFiltered,2),
-                                                     fractionIncorrect = 1 - round(fractionCorrect,2),
-                                                     notClassified = 1 - round(nSamplesFiltered / nSamples, 2),
+                                                     fraction = base::round(nSamplesFiltered / nSamples, 2),
+                                                     fractionCorrect = base::round(fractionCorrect,2),
+                                                     fractionCorrect2 = base::round(fractionCorrect2, 2),
+                                                     fractionCorrect3 = base::round(fractionCorrect3, 2),
+                                                     fractionCorrectFiltered = base::round(fractionCorrectFiltered,2),
+                                                     fractionIncorrect = 1 - base::round(fractionCorrect,2),
+                                                     notClassified = 1 - base::round(nSamplesFiltered / nSamples, 2),
                                                      nCases = nCases,
-                                                     numbersClassifiedFiltered = paste0("N = ", nSamplesFiltered),
-                                                     numbersClassifiedTotal = paste0("N = ", nSamples),
-                                                     errorsFiltered = paste0("N = ", errorsFiltered),
+                                                     numbersClassifiedFiltered = base::paste0("N = ", nSamplesFiltered),
+                                                     numbersClassifiedTotal = base::paste0("N = ", nSamples),
+                                                     errorsFiltered = base::paste0("N = ", errorsFiltered),
                                                      Precision = Precision,
                                    F1 = F1,
                                    Recall = Recall
                                    )
   } else {
-    fractionsCorrect <- data.frame(nSamples = nSamples,
+    fractionsCorrect <- base::data.frame(nSamples = nSamples,
                                    nSamplesFiltered = nSamplesFiltered,
                                    fraction = nSamplesFiltered / nSamples,
                                    fractionCorrect = fractionCorrect,
@@ -122,8 +123,8 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
                                    fractionIncorrect = 1 - fractionCorrect,
                                    notClassified = 1 - nSamplesFiltered / nSamples,
                                    nCases = nCases,
-                                   numbersClassifiedFiltered = paste0("N = ", nSamplesFiltered),
-                                   numbersClassifiedTotal = paste0("N = ", nSamples),
+                                   numbersClassifiedFiltered = base::paste0("N = ", nSamplesFiltered),
+                                   numbersClassifiedTotal = base::paste0("N = ", nSamples),
                                    errorsFiltered = paste0("N = ", errorsFiltered),
                                    Precision = Precision,
                                    F1 = F1,
@@ -145,7 +146,7 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
   fractionCorrect <- (predictionsMM %>%
                         dplyr::filter(predict == originalCall) %>% base::nrow(.)) / base::nrow(predictionsMM)
   fractionCorrect2 <- (predictionsMM %>%
-                         dplyr::filter(predict == originalCall | predict2 == originalCall) %>% nrow) / nrow(predictionsMM)
+                         dplyr::filter(predict == originalCall | predict2 == originalCall) %>% base::nrow) / base::nrow(predictionsMM)
   fractionCorrect3 <- (predictionsMM %>%
                          dplyr::filter(predict == originalCall | predict2 == originalCall |
                                 predict3 == originalCall) %>% base::nrow(.)) / base::nrow(predictionsMM)
@@ -153,27 +154,27 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
   recall <- base::table(filteredResultTest[,"originalCall"]) / patientsPerTumor[base::names(patientsPerTumor) %in% base::names(base::table(filteredResultTest[,"originalCall"]))]
   tumorConfusionMatrixSelection <- tumorConfusionMatrix$byClass %>% base::as.data.frame()
   #tumorConfusionMatrixSelection$Precision[is.na(tumorConfusionMatrixSelection$Precision)] <- 0
-  tumorConfusionMatrixSelection$F1[is.na(tumorConfusionMatrixSelection$F1)] <- 0
+  tumorConfusionMatrixSelection$F1[base::is.na(tumorConfusionMatrixSelection$F1)] <- 0
   if (rounding == T) {
-    allSamplesCorrect <-  data.frame(nSamples = nSamples,
+    allSamplesCorrect <-  base::data.frame(nSamples = nSamples,
                                      nSamplesFiltered = nSamplesFiltered,
-                                     fraction = round(nSamplesFiltered / nSamples, 2),
-                                     fractionCorrect = round(fractionCorrect,2),
-                                     fractionCorrect2 = round(fractionCorrect2, 2),
-                                     fractionCorrect3 = round(fractionCorrect3, 2),
-                                     fractionCorrectFiltered = round(fractionCorrectFiltered,2),
-                                     fractionIncorrect = 1 - round(fractionCorrect,2),
-                                     notClassified = 1 - round(nSamplesFiltered / nSamples, 2),
+                                     fraction = base::round(nSamplesFiltered / nSamples, 2),
+                                     fractionCorrect = base::round(fractionCorrect,2),
+                                     fractionCorrect2 = base::round(fractionCorrect2, 2),
+                                     fractionCorrect3 = base::round(fractionCorrect3, 2),
+                                     fractionCorrectFiltered = base::round(fractionCorrectFiltered,2),
+                                     fractionIncorrect = 1 - base::round(fractionCorrect,2),
+                                     notClassified = 1 - base::round(nSamplesFiltered / nSamples, 2),
                                      nCases = "All",
-                                     numbersClassifiedFiltered = paste0("N = ", nSamplesFiltered),
-                                     numbersClassifiedTotal = paste0("N = ", nSamples),
-                                     errorsFiltered = paste0("N = ", errorsFiltered),
-                                     Precision = mean(tumorConfusionMatrixSelection$Precision, na.rm = T),
-                                     F1= mean(tumorConfusionMatrixSelection$F1),
-                                     Recall = mean(recall)
+                                     numbersClassifiedFiltered = base::paste0("N = ", nSamplesFiltered),
+                                     numbersClassifiedTotal = base::paste0("N = ", nSamples),
+                                     errorsFiltered = base::paste0("N = ", errorsFiltered),
+                                     Precision = base::mean(tumorConfusionMatrixSelection$Precision, na.rm = T),
+                                     F1= base::mean(tumorConfusionMatrixSelection$F1),
+                                     Recall = base::mean(recall)
                                      )
   } else {
-    allSamplesCorrect <-  data.frame(nSamples = nSamples,
+    allSamplesCorrect <-  base::data.frame(nSamples = nSamples,
                                       nSamplesFiltered = nSamplesFiltered,
                                       fraction = nSamplesFiltered / nSamples,
                                       fractionCorrect = fractionCorrect,
@@ -183,18 +184,18 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
                                       fractionIncorrect = 1 - fractionCorrect,
                                       notClassified = 1 - nSamplesFiltered / nSamples,
                                       nCases = "All",
-                                      numbersClassifiedFiltered = paste0("N = ", nSamplesFiltered),
-                                      numbersClassifiedTotal = paste0("N = ", nSamples),
-                                      errorsFiltered = paste0("N = ", errorsFiltered),
-                                     Precision = mean(tumorConfusionMatrixSelection$Precision, na.rm = T),
-                                     F1 = mean(tumorConfusionMatrixSelection$F1),
-                                     Recall = mean(recall))
+                                      numbersClassifiedFiltered = base::paste0("N = ", nSamplesFiltered),
+                                      numbersClassifiedTotal = base::paste0("N = ", nSamples),
+                                      errorsFiltered = base::paste0("N = ", errorsFiltered),
+                                     Precision = base::mean(tumorConfusionMatrixSelection$Precision, na.rm = T),
+                                     F1 = base::mean(tumorConfusionMatrixSelection$F1),
+                                     Recall = base::mean(recall))
   }
 
 
-  fractionsCorrect <- rbind(fractionsCorrect, allSamplesCorrect)
+  fractionsCorrect <- base::rbind(fractionsCorrect, allSamplesCorrect)
 
-  fractionsCorrect$nCases <- factor(fractionsCorrect$nCases, levels = base::unique(fractionsCorrect$nCases))
+  fractionsCorrect$nCases <- base::factor(fractionsCorrect$nCases, levels = base::unique(fractionsCorrect$nCases))
   if (rounding == T) {
   fractionsCorrect$fractionClassifiedCorrect <- base::round(fractionsCorrect$fraction * fractionsCorrect$fractionCorrectFiltered, digits = 2)
   } else {

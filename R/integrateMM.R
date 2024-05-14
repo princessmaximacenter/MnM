@@ -57,7 +57,7 @@ integrateMM <- function(minority,
                                           higherClassColumn = higherClassColumn,
                                           subtype = subtype)
 
-  predictionsList <- list(predictionsMMFinal = predictionsMM,
+  predictionsList <- base::list(predictionsMMFinal = predictionsMM,
                           MMProbabilityList = MMProbabilityList)
   } else {
     predictionsMinority <- getTopClassifications(minority = minority,
@@ -70,7 +70,7 @@ integrateMM <- function(minority,
                                                   higherClassColumn = higherClassColumn,
                                                   subtype = subtype)
 
-    predictionsList <- list(predictionsMinority = predictionsMinority,
+    predictionsList <- base::list(predictionsMinority = predictionsMinority,
                             predictionsMajority = predictionsMajority)
   }
   return(predictionsList)

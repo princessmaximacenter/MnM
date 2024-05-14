@@ -25,18 +25,18 @@ estimateProbabilityThreshold <- function(predictionsMM,
                                          returnPlot,
                                          interceptionPoint) {
 
-  for (cutoff in seq(from = 0, to = 1.01, by = 0.01)) {
+  for (cutoff in base::seq(from = 0, to = 1.01, by = 0.01)) {
     predictionsMMFiltered <- predictionsMM %>% dplyr::filter(probability1 > cutoff)
 
-    TP <- predictionsMMFiltered %>% dplyr::filter(originalCall == predict) %>% nrow()
-    FP <- predictionsMMFiltered %>% dplyr::filter(originalCall != predict) %>% nrow()
+    TP <- predictionsMMFiltered %>% dplyr::filter(originalCall == predict) %>% base::nrow()
+    FP <- predictionsMMFiltered %>% dplyr::filter(originalCall != predict) %>% base::nrow()
     TN <- predictionsMM %>% dplyr::filter(probability1 <= cutoff,
-                                   originalCall != predict) %>% nrow()
+                                   originalCall != predict) %>% base::nrow()
     FN <- predictionsMM %>% dplyr::filter(probability1 <= cutoff,
-                                          originalCall == predict) %>% nrow()
+                                          originalCall == predict) %>% base::nrow()
 
     #recall <- nrow(predictionsMMFiltered) / nrow(predictionsMM)
-    binaryScoreDF <- data.frame(cutoff = cutoff,
+    binaryScoreDF <- base::data.frame(cutoff = cutoff,
                                 TP = TP,
                                 FP = FP,
                                 TN = TN,
@@ -44,7 +44,7 @@ estimateProbabilityThreshold <- function(predictionsMM,
     if (cutoff == 0) {
       totalbinaryScoreDF <- binaryScoreDF
     } else {
-      totalbinaryScoreDF <- rbind(totalbinaryScoreDF,
+      totalbinaryScoreDF <- base::rbind(totalbinaryScoreDF,
                                   binaryScoreDF)
     }
   }
@@ -57,7 +57,7 @@ estimateProbabilityThreshold <- function(predictionsMM,
   totalbinaryScoreDF$recall <- (totalbinaryScoreDF$TP + totalbinaryScoreDF$FP) /
     (totalbinaryScoreDF$TP + totalbinaryScoreDF$FP + totalbinaryScoreDF$TN + totalbinaryScoreDF$FN)
 
-  totalbinaryScoreDF$precision[is.na(totalbinaryScoreDF$precision)] <- 1
+  totalbinaryScoreDF$precision[base::is.na(totalbinaryScoreDF$precision)] <- 1
 
   if (returnPlot == T) {
     totalbinaryScoreDFGGPlot <- totalbinaryScoreDF %>% tidyr::pivot_longer(cols = sensitivity:recall,

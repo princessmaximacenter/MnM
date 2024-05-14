@@ -60,7 +60,7 @@ getSeparateClassifierAccuracies <- function(minority,
 
   majorityAccuracies$classifier <- "Majority Classifier"
 
-  fractionsCorrectTotal <- rbind(minorityAccuracies, majorityAccuracies)
+  fractionsCorrectTotal <- base::rbind(minorityAccuracies, majorityAccuracies)
 
   return(fractionsCorrectTotal)
 }
