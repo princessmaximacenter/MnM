@@ -1,4 +1,4 @@
-#' Calcalate metrics to estimate probability score treshold
+#' Calculate metrics to estimate probability score threshold
 #'
 #' This function calculates the sensitivity, specificity, precision and recall at
 #' different probability score thresholds for sample classification.

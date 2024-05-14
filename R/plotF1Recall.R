@@ -9,7 +9,7 @@
 #'
 #' @param separateMeanF1 Dataframe obtained from function 'calculateSeparateF1'.
 #' Contains all the calculated F1 scores and associated recall rates per tumor (sub)type.
-#' For this setup, filterOrNot within calculateSeparateF1 should be put to F.
+#' For this setup, filterOrNot within 'calculateSeparateF1' should be put to FALSE.
 #' @param dataMeanF1 Dataframe obtained from function 'calculateMeanAndSDAccuracy'.
 #' Contains all the calculated F1 scores and associated recall rates stratified by population frequency.
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
