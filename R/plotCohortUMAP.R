@@ -1,18 +1,20 @@
 #' Plot UMAP coordinates colored by tumor domain, tumor types or tumor subtypes
 #'
 #' Function to plot the UMAP coordinates for the different tumor (sub)type samples
-#' belonging to one domain or tumor type.
+#' belonging to one domain or tumor type. Coloring and labeling can be performed based on the
+#' sample's tumor domain, tumor type and tumor subtype labels.
 #'
 #' @param dataUMAPList List containing the UMAP coordinate data
 #' and the desired abbreviation for the tumor type ($abbreviation), resulting from the function 'createUMAPcohort'
-#' @param domain Which domain do you want to plot the tumor types for? If not specified, visualization will be performed on the domain level by default.
-#' @param subtype In case domain is specified: Do you want to visualize on the tumor subtype level (TRUE) or on the tumor type level (FALSE)?
+#' @param domain Which domain do you want to visualize the tumor types for (for example: domain = "Hemato")?
+#' If not specified, visualization will be performed on the domain level.
+#' @param subtype Do you want to visualize on the tumor subtype level (TRUE) or on the tumor type level (FALSE)?
+#' Only possible when the domain is specified (e.g. domain = "Hemato"), otherwise visualization will
+#' automatically take place on the domain level.
 #' @param tumorType If domain is specified and subtype = TRUE, there's a possibility to plot the tumor subtypes for only one tumor type.
-#' Please specify which tumor type you would like to visualize within this parameter.
+#' If that is desired, fill out the tumor type that you would like to visualize at 'tumorType' (for example: tumorType = "B-ALL")
 #' @param plotColors Which colors do you want to use for the tumor types? If not specified, default ggplot2 colors will be used.
 #' @param useLabels Do you want to supply labels within the plot?
-
-#' If that would be desired, fill out the tumor type that you would like to visualize at 'tumorType' (for example: "B-ALL").
 
 #' @return ggplot with only the datapoints of the selected domain,
 #' color coded by the tumor type (subtype = F) or tumor subtype (subtype = T).
@@ -27,7 +29,7 @@ plotCohortUMAP <- function(dataUMAPList,
                                 useLabels = T
                                 ) {
 
-  if (require("ggrepel") == F) {
+  if (base::require("ggrepel") == F) {
     remotes::install_github("fwallis/ggrepel")
   }
 
@@ -35,7 +37,8 @@ plotCohortUMAP <- function(dataUMAPList,
 
   if (!base::is.na(domain)) {
     umapDomain <- dataUMAP %>% dplyr::filter(Domain == domain)
-    abbreviations <- dataUMAPList$abbreviations %>% dplyr::filter(abbreviationSubtype %in% base::unique(umapDomain$abbreviationSubtype))
+    abbreviations <- dataUMAPList$abbreviations %>%
+      dplyr::filter(abbreviationSubtype %in% base::unique(umapDomain$abbreviationSubtype))
 
     if (subtype == F) {
       umapDomain$abbreviation <- umapDomain$abbreviationTumorType
