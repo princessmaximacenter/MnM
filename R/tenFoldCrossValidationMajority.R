@@ -9,7 +9,7 @@
 #' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param sampleColumn Column in the metadata file that contains the samples.
+#' @param sampleColumn Column in the metadata file that contains the sample identifiers.
 #' @param nModels How many models should be created for the Majority classifier?
 #' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
 #' @param nFeatures How many of the most variable genes within the dataset should we select for principal component analysis (PCA)?
@@ -56,61 +56,61 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   } else if (domainColumn %notin% colnames(metaDataRef)) {
     stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
   }
-  rownames(metaDataRef) <- metaDataRef[, sampleColumn]
+  base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
   # Make sure the metadata and count data are in the right format and same order
-  if (nrow(metaDataRef) != ncol(countDataRef)) {
-    stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
-  } else if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
-    stop("Your input data is not as required. Please make sure your sample IDs are within the sampleColumn or within the row names of the metadata, and in the column names of the count data")
+  if (base::nrow(metaDataRef) != base::ncol(countDataRef)) {
+    base::stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
+  } else if (base::all(base::rownames(metaDataRef) %notin% base::colnames(countDataRef))) {
+    base::stop("Your input data is not as required. Please make sure your sample IDs are within the sampleColumn or within the row names of the metadata, and in the column names of the count data")
   }
 
-  if (is.numeric(countDataRef) != T) {
-    stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.")
+  if (base::is.numeric(countDataRef) != T) {
+    base::stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.")
 
   }
 
   # Include a statement to store the classColumn, higherClassColumn and domainColumn
-  print(paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
-  print(base::unique(metaDataRef[,classColumn])[1:3])
+  base::print(base::paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
+  base::print(base::unique(metaDataRef[,classColumn])[1:3])
 
-  print(paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
-  print(base::unique(metaDataRef[,higherClassColumn])[1:3])
+  base::print(base::paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
+  base::print(base::unique(metaDataRef[,higherClassColumn])[1:3])
 
-  print(paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
-  print(base::unique(metaDataRef[,domainColumn])[1:3])
-  print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
+  base::print(base::paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
+  base::print(base::unique(metaDataRef[,domainColumn])[1:3])
+  base::print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
 
 
 
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
   if (length(tumorEntitiesWithTooFewSamples) >0) {
 
-    metaDataRef %<>% filter(!!sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
-    print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
+    metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
+    base::print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
     #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
 
   }
-  countDataRef <- countDataRef[, rownames(metaDataRef)]
+  countDataRef <- countDataRef[, base::rownames(metaDataRef)]
 
   # Make sure you have CPM counts
-  countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
+  countDataRef <- base::apply(countDataRef,2,function(x) (x/base::sum(x))*1E6)
 
-  if (!dir.exists(outputDir)) {
-    dir.create(outputDir)}
+  if (!base::dir.exists(outputDir)) {
+    base::dir.create(outputDir)}
   directory <- outputDir#paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"), "/")
-  modelDirectory <- paste0(directory, "/seed", whichSeed)
-  if (!dir.exists(directory)) {
-    dir.create(directory)
-    dir.create(modelDirectory)
-  } else if (!dir.exists(modelDirectory)){
-    dir.create(modelDirectory)
+  modelDirectory <- base::paste0(directory, "/seed", whichSeed)
+  if (!base::dir.exists(directory)) {
+    base::dir.create(directory)
+    base::dir.create(modelDirectory)
+  } else if (!base::dir.exists(modelDirectory)){
+    base::dir.create(modelDirectory)
   }
 
   # Correct for ribosomal protein contamination
-    riboCountFile <- paste0(modelDirectory, "/modelListRiboCounts.rds")
-    if (!file.exists(riboCountFile)) {
+    riboCountFile <- base::paste0(modelDirectory, "/modelListRiboCounts.rds")
+    if (!base::file.exists(riboCountFile)) {
 
-      set.seed(whichSeed)
+      base::set.seed(whichSeed)
       riboModelList <- riboCorrectCounts(data = countDataRef,
                                          proteinCodingGenes = proteinCodingGenes,
                                          outputDir = modelDirectory,
@@ -118,24 +118,24 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
       )
 
     } else {
-      riboModelList <- readRDS(riboCountFile)
+      riboModelList <- base::readRDS(riboCountFile)
 
     }
     countDataRef <- riboModelList$counts
 
   # Log-transform data
-  dataLogRef <- log(countDataRef +1)
+  dataLogRef <- base::log(countDataRef +1)
 
   # Remove the genes with zero variance across the dataset
 
-  dataLogZeroVar <- t(dataLogRef) %>% as.data.frame(.)
+  dataLogZeroVar <- base::t(dataLogRef) %>% base::as.data.frame()
   zeroVar <- caret::nearZeroVar(dataLogZeroVar)
 
   dataLogNonZero <- dataLogRef[-zeroVar, ]
 
-  print("We will now start with the cross-validation")
+  base::print("We will now start with the cross-validation")
   # Set seed for reproducibility
-  set.seed(whichSeed)
+  base::set.seed(whichSeed)
 
   # Create splits for cross-validation setup with equal distribution of tumor types
   folds <- caret::createFolds(metaDataRef[ , classColumn], k = 10, returnTrain = TRUE, list = TRUE)
@@ -153,7 +153,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
     testSamples <- colnames(testDataCV)
 
     # Select biomaterial IDs as training data per model
-    set.seed(whichSeed)
+    base::set.seed(whichSeed)
     samplesTrainDefList <- obtainTrainData(metaDataRef = metaDataCV,
                                            classColumn = classColumn,
                                            nModels = nModels,
@@ -211,8 +211,8 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   }
 
   # Check the accuracy of the current run
-  accuracy <- sum(classifications$predict == classifications$originalCall) / base::length(classifications$originalCall)
-  print(paste("accuracy: ", accuracy))
+  accuracy <- base::sum(classifications$predict == classifications$originalCall) / base::length(classifications$originalCall)
+  base::print(base::paste("accuracy: ", accuracy))
 
   # Store the settings of the classifier run within the resulting object
   metaDataRun <- data.frame(nModels = nModels,
@@ -233,9 +233,9 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                                          metaDataRun = metaDataRun
   )
 
-  print("We have finished the classification process. Please find your results in the generated object.")
-  filename <- paste0(modelDirectory, "/crossValidationMajorityResults.rds")
-  saveRDS(crossValidationMajorityResults, file = filename)
-  print(paste0("Please find the generated R-object with the classification results within ", filename))
+  base::print("We have finished the classification process. Please find your results in the generated object.")
+  filename <- base::paste0(modelDirectory, "/crossValidationMajorityResults.rds")
+  base::saveRDS(crossValidationMajorityResults, file = filename)
+  base::print(base::paste0("Please find the generated R-object with the classification results within ", filename))
   return(crossValidationMajorityResults)
 }

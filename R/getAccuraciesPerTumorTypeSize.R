@@ -62,36 +62,37 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
 
     filteredResultTest <- subsetResultTest %>% dplyr::filter(probability1 > probabilityThreshold)
 
-    tumorConfusionMatrixSelection <- tumorConfusionMatrix$byClass %>% as.data.frame() %>% dplyr::filter(rownames(.) %in% paste0("Class: ", selectionMoreThanNCases))
+    tumorConfusionMatrixSelection <- tumorConfusionMatrix$byClass %>% base::as.data.frame() %>%
+      dplyr::filter(base::rownames(.) %in% base::paste0("Class: ", selectionMoreThanNCases))
 
-    tumorConfusionMatrixSelection$F1[is.na(tumorConfusionMatrixSelection$F1)] <- 0
+    tumorConfusionMatrixSelection$F1[base::is.na(tumorConfusionMatrixSelection$F1)] <- 0
     #tumorConfusionMatrixSelection$Precision[is.na(tumorConfusionMatrixSelection$Precision)] <- 0
     recall <- base::table(filteredResultTest[,"originalCall"]) / patientsPerTumor[base::names(patientsPerTumor) %in% base::names(base::table(filteredResultTest[,"originalCall"]))]
 
-    nSamples[i] <- nrow(subsetResultTest)
-    nSamplesFiltered[i] <- nrow(filteredResultTest)
+    nSamples[i] <- base::nrow(subsetResultTest)
+    nSamplesFiltered[i] <- base::nrow(filteredResultTest)
 
     fractionCorrectFiltered[i] <- (filteredResultTest %>%
-                                     dplyr::filter(predict == originalCall) %>% nrow) / nrow(filteredResultTest)
+                                     dplyr::filter(predict == originalCall) %>% base::nrow(.)) / base::nrow(filteredResultTest)
     errorsFiltered[i] <- filteredResultTest %>%
-                            dplyr::filter(predict != originalCall) %>% nrow
+                            dplyr::filter(predict != originalCall) %>% base::nrow(.)
     fractionCorrect[i] <- (subsetResultTest %>%
-                             dplyr::filter(predict == originalCall) %>% nrow) / nrow(subsetResultTest)
+                             dplyr::filter(predict == originalCall) %>% base::nrow(.)) / base::nrow(subsetResultTest)
     fractionCorrect2[i] <- (subsetResultTest %>%
-                           dplyr::filter(predict == originalCall | predict2 == originalCall) %>% nrow) / nrow(subsetResultTest)
+                           dplyr::filter(predict == originalCall | predict2 == originalCall) %>% nrow(.)) / nrow(subsetResultTest)
     fractionCorrect3[i] <- (subsetResultTest %>%
                            dplyr::filter(predict == originalCall | predict2 == originalCall |
-                                    predict3 == originalCall) %>% nrow) / nrow(subsetResultTest)
+                                    predict3 == originalCall) %>% base::nrow(.)) / base::nrow(subsetResultTest)
 
 
-    Precision[i] <- mean(tumorConfusionMatrixSelection$Precision, na.rm = T)
+    Precision[i] <- base::mean(tumorConfusionMatrixSelection$Precision, na.rm = T)
     #Recall[i] <- mean(tumorConfusionMatrixSelection$Recall)
-    F1[i] <- mean(tumorConfusionMatrixSelection$F1)
-    Recall[i] <- mean(recall)# Make this how many of the samples are included into the classified samples
+    F1[i] <- base::mean(tumorConfusionMatrixSelection$F1)
+    Recall[i] <- base::mean(recall)# Make this how many of the samples are included into the classified samples
 
   }
 
-  nCases  <- c("3 <= n <= 5", paste( nCases[-c(base::length(nCases))],"< n <=",nCases[-c(1)])[-1], "n > 100")
+  nCases  <- c("3 <= n <= 5", base::paste( nCases[-c(base::length(nCases))],"< n <=",nCases[-c(1)])[-1], "n > 100")
   if (rounding == T) {
     fractionsCorrect <- data.frame(nSamples = nSamples,
                                                      nSamplesFiltered = nSamplesFiltered,
@@ -132,25 +133,25 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
   # Now add the results if all samples are taken into account
   #subsetResultTest <- predictionsMM %>% filter(originalCall %in% selectionMoreThanNCases)
 
-  filteredResultTest <- predictionsMM %>% filter(probability1 > probabilityThreshold)
+  filteredResultTest <- predictionsMM %>% dplyr::filter(probability1 > probabilityThreshold)
 
-  nSamples <- nrow(predictionsMM)
-  nSamplesFiltered <- nrow(filteredResultTest)
+  nSamples <- base::nrow(predictionsMM)
+  nSamplesFiltered <- base::nrow(filteredResultTest)
 
   fractionCorrectFiltered <- (filteredResultTest %>%
-                                   dplyr::filter(predict == originalCall) %>% nrow) / nrow(filteredResultTest)
+                                   dplyr::filter(predict == originalCall) %>% base::nrow(.)) / base::nrow(filteredResultTest)
   errorsFiltered <- filteredResultTest %>%
-    dplyr::filter(predict != originalCall) %>% nrow
+    dplyr::filter(predict != originalCall) %>% base::nrow(.)
   fractionCorrect <- (predictionsMM %>%
-                        dplyr::filter(predict == originalCall) %>% nrow) / nrow(predictionsMM)
+                        dplyr::filter(predict == originalCall) %>% base::nrow(.)) / base::nrow(predictionsMM)
   fractionCorrect2 <- (predictionsMM %>%
                          dplyr::filter(predict == originalCall | predict2 == originalCall) %>% nrow) / nrow(predictionsMM)
   fractionCorrect3 <- (predictionsMM %>%
                          dplyr::filter(predict == originalCall | predict2 == originalCall |
-                                predict3 == originalCall) %>% nrow) / nrow(predictionsMM)
+                                predict3 == originalCall) %>% base::nrow(.)) / base::nrow(predictionsMM)
 
   recall <- base::table(filteredResultTest[,"originalCall"]) / patientsPerTumor[base::names(patientsPerTumor) %in% base::names(base::table(filteredResultTest[,"originalCall"]))]
-  tumorConfusionMatrixSelection <- tumorConfusionMatrix$byClass %>% as.data.frame()
+  tumorConfusionMatrixSelection <- tumorConfusionMatrix$byClass %>% base::as.data.frame()
   #tumorConfusionMatrixSelection$Precision[is.na(tumorConfusionMatrixSelection$Precision)] <- 0
   tumorConfusionMatrixSelection$F1[is.na(tumorConfusionMatrixSelection$F1)] <- 0
   if (rounding == T) {

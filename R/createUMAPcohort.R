@@ -1,8 +1,7 @@
 #' UMAP-transform reference cohort
 #'
-#' Function to create the data required for plotting an UMAP of the reference cohort,
-#' and paving the way for transforming new samples into the same sample space by
-#' saving the transformation-model and ribo-depletion correction model.
+#' Function to create the data required for plotting an UMAP of the reference cohort
+#' and ribo-depletion correction model.
 #'
 #' Please note that the tumor domain, type and subtype all need to be specified within the metadata.
 #'
@@ -13,6 +12,7 @@
 #' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param domainColumn Column in the metadata file that contains the tumor domain labels.
+#' @param sampleColumn Column in the metadata file that contains the sample identifiers.
 #' @param abbreviations Optional. Dataframe containing the links between the tumor (sub)type,
 #' the abbreviation required in the plot, and the domain.
 #' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
@@ -50,7 +50,7 @@ createUMAPcohort <- function(countDataRef,
   if (nrow(metaDataRef) != ncol(countDataRef)) {
     stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
   }
-  rownames(metaDataRef) <- metaDataRef[, sampleColumn]
+  base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
   if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
     stop("Your input data is not as required. Please make sure your sample IDs are within the row names of the metadata, and in the column names of the count data")
   }
@@ -62,7 +62,7 @@ createUMAPcohort <- function(countDataRef,
 
   if (is.na(abbreviations)[1]) {
 
-    abbreviations <- metaDataRef[, c(domainColumn, classColumn, higherClassColumn)] %>% unique()
+    abbreviations <- metaDataRef[, c(domainColumn, classColumn, higherClassColumn)] %>% base::unique()
     abbreviations$abbreviationSubtype <- abbreviations[,classColumn]
     abbreviations$abbreviationTumorType <- abbreviations[,higherClassColumn]
 
@@ -73,7 +73,7 @@ createUMAPcohort <- function(countDataRef,
 
   if (correctRibo == T) {
 
-  set.seed(whichSeed)
+  base::set.seed(whichSeed)
   riboModelList <- riboCorrectCounts(data = countDataRef,
                                      proteinCodingGenes = proteinCodingGenes,
                                      outputDir = ".",
@@ -82,31 +82,31 @@ createUMAPcohort <- function(countDataRef,
   countDataRef <- riboModelList$counts
   }
   # Log-transform data
-  dataLogRef <- log(countDataRef +1) %>% t() %>% as.data.frame()
-  abbreviations %<>% dplyr::filter(!!sym(classColumn) %in% unique(metaDataRef[, classColumn]),
-                            !!sym(higherClassColumn) %in% unique(metaDataRef[, higherClassColumn])
+  dataLogRef <- log(countDataRef +1) %>% base::t() %>% base::as.data.frame()
+  abbreviations %<>% dplyr::filter(!!dplyr::sym(classColumn) %in% base::unique(metaDataRef[, classColumn]),
+                            !!dplyr::sym(higherClassColumn) %in% base::unique(metaDataRef[, higherClassColumn])
                             )
   metaDataJoined <- dplyr::left_join(metaDataRef, abbreviations[,c(classColumn, "abbreviationTumorType", "abbreviationSubtype")])
 
-  rownames(metaDataJoined) <- rownames(metaDataRef)
+  base::rownames(metaDataJoined) <- base::rownames(metaDataRef)
   metaDataRef <- metaDataJoined
 
-  set.seed(whichSeed)
+  base::set.seed(whichSeed)
   dataLogUMAP <- dataLogRef %>%
-    dplyr::select(where(is.numeric)) %>%
+    dplyr::select(dplyr::where(is.numeric)) %>%
     umap::umap()
-  colnames(dataLogUMAP$layout) <- c("UMAP1", "UMAP2")
+  base::colnames(dataLogUMAP$layout) <- c("UMAP1", "UMAP2")
 
   dataUMAP <- dataLogUMAP$layout %>%
-    as.data.frame()
+    base::as.data.frame()
 
-  dataUMAP$abbreviationTumorType <- metaDataRef[rownames(dataUMAP), "abbreviationTumorType"]
-  dataUMAP$abbreviationSubtype <- metaDataRef[rownames(dataUMAP), "abbreviationSubtype"]
-  dataUMAP$Domain <- metaDataRef[rownames(dataUMAP), domainColumn]
+  dataUMAP$abbreviationTumorType <- metaDataRef[base::rownames(dataUMAP), "abbreviationTumorType"]
+  dataUMAP$abbreviationSubtype <- metaDataRef[base::rownames(dataUMAP), "abbreviationSubtype"]
+  dataUMAP$Domain <- metaDataRef[base::rownames(dataUMAP), domainColumn]
 
 
-  dataUMAP$subclass <- metaDataRef[rownames(dataUMAP), higherClassColumn]
-  dataUMAP$subtype <- metaDataRef[rownames(dataUMAP), classColumn]
+  dataUMAP$subclass <- metaDataRef[base::rownames(dataUMAP), higherClassColumn]
+  dataUMAP$subtype <- metaDataRef[base::rownames(dataUMAP), classColumn]
 
 
   #dataUMAP <- cbind(dataUMAP, dataLogRef[, c("subclass","Domain", "abbreviation"), drop = F])

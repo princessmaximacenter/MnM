@@ -91,8 +91,13 @@ namesDomain <- abbreviations %>% dplyr::filter(!!dplyr::sym(domainColumn) == whi
   dplyr::select(abbreviationTumorType) %>% base::unique() %>%
   tibble::deframe()
 
+namesSubtype <- abbreviations %>% dplyr::filter(!!dplyr::sym(domainColumn) == whichDomain) %>%
+  dplyr::select(abbreviationSubtype) %>% base::unique() %>%
+  tibble::deframe()
 pieChartDF <- pieDF[pieDF[,domainColumn] == whichDomain,]
-pieChartDF <- pieChartDF %>% dplyr::slice(order(factor(!!dplyr::sym(higherClassColumn), levels = namesDomain)))
+#pieChartDF <- pieChartDF %>% dplyr::slice(order(factor(!!dplyr::sym(higherClassColumn), levels = namesDomain)))
+pieChartDF <- pieChartDF %>% dplyr::slice(order(factor(!!dplyr::sym(classColumn),
+                                                       levels = namesSubtype)))
 
 freqSameTumorType <- pieChartDF[,higherClassColumn] %>% base::table()
 freqSameTumorType <- freqSameTumorType[base::match(namesDomain, base::names(freqSameTumorType))]

@@ -23,27 +23,28 @@ createExtraData <- function(countDataRef,
   subsetCountData <- countDataRef %>% dplyr::filter(class %in% classesWith2)
 
   createData <- subsetCountData %>%
-    group_by(class) %>% nest %>%
-    mutate(meanDataPoint = purrr::map(data, ~ apply(.x, 2, mean)))
+    dplyr::group_by(class) %>%
+    tidyr::nest(.) %>%
+    dplyr::mutate(meanDataPoint = purrr::map(data, ~ apply(.x, 2, mean)))
 
-  for (line in seq(1:nrow(createData))) {
+  for (line in seq(1:base::nrow(createData))) {
 
-    newDataPoint <- data.frame(createData$meanDataPoint[[line]])
-    colnames(newDataPoint) <- createData$class[line]
+    newDataPoint <- base::data.frame(createData$meanDataPoint[[line]])
+    base::colnames(newDataPoint) <- createData$class[line]
     if(line == 1) {
       newDataDF <- newDataPoint
     } else {
-      newDataDF <- cbind(newDataDF, newDataPoint)
+      newDataDF <- base::cbind(newDataDF, newDataPoint)
     }
 
   }
-  newDataDF <- t(newDataDF) %>% as.data.frame()
-  newDataDF$class <- rownames(newDataDF)
-  rownames(newDataDF) <- paste0("Synthetic", 1:length(newDataDF$class))
+  newDataDF <- base::t(newDataDF) %>% base::as.data.frame()
+  newDataDF$class <- base::rownames(newDataDF)
+  base::rownames(newDataDF) <- base::paste0("Synthetic", 1:base::length(newDataDF$class))
 
-  countDataExtra <- rbind(countDataRef, newDataDF)
+  countDataExtra <- base::rbind(countDataRef, newDataDF)
 
-  colnumber <- which(colnames(countDataExtra) == "class")
+  colnumber <- base::which(base::colnames(countDataExtra) == "class")
   countDataExtra <- countDataExtra[, -(colnumber)]
 
   return(countDataExtra)

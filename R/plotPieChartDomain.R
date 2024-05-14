@@ -20,6 +20,7 @@
 #' certain tumor type, and to a certain tumor subtype.
 #' The piechart is generated for one domain, as there are many different tumor types and subtypes
 #' within each domain.
+#' @import grDevices
 
 plotPieChartDomain <- function(data,
                                domain,
@@ -45,41 +46,47 @@ plotPieChartDomain <- function(data,
   }
   filename <- storeLocation
   if (saveImage == T) {
-    pdf(file = filename ) }
-  par(mar=c(0,0,0,0))
+    grDevices::pdf(file = filename ) }
+  graphics::par(mar=c(0,0,0,0))
   if (includeNumbers == T) {
-  tumorTypeSubtypePie(data %>% dplyr::group_by(!!rlang::sym(classColumn)) %>% dplyr::select(counts) %>% tibble::deframe(),#sapply(unique(data[,classColumn]), function(x) sum(data$counts[data[,classColumn] == x])),
+  tumorTypeSubtypePie(data %>% dplyr::group_by(!!dplyr::sym(classColumn)) %>%
+                        dplyr::select(counts) %>%
+                        tibble::deframe(),#sapply(unique(data[,classColumn]), function(x) sum(data$counts[data[,classColumn] == x])),
        init.angle = 0,
        labels = data$counts,
        border = F,
        radius=0.9,
        cex=0.5,
        col=NULL)
-  par(new=T)}
+  graphics::par(new=T)}
 
-  tumorTypeSubtypePie(data %>% dplyr::group_by(!!rlang::sym(classColumn)) %>% dplyr::select(counts) %>% tibble::deframe(),
+  tumorTypeSubtypePie(data %>% dplyr::group_by(!!dplyr::sym(classColumn)) %>%
+                        dplyr::select(counts) %>%
+                        tibble::deframe(),
        init.angle = 0,
-       labels = rep("",base::length(data[,classColumn])),
+       labels = base::rep("",base::length(data[,classColumn])),
        radius=0.95,
        col=myColours,
        border = "white")
 
-  par(new=T)
+  graphics::par(new=T)
 
-  tumorTypeSubtypePie(data %>% dplyr::group_by(!!rlang::sym(classColumn)) %>% dplyr::select(counts) %>% tibble::deframe(), # 2
+  tumorTypeSubtypePie(data %>% dplyr::group_by(!!dplyr::sym(classColumn)) %>%
+                        dplyr::select(counts) %>%
+                        tibble::deframe(), # 2
        init.angle = 0,
        radius=0.38,
        border = F,
        cex=textSizeSubspec,
        col=NULL)
-  par(new=T)
+  graphics::par(new=T)
 
   tumorTypeSubtypePie(sapply(base::unique(data[,higherClassColumn]), function(x) sum(data$counts[data[,higherClassColumn] == x])), # White border around subclass
        init.angle = 0,
-       labels = rep("",base::length(base::unique(data[,higherClassColumn]))),
+       labels = base::rep("",base::length(base::unique(data[,higherClassColumn]))),
        border = "white",radius=0.38,
        col=plotColors)
-  par(new=T)
+  graphics::par(new=T)
 
   tumorTypeSubtypePie(sapply(base::unique(data[,higherClassColumn]),
               function(x) sum(data$counts[data[,higherClassColumn] == x])),
@@ -88,7 +95,7 @@ plotPieChartDomain <- function(data,
        border = F,
        cex=textSizeClass,
        col=NULL) # 4
-  par(new=T)
+  graphics::par(new=T)
 
   tumorTypeSubtypePie(sapply(base::unique(data[,domainColumn]),
               function(x) sum(data$counts[data[,domainColumn] == x])),
@@ -97,10 +104,10 @@ plotPieChartDomain <- function(data,
        border = F,
        radius=0.25,
        col="white")
-  par(new=T)
-  text(0,0,labels = domain,cex=1, col = "grey")
+  graphics::par(new=T)
+  graphics::text(0,0,labels = domain,cex=1, col = "grey")
   if (saveImage == T) {
-    dev.off()
-    print(paste0("Image has been saved under ", filename))
+    grDevices::dev.off()
+    base::print(base::paste0("Image has been saved under ", filename))
   }
 }

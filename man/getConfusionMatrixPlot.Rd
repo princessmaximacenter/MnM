@@ -15,14 +15,14 @@ getConfusionMatrixPlot(
 \arguments{
 \item{minorityDir}{Directory in which the Minority classifier model(s) are stored.}
 
+\item{majorityDir}{in which the Majority classifier model(s) are stored.}
+
 \item{abbreviations}{Dataframe containing the links between the tumor subtype and their abbreviations ($abbreviationSubtype),
 the tumor types and their abbreviations ($abbreviationTumorType), and the domain.}
 
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?}
 
 \item{probabilityThreshold}{Which probability score do you want to use as a cutoff for calling classifications confident or not?}
-
-\item{majorityDirDirectory}{in which the Majority classifier model(s) are stored.}
 }
 \value{
 List containing all tiles that contain classifications with their frequencies ($confusionPlotDF),

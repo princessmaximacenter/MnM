@@ -13,6 +13,8 @@ For this setup, filterOrNot within calculateSeparateF1 should be put to F.}
 
 \item{dataMeanF1}{Dataframe obtained from function 'calculateMeanAndSDAccuracy'.
 Contains all the calculated F1 scores and associated recall rates stratified by population frequency.}
+
+\item{whichSeed}{For reproducibility, the seed can be specified with this parameter.}
 }
 \value{
 If dataMeanF1 is not specified: Plot showing the F1 score and recall per tumor (sub)type together,

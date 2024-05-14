@@ -78,19 +78,21 @@ plotConfusionMatrix <- function(domain = NA,
   }
 
   if (!is.na(domain)) {
-    confusionPlot <- ggplot2::ggplot(data = DomainDF, aes(y = Prediction,
+    confusionPlot <- ggplot2::ggplot(data = DomainDF,
+                                     ggplot2::aes(y = Prediction,
                                                           x = Reference,
                                                           label = Freq)) +
 
       ggplot2::geom_tile(color = "black",
-                         fill = colorTiles) + coord_equal()
+                         fill = colorTiles) + ggplot2::coord_equal()
   } else {
-    confusionPlot <- ggplot2::ggplot(data = DomainDF, aes(y = Prediction,
+    confusionPlot <- ggplot2::ggplot(data = DomainDF,
+                                     ggplot2::aes(y = Prediction,
                                                           x = Reference,
                                                           label = Freq,
                                                           fill= Domain)) +
 
-      ggplot2::geom_tile(color = "black") + coord_equal()
+      ggplot2::geom_tile(color = "black") + ggplot2::coord_equal()
 
   }
   confusionPlot <- confusionPlot +
@@ -99,20 +101,22 @@ plotConfusionMatrix <- function(domain = NA,
     ggplot2::geom_text(color = "white") +
     ggplot2::guides(fill=F) + # removing legend for `fill`
     ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-                   axis.text = element_text(size = 14),
-                   axis.title = element_text(size = 18),
-                   plot.margin = unit(c(0.8,0.8,0.8,0.8), "cm")
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1),
+                   axis.text = ggplot2::element_text(size = 14),
+                   axis.title = ggplot2::element_text(size = 18),
+                   plot.margin = ggplot2::unit(c(0.8,0.8,0.8,0.8), "cm")
     ) +
 
     ggplot2::geom_tile(data = (nonAvailableTilesDomain), fill = "white", color = "lightgrey") +
-    ggplot2::scale_y_discrete(drop=FALSE) + scale_x_discrete(drop = FALSE) +
+    ggplot2::scale_y_discrete(drop=FALSE) +
+    ggplot2::scale_x_discrete(drop = FALSE) +
 
     ggplot2::labs(y = "Classification")
 
   if (!is.na(domain)) {
     confusionPlot <- confusionPlot +
-      ggplot2::geom_tile(data = notClassifiedDF, aes(fill = TumorType),
+      ggplot2::geom_tile(data = notClassifiedDF,
+                         ggplot2::aes(fill = TumorType),
                          color = "black")
   }
 

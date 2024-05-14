@@ -18,58 +18,59 @@
 #' @param ... If you want to specify other things.
 #'
 #' @return Piece of the pie-chart.
+#' @import grDevices
 
 tumorTypeSubtypePie <- function(x, labels = names(x), edges = 200, radius = 0.8, clockwise = FALSE,
                  init.angle = if (clockwise) 90 else 0, density = NULL, angle = 45,
                  col = NULL, border = NULL, lty = NULL, main = NULL, ...)
 {
-  if (!is.numeric(x) || any(is.na(x) | x < 0))
+  if (!base::is.numeric(x) || base::any(base::is.na(x) | x < 0))
     stop("'x' values must be positive.")
-  if (is.null(labels))
-    labels <- as.character(seq_along(x))
-  else labels <- as.graphicsAnnot(labels)
-  x <- c(0, cumsum(x)/sum(x))
-  dx <- diff(x)
+  if (base::is.null(labels))
+    labels <- base::as.character(base::seq_along(x))
+  else labels <- grDevices::as.graphicsAnnot(labels)
+  x <- c(0, base::cumsum(x)/base::sum(x))
+  dx <- base::diff(x)
   nx <- base::length(dx)
-  plot.new()
-  pin <- par("pin")
+  graphics::plot.new()
+  pin <- graphics::par("pin")
   xlim <- ylim <- c(-1, 1)
   if (pin[1L] > pin[2L])
     xlim <- (pin[1L]/pin[2L]) * xlim
   else ylim <- (pin[2L]/pin[1L]) * ylim
-  dev.hold()
-  on.exit(dev.flush())
-  plot.window(xlim, ylim, "", asp = 1)
+  grDevices::dev.hold()
+  base::on.exit(grDevices::dev.flush())
+  graphics::plot.window(xlim, ylim, "", asp = 1)
 
-  if (!is.null(col))
-    col <- rep_len(col, nx)
-  if (!is.null(border))
-    border <- rep_len(border, nx)
-  if (!is.null(lty))
-    lty <- rep_len(lty, nx)
-  angle <- rep(angle, nx)
-  if (!is.null(density))
-    density <- rep_len(density, nx)
+  if (!base::is.null(col))
+    col <- base::rep_len(col, nx)
+  if (!base::is.null(border))
+    border <- base::rep_len(border, nx)
+  if (!base::is.null(lty))
+    lty <- base::rep_len(lty, nx)
+  angle <- base::rep(angle, nx)
+  if (!base::is.null(density))
+    density <- base::rep_len(density, nx)
   twopi <- if (clockwise)
-    -2 * pi
-  else 2 * pi
+    -2 * base::pi
+  else 2 * base::pi
   t2xy <- function(t) {
-    t2p <- twopi * t + init.angle * pi/180
-    list(x = radius * cos(t2p), y = radius * sin(t2p), an=t2p)
+    t2p <- twopi * t + init.angle * base::pi/180
+    list(x = radius * base::cos(t2p), y = radius * base::sin(t2p), an=t2p)
   }
   for (i in 1L:nx) {
-    n <- max(2, floor(edges * dx[i]))
-    P <- t2xy(seq.int(x[i], x[i + 1], length.out = n))
-    polygon(c(P$x, 0), c(P$y, 0), density = density[i], angle = angle[i],
+    n <- base::max(2, base::floor(edges * dx[i]))
+    P <- t2xy(base::seq.int(x[i], x[i + 1], length.out = n))
+    graphics::polygon(c(P$x, 0), c(P$y, 0), density = density[i], angle = angle[i],
             border = border[i], col = col[i], lty = lty[i])
-    P <- t2xy(mean(x[i + 0:1]))
-    lab <- as.character(labels[i])
-    if (!is.na(lab) && nzchar(lab)) {
-      text(1.1 * P$x, 1.1 * P$y, labels[i], xpd = TRUE,
+    P <- t2xy(base::mean(x[i + 0:1]))
+    lab <- base::as.character(labels[i])
+    if (!base::is.na(lab) && base::nzchar(lab)) {
+      graphics::text(1.1 * P$x, 1.1 * P$y, labels[i], xpd = TRUE,
            srt = ifelse(P$x < 0, P$an/pi*180+180, P$an/pi*180),
            adj = ifelse(P$x < 0, 1, 0), ...)
     }
   }
-  title(main = main, ...)
-  invisible(NULL)
+  graphics::title(main = main, ...)
+  base::invisible(NULL)
 }

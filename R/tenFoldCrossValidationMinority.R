@@ -7,7 +7,7 @@
 #' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param sampleColumn Column in the metadata file that contains the samples.
+#' @param sampleColumn Column in the metadata file that contains the sample identifiers.
 #' @param meanExpression Selection criterion for the RNA-transcripts,
 #' specifying what the minimum mean expression of an RNA-transcript should be for it to be included in the F-statistic analysis.
 #' Default is 5.
@@ -48,7 +48,6 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
 ) {
 
-  library(magrittr)
   `%notin%` <- Negate(`%in%`)
 
   if (sampleColumn %notin% colnames(metaDataRef)) {
@@ -90,31 +89,31 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
   if (base::length(tumorEntitiesWithTooFewSamples) >0) {
 
-    metaDataRef %<>% dplyr::filter(!!sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
-    print("You have labels within your dataset that have less than 3 available samples. Please note samples with these labels have been removed.")
+    metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
+    base::print("You have labels within your dataset that have less than 3 available samples. Please note samples with these labels have been removed.")
 
   }
-  countDataRef <- countDataRef[, rownames(metaDataRef)]
+  countDataRef <- countDataRef[, base::rownames(metaDataRef)]
 
   # Make sure you have CPM counts
-  countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
+  countDataRef <- base::apply(countDataRef,2,function(x) (x/base::sum(x))*1E6)
 
-  if (!dir.exists(outputDir)) {
-    dir.create(outputDir)}
+  if (!base::dir.exists(outputDir)) {
+    base::dir.create(outputDir)}
   directory <- outputDir#paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"), "/")
-  modelDirectory <- paste0(directory, "/seed", whichSeed)
-  if (!dir.exists(directory)) {
-    dir.create(directory)
-    dir.create(modelDirectory)
-  } else if (!dir.exists(modelDirectory)){
-    dir.create(modelDirectory)
-    }
+  modelDirectory <- base::paste0(directory, "/seed", whichSeed)
+  if (!base::dir.exists(directory)) {
+    base::dir.create(directory)
+    base::dir.create(modelDirectory)
+  } else if (!base::dir.exists(modelDirectory)){
+    base::dir.create(modelDirectory)
+  }
 
   # Correct for ribosomal protein contamination
     riboCountFile <- paste0(modelDirectory, "/modelListRiboCounts.rds")
-    if (!file.exists(riboCountFile)) {
+    if (!base::file.exists(riboCountFile)) {
 
-      set.seed(whichSeed)
+      base::set.seed(whichSeed)
       riboModelList <- riboCorrectCounts(data = countDataRef,
                                          proteinCodingGenes = proteinCodingGenes,
                                          outputDir = modelDirectory,
@@ -122,25 +121,25 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
       )
 
     } else {
-      riboModelList <- readRDS(riboCountFile)
+      riboModelList <- base::readRDS(riboCountFile)
     }
     countDataRef <- riboModelList$counts
 
   # Log-transform data
-  dataLogRef <- log(countDataRef +1) %>% t() %>% as.data.frame()
+  dataLogRef <- base::log(countDataRef +1) %>% base::t() %>% base::as.data.frame()
 
   # Specify max samples per tumor type
   if (is.na(maxSamplesPerType)) {
-    maxSamplesPerType <- ceiling(median(table(metaDataRef[, classColumn])))
+    maxSamplesPerType <- base::ceiling(stats::median(base::table(metaDataRef[, classColumn])))
   }
 
   # Remove genes with mean expression for ANOVA
-  meanVals <- apply(countDataRef, 1, mean)
+  meanVals <- base::apply(countDataRef, 1, mean)
   countDataRef <- countDataRef[meanVals >= meanExpression,]
 
   print("We will now start with the cross-validation")
   # Set seed for reproducibility
-  set.seed(whichSeed)
+  base::set.seed(whichSeed)
 
   # Create splits for cross-validation setup with equal distribution of tumor types
   folds <- caret::createFolds(metaDataRef[ , classColumn], k = 10, returnTrain = TRUE, list = TRUE)
@@ -152,18 +151,18 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
     countDataCV <- countDataRef[, folds[[i]]]
 
     # Run an ANOVA to select the top n genes from the training data for use in the further classification process
-    set.seed(whichSeed)
+    base::set.seed(whichSeed)
     interestingANOVAgenes <- selectAnovaGenes(metaDataRef  = metaDataCV,
                                            countDataRef  = countDataCV,
                                            nANOVAgenes = nANOVAgenes,
                                            classColumn = classColumn)
 
-    print(paste("Found interesting ANOVA genes for Fold ", i))
+    base::print(base::paste("Found interesting ANOVA genes for Fold ", i))
     # Select the ANOVA genes within the log-transformed data
     dataLogCV <- dataLogRef[ ,interestingANOVAgenes]
 
     # Select biomaterial IDs as training data per model
-    set.seed(whichSeed)
+    base::set.seed(whichSeed)
     samplesTrainDefList <- obtainTrainData(metaDataRef = metaDataCV,
                                            classColumn = classColumn,
                                            nModels = nModels,
@@ -172,14 +171,14 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
     dataCV <- dataLogCV[folds[[i]], ]
 
     # Add class label to the dataset
-    dataCV$class <- as.character(metaDataRef[rownames(dataCV),classColumn])
+    dataCV$class <- base::as.character(metaDataRef[rownames(dataCV),classColumn])
 
     # Also create test data and specify which biomaterial IDs are in there
     testDataCV <- dataLogCV[ -folds[[i]], ]
     #testSamples <- rownames(testDataCV)
 
     # Reduce features using RF feature importance for accuracy
-    print(paste("Working on reducing Features for Fold", i))
+    base::print(base::paste("Working on reducing Features for Fold", i))
     reducedFeatures <- reduceFeatures(dataTrain = dataCV,
                                       samplesTrainDefList = samplesTrainDefList,
                                       ntree = 500,
@@ -196,17 +195,17 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
     # Reduce features of testing data
     testDataCVReduced <- testDataCV[,reducedFeatures]
-    print("Initiating RF")
+    base::print("Initiating RF")
 
     # Start the modelling of the data within the different compositions of training data
-    set.seed(whichSeed)
+    base::set.seed(whichSeed)
     modelList <- obtainModelsMinorityClassifier(dataTrain = dataCV,
                                                 #dataSynth = data
                                       samplesTrainDefList = samplesTrainDefList,
                                       nModels = nModels,
                                       ntree = ntree)
 
-    print(paste("Generated all models for Fold ", i))
+    base::print(base::paste("Generated all models for Fold ", i))
     # Find the predictions for the test data
     result <- predictTest(modelList, testDataCVReduced)
 
@@ -256,7 +255,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
   }
 
   # Check the accuracy of the current run
-  accuracy <- sum(classifications$predict == classifications$originalCall) / base::length(classifications$originalCall)
+  accuracy <- base::sum(classifications$predict == classifications$originalCall) / base::length(classifications$originalCall)
   print(paste("accuracy: ", accuracy))
 
   # Store the settings of the classifier run within the resulting object
@@ -277,9 +276,9 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                          metaDataRef = metaDataRef,
                                          metaDataRun = metaDataRun)
 
-  print("We have finished the classification process. Please find your results in the generated object.")
-  filename <- paste0(modelDirectory, "/crossValidationMinorityResults.rds")
-  saveRDS(crossValidationMinorityResults, file = filename)
-  print(paste0("Please find the generated R-object with the classification results within ", filename))
+  base::print("We have finished the classification process. Please find your results in the generated object.")
+  filename <- base::paste0(modelDirectory, "/crossValidationMinorityResults.rds")
+  base::saveRDS(crossValidationMinorityResults, file = filename)
+  base::print(base::paste0("Please find the generated R-object with the classification results within ", filename))
   return(crossValidationMinorityResults)
 }

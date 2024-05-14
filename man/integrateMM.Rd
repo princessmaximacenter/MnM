@@ -11,7 +11,11 @@ integrateMM(minority, majority, subtype, integrate = T)
 
 \item{majority}{R-object that contains the results from the Majority classifier}
 
-\item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?
+\item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level (TRUE) or
+tumor type level (FALSE)?}
+
+\item{integrate}{Do you want to integrate the results of the Minority and Majority classifiers into M&M,
+or do you want to obtain the results from the separate classifiers?
 If so, use \emph{subtype = T}. If you want to obtain tumor type classifications instead, use \emph{subtype = F}.}
 }
 \value{

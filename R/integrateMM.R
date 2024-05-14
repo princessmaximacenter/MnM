@@ -4,7 +4,10 @@
 #'
 #' @param minority R-object that contains the results from the Minority classifier
 #' @param majority R-object that contains the results from the Majority classifier
-#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
+#' @param subtype Do you want to obtain the predictions on the tumor subtype classification level (TRUE) or
+#' tumor type level (FALSE)?
+#' @param integrate Do you want to integrate the results of the Minority and Majority classifiers into M&M,
+#' or do you want to obtain the results from the separate classifiers?
 #' If so, use _subtype = T_. If you want to obtain tumor type classifications instead, use _subtype = F_.
 #' @return If integrate = T: List containing the a dataframe with the final classifications (predictionsMMFinal),
 #' and a list with the probability scores for all classification labels that were assigned to samples (MMProbabilityList).

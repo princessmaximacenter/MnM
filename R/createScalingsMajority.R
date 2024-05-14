@@ -10,7 +10,7 @@
 #' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
 #' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param sampleColumn Column in the metadata file that contains the samples.
+#' @param sampleColumn Column in the metadata file that contains the sample identifiers.
 #' @param nModels How many models should be created for the Majority classifier?
 #' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
 #' @param nComps How many principal components will be selected after PCA?
@@ -92,7 +92,7 @@ createScalingsMajority <-  function(countDataRef,
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
   if (base::length(tumorEntitiesWithTooFewSamples) >0) {
 
-    metaDataRef %<>% dplyr::filter(!!sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
+    metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
     print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
     #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
 
