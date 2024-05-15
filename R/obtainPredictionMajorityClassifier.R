@@ -8,7 +8,7 @@
 #' @param dataTest New samples for which the classifier should provide a classification label.
 #' @param metaDataRef Metadata file containing the links between the samples and the tumor subtype diagnosis.
 #' @param testSamples test sample IDs matching with samples from the test data.
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
 #' @param maxNeighbors What is the maximum number of neighbors to be used for the weighted _k_-nearest neighbor algorithm?
 #' @param nModels How many models should be created for the Majority classifier?
 #'

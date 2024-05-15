@@ -6,7 +6,7 @@
 #' @param result Dataframe containing the classification labels from each model for each sample.
 #' @param metaDataRef Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.
 #' @param addOriginalCall Would you like to add the original tumor subtype label from the metadata (TRUE)?
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
 #'
 #' @return List containing the final per-sample classifications ($classifications),
 #' per-label probabilities ($probabilityList) and metadata that the classifications were based on ($metaDataRef).

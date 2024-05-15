@@ -4,10 +4,10 @@
 #' @param countDataRef Matrix containing the RNA-transcript per million data. Samples are in the columns,
 #' different RNA-transcripts in the rows.
 #' @param metaDataRef Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
-#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param sampleColumn Column in the metadata file that contains the sample identifiers.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Name of column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Name of column in the metadata file that contains the tumor domain labels.
+#' @param sampleColumn Name of column in the metadata file that contains the sample identifiers.
 #' @param meanExpression Selection criterion for the RNA-transcripts,
 #' specifying what the minimum mean expression of an RNA-transcript should be for it to be included in the F-statistic analysis.
 #' Default is 5.

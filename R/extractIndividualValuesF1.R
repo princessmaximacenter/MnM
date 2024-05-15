@@ -3,7 +3,7 @@
 #' @param predictionsMM Predictions for samples by M&M, coming from the function integrateMM.
 #' @param metaDataRef  Metadata file containing the links between the samples and
 #' the tumor (sub)type diagnosis within the reference cohort.
-#' @param classColumn Column in the metadata file that contains the tumor (sub)type labels.
+#' @param classColumn Name of column in the metadata file that contains the tumor (sub)type labels.
 #' @param probabilityThreshold What is the probability score threshold you would like to use to call a classification 'confident'?
 #' @param filterOrNot Do you want to filter the 'confident' classifications only for your calculation?
 #' @import caret

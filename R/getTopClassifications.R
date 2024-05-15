@@ -3,7 +3,7 @@
 #' Function to extract the top 3 tumor (sub)type classifications for samples, with their accompanying probability scores.
 #' @param minority R-object that contains the results from the Minority classifier.
 #' @param MMProbabilityList List of all the samples containing the probabilities for the different sample predictions from the integrated M&M classifier.
-#' @param higherClassColumn Column name within metadata-file that contains the tumor type labels.
+#' @param higherClassColumn Name of column name within metadata-file that contains the tumor type labels.
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
 #' If so, use _subtype = T_. If you want to obtain tumor type predictions instead, use _subtype = F_.
 #'

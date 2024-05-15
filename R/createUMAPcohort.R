@@ -9,10 +9,10 @@
 #' different genes in the rows.
 #' @param metaDataRef Metadata file containing the links between the samples and
 #' the tumor (sub)type diagnosis within the reference cohort.
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
-#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param sampleColumn Column in the metadata file that contains the sample identifiers.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Name of column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Name of column in the metadata file that contains the tumor domain labels.
+#' @param sampleColumn Name of column in the metadata file that contains the sample identifiers.
 #' @param abbreviations Optional. Dataframe containing the links between the tumor (sub)type,
 #' the abbreviation required in the plot, and the domain.
 #' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?

@@ -6,7 +6,6 @@
 #'
 #' @param dataTrain Data to be used for model training, containing the all samples available within the training dataset.
 #' @param samplesTrainDefList List of different training data sample subsets used for subsetting the available training dataset (dataTrain).
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
 #' @param nModels How many models should be created for the classifier?
 #' @param nFeatures How many of the most variable RNA-transcripts within the dataset should we select for principal component analysis (PCA)?
 #' @param nComps How many principal components will be selected after PCA?
@@ -16,7 +15,6 @@
 #'
 getPrincipalComponents <- function(dataTrain,
          samplesTrainDefList,
-         classColumn,
          nModels = 100,
          nFeatures = 2500,
          nComps = 100

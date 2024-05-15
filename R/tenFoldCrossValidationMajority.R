@@ -6,10 +6,10 @@
 #' @param countDataRef Matrix containing the RNA-transcript per million data. Samples are in the columns,
 #' different RNA-transcripts in the rows.
 #' @param metaDataRef Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
-#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param sampleColumn Column in the metadata file that contains the sample identifiers.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Name of column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Name of column in the metadata file that contains the tumor domain labels.
+#' @param sampleColumn Name of column in the metadata file that contains the sample identifiers.
 #' @param nModels How many models should be created for the Majority classifier?
 #' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
 #' @param nFeatures How many of the most variable genes within the dataset should we select for principal component analysis (PCA)?
@@ -58,7 +58,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
     base::stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
 
     stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
-  } else if (base::classColumn %notin% base::colnames(metaDataRef)) {
+  } else if (classColumn %notin% base::colnames(metaDataRef)) {
     stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
   } else if (higherClassColumn %notin% base::colnames(metaDataRef)){
     stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
@@ -173,7 +173,6 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 
     rotationsAndScalingsList <- getPrincipalComponents(dataTrain = dataCV,
                                                        samplesTrainDefList,
-                                                       classColumn = classColumn,
                                                        nModels = nModels,
                                                        nFeatures = nFeatures,
                                                        nComps = nComps

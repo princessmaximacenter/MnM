@@ -5,8 +5,8 @@
 #' @param probabilities List with the probabilities from the different tumor subtype predictions from the Minority or Majority classifier.
 #' @param linkClassAndHigherClass dataframe containing the link between the tumor subtypes and the tumor types.
 #' The dataframe is automatically generated in previous functions from the metadata.
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Name of column in the metadata file that contains the tumor type labels.
 #'
 #' @return  List of all the samples containing the probabilities for the different _tumor type_ predictions from the Minority or Majority classifier.
 #'

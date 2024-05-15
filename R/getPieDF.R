@@ -5,8 +5,8 @@
 #' and tumor type labels (higherClassColumn) with their appropriate abbreviations (abbreviationTumorType).
 #' Please make sure that the higherClassColumn name is used as column name within abbreviationsCombi for the tumor type labels,
 #' and classColumn name for the tumor subtype labels.
-#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Name of column in the metadata file that contains the tumor type labels.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
 #'
 #' @return Dataframe containing the different labels within our dataset with their frequencies.
 #'
