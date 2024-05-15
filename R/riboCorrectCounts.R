@@ -35,7 +35,7 @@ riboCorrectCounts <- function(data,
 
   normalizedData <- base::apply(data,2,function(x) (x[highMeanGenes]-meanGenes)/varGenes)
 
-  set.seed(1)
+  base::set.seed(1)
   # Do cross-validation for glmnet, generalized linear model, Lasso and Elastic-Net Regularized
   modelCV <- glmnet::cv.glmnet(x = base::t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian")
 
