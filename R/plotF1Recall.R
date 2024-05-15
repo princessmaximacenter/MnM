@@ -26,7 +26,7 @@ plotF1Recall <- function(separateMeanF1,
                          whichSeed = 1) {
 
 
-  if (require("ungeviz") == F) {
+  if (requireNamespace("ungeviz") == F) {
     remotes::install_github("fwallis/ungeviz")
   }
 

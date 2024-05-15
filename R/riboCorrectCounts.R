@@ -9,6 +9,7 @@
 #' @param outputDir Directory where the generated model for predicting the protein fraction should be stored.
 #' @param saveRiboModels Do you want to save the riboModel? Default is FALSE.
 #' @import glmnet
+#' @importFrom stats coef
 #' @return list containing the corrected count data ($counts) and the essentials needed to correct new data using the same model ($modelList).
 
 #'
@@ -41,7 +42,7 @@ riboCorrectCounts <- function(data,
 
   model <- glmnet::glmnet(x = base::t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian",lambda = modelCV$lambda.1se)
 
-  allCoefficients <- base::as.matrix(coef(model))[base::which(as.matrix(coef(model)) > 0),]
+  allCoefficients <- base::as.matrix(stats::coef(model))[base::which(as.matrix(stats::coef(model)) > 0),]
   relevantCoefficients <- c(allCoefficients[1],allCoefficients[-1][allCoefficients[-1] > 0.01])
 
   predictProteinCoding <- 1-(relevantCoefficients[1] + base::t(normalizedData[base::names(relevantCoefficients)[-1],]) %*% relevantCoefficients[-1])

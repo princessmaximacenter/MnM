@@ -7,7 +7,7 @@
 #'
 #' @return Dataframe containing the classifications of the tumor subtypes for each sample within the Minority classifier.
 #' Each row is a test sample, with the separate columns containing the classifications from the separate models.
-#'
+#' @importFrom stats predict
 predictTest <- function(modelList, testData) {
   for (i in seq(1:length(modelList))) {
     model <- modelList[[i]]
