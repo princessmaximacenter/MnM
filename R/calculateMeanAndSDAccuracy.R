@@ -18,7 +18,6 @@
 #'The total amount of samples within each frequency range ($meanSamples) is also specified.
 #' Lastly, it's specified whether a cross-validation (Train) or test (Test) type was used.
 #' @export
-#' @import stats
 #'
 calculateMeanAndSDAccuracy <- function(
   minorityDir,

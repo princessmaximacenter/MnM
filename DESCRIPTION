@@ -9,5 +9,5 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Imports: caret, foreach, randomForest, kknn, glmnet, umap, remotes, RColorBrewer
-Depends: magrittr, tidyverse
+Imports: tibble, tidyselect, tidyr, purrr, caret, foreach, randomForest, kknn, glmnet, umap, remotes, RColorBrewer
+Depends: magrittr, ggplot2, dplyr

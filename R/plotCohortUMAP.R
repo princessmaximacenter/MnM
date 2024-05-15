@@ -29,7 +29,7 @@ plotCohortUMAP <- function(dataUMAPList,
                                 useLabels = T
                                 ) {
 
-  if (base::require("ggrepel") == F) {
+  if (base::requireNamespace("ggrepel") == F) {
     remotes::install_github("fwallis/ggrepel")
   }
 
