@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimateProbabilityThreshold.R
 \name{estimateProbabilityThreshold}
 \alias{estimateProbabilityThreshold}
-\title{Calcalate metrics to estimate probability score treshold}
+\title{Calculate metrics to estimate probability score threshold}
 \usage{
 estimateProbabilityThreshold(predictionsMM, returnPlot, interceptionPoint)
 }
@@ -16,7 +16,7 @@ together with their probability scores and the original pathology label (origina
 }
 \value{
 If returnPlot = FALSE: Dataframe containing the number of true positives ($TP), false positives ($FP),
-true negatives ($TN) and false negatives ($FN) at different probability score tresholds.
+true negatives ($TN) and false negatives ($FN) at different probability score thresholds.
 Calculated from the metrics named above are the sensitivity ($sensitivity),
 specificity ($specificity), precision ($precision) and recall ($recall).
 
@@ -25,8 +25,8 @@ If returnPlot = TRUE: Plot showing the sensitivity and specificity at the differ
 \description{
 This function calculates the sensitivity, specificity, precision and recall at
 different probability score thresholds for sample classification.
-A sample is classified as positive when it receives a classification (prediction probability > threshold).
+A sample is classified as positive when it receives a classification (classification probability > threshold).
 On the contrary, a sample is classified as negative when it does not receive a classification
-(prediction probability < threshold). A true positive is a classified sample for which the prediction is
-correct, a true negative a non-classified sample that had a wrong prediction.
+(prediction probability < threshold). A true positive is a classified sample for which the classification is
+correct, a true negative a non-classified sample that had a wrong classification
 }

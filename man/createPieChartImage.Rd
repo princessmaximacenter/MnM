@@ -2,7 +2,7 @@
 % Please edit documentation in R/createPieChartImage.R
 \name{createPieChartImage}
 \alias{createPieChartImage}
-\title{Plot piechart per domain as cohort overview}
+\title{Plot pie-chart per domain as cohort overview}
 \usage{
 createPieChartImage(
   metaDataRef,
@@ -44,15 +44,16 @@ domainColumn of the metadata.}
 
 \item{textSizeSubspec}{What size should the letters have for the tumor subtype? Default is 0.45.}
 
-\item{plotColors}{Which colors do you want to use to color your plot? If not specified, default colors from RColorBrewer palette spectral will be used.}
+\item{plotColors}{Which colors do you want to use to color your plot? If not specified,
+default colors from RColorBrewer palette spectral will be used.}
 
 \item{includeNumbers}{Do you want to show the numbers for the pie chart on the outer edge?
 Default is includeNumbers = TRUE.}
 }
 \value{
-Piechart of how many samples are present within the dataset belonging to a
+Pie-chart of how many samples are present within the dataset belonging to a
 certain tumor type, and to a certain tumor subtype.
-The piechart is generated for one domain, as there are many different tumor types and subtypes
+The pie-chart is generated for one domain, as there are many different tumor types and subtypes
 within each domain.
 }
 \description{

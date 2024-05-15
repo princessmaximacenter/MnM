@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotSeparateClassifierAccuracies.R
 \name{plotSeparateClassifierAccuracies}
 \alias{plotSeparateClassifierAccuracies}
-\title{Plot the separate accuracies of the Minority classifier, Majority classifier and M&M classifier}
+\title{Plot the separate accuracy of the Minority classifier, Majority classifier and M&M classifier}
 \usage{
 plotSeparateClassifierAccuracies(separateClassifierAccuracies)
 }
@@ -13,5 +13,5 @@ plotSeparateClassifierAccuracies(separateClassifierAccuracies)
 Plot showing the accuracy for different population frequencies separately for the Minority, Majority and M&M classifier.
 }
 \description{
-Plot the separate accuracies of the Minority classifier, Majority classifier and M&M classifier
+Plot the separate accuracy of the Minority classifier, Majority classifier and M&M classifier
 }

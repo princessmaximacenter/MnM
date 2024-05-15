@@ -2,7 +2,7 @@
 % Please edit documentation in R/getAccuraciesPerTumorTypeSize.R
 \name{getAccuraciesPerTumorTypeSize}
 \alias{getAccuraciesPerTumorTypeSize}
-\title{Obtain accuracies per tumor (sub)type sample size}
+\title{Obtain accuracy per tumor (sub)type sample size}
 \usage{
 getAccuraciesPerTumorTypeSize(
   predictionsMM,
@@ -37,5 +37,5 @@ For the rest, for the confident classifications the average precision ($Precisio
 F1 score ($F1) and recall ($Recall) for all tumor entities combined is determined.
 }
 \description{
-Obtain accuracies per tumor (sub)type sample size
+Obtain accuracy per tumor (sub)type sample size
 }
