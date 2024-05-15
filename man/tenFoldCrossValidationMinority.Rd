@@ -28,13 +28,13 @@ different RNA-transcripts in the rows.}
 
 \item{metaDataRef}{Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+\item{classColumn}{Name of column in the metadata file that contains the tumor subtype labels.}
 
-\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
+\item{higherClassColumn}{Name of column in the metadata file that contains the tumor type labels.}
 
-\item{domainColumn}{Column in the metadata file that contains the tumor domain labels.}
+\item{domainColumn}{Name of column in the metadata file that contains the tumor domain labels.}
 
-\item{sampleColumn}{Column in the metadata file that contains the sample identifiers.}
+\item{sampleColumn}{Name of column in the metadata file that contains the sample identifiers.}
 
 \item{meanExpression}{Selection criterion for the RNA-transcripts,
 specifying what the minimum mean expression of an RNA-transcript should be for it to be included in the F-statistic analysis.

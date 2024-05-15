@@ -22,8 +22,9 @@ If so, use \emph{subtype = T}. If you want to obtain tumor type classifications 
 If integrate = T: List containing the a dataframe with the final classifications (predictionsMMFinal),
 and a list with the probability scores for all classification labels that were assigned to samples (MMProbabilityList).
 
-predictionsMMFinal contains the top 3 final classification labels ($predict{2,3}) with their accompanying probability scores
-($probability{1,2,3} and the original diagnosis label ($originalCall).
+predictionsMMFinal contains the 3 highest-scoring classification labels ($predict,$predict2,$predict3)
+with their accompanying probability scores
+($probability1,probability2,probability3) and the original diagnosis label ($originalCall).
 
 If integrate = F: List containing a dataframe with the final classifications separately for the Minority Classifier ($predictionsMinority)
 and Majority Classifier ($predictionsMajority). This dataframe has the same setup as predictionsMMFinal.

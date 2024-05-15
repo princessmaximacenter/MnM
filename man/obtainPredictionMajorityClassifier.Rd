@@ -27,7 +27,7 @@ and the information needed to scale new sample input data to center the features
 
 \item{testSamples}{test sample IDs matching with samples from the test data.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+\item{classColumn}{Name of column in the metadata file that contains the tumor subtype labels.}
 
 \item{maxNeighbors}{What is the maximum number of neighbors to be used for the weighted \emph{k}-nearest neighbor algorithm?}
 

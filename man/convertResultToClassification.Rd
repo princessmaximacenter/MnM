@@ -18,7 +18,7 @@ convertResultToClassification(
 
 \item{addOriginalCall}{Would you like to add the original tumor subtype label from the metadata (TRUE)?}
 
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+\item{classColumn}{Name of column in the metadata file that contains the tumor subtype labels.}
 }
 \value{
 List containing the final per-sample classifications ($classifications),

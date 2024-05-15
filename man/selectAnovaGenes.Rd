@@ -14,7 +14,7 @@ different RNA-transcripts in the rows.}
 
 \item{nANOVAgenes}{How many RNA-transcripts should we select using the F-statistic of ANOVA?}
 
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+\item{classColumn}{Name of column in the metadata file that contains the tumor subtype labels.}
 }
 \value{
 Vector containing the names of the most interesting RNA-transcripts according to the F-statistic of ANOVA.

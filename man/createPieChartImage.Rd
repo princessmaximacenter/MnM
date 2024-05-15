@@ -22,11 +22,11 @@ createPieChartImage(
 \arguments{
 \item{metaDataRef}{Metadata file containing the links between the patients and the tumor (sub)type diagnosis.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+\item{classColumn}{Name of column in the metadata file that contains the tumor subtype labels.}
 
-\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
+\item{higherClassColumn}{Name of column in the metadata file that contains the tumor type labels.}
 
-\item{domainColumn}{Column in the metadata file that contains the domain labels.}
+\item{domainColumn}{Name of column in the metadata file that contains the domain labels.}
 
 \item{abbreviations}{Dataframe containing the different tumor subtype labels with their appropriate abbreviations ($abbreviationSubtype),
 and tumor type labels with their appropriate abbreviations (abbreviationTumorType).
