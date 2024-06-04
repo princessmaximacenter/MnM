@@ -26,7 +26,8 @@ plotCohortUMAP <- function(dataUMAPList,
                                 subtype = F,
                                 tumorType = NA,
                                 plotColors = NA,
-                                useLabels = T
+                                useLabels = T,
+                           labelSize = 4
                                 ) {
 
   if (base::requireNamespace("ggrepel") == F) {
@@ -99,7 +100,7 @@ plotCohortUMAP <- function(dataUMAPList,
                                 ggplot2::aes(color = abbreviation,
                            label = abbreviation),
                        max.overlaps = 40,
-                       size=4,
+                       size=labelSize,
                        seed = 1,
                        label.size = 1,
                        show.legend = F,
