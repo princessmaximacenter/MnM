@@ -8,10 +8,11 @@
 #' @return Dataframe containing the classifications of the tumor subtypes for each sample within the Minority classifier.
 #' Each row is a test sample, with the separate columns containing the classifications from the separate models.
 #' @importFrom stats predict
+
 predictTest <- function(modelList, testData) {
-  for (i in seq(1:length(modelList))) {
+  for (i in base::seq(1:base::length(modelList))) {
     model <- modelList[[i]]
-    prediction <- stats:: predict(model, newdata=testData)
+    prediction <- stats::predict(model, newdata=testData)
 
     if (i == 1) {
       result <- base::data.frame(fold1 = prediction)
