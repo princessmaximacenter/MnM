@@ -83,13 +83,13 @@ getConfusionMatrixPlot <- function(minorityDir,
     chosenClassColumn <- higherClassColumn
   }
 
-  if ("Not classified" %notin% abbreviations[,"abbreviation"]) {
-    notClassifiedLine <- data.frame(classColumn = "Not classified",
+  if ("Low confidence" %notin% abbreviations[,"abbreviation"]) {
+    notClassifiedLine <- data.frame(classColumn = "Low confidence",
                                     abbreviationSubtype = NA,
                                     abbreviationTumorType = NA,
-                                    higherClassColumn = "Not classified",
+                                    higherClassColumn = "Low confidence",
                                     domainColumn = NA,
-                                    abbreviation = "Not classified")
+                                    abbreviation = "Low confidence")
 
     colnames(notClassifiedLine) <- base::gsub("classColumn", classColumn, base::colnames(notClassifiedLine))
     colnames(notClassifiedLine) <- base::gsub("higherClassColumn", higherClassColumn, base::colnames(notClassifiedLine))
@@ -121,7 +121,7 @@ getConfusionMatrixPlot <- function(minorityDir,
 
 
     if (missingTumors$Reference[j] %notin% base::unique(predictionsMMFiltered$originalCall)) {
-      missingTumors <- base::rbind(missingTumors, base::data.frame(Prediction = "Not classified",
+      missingTumors <- base::rbind(missingTumors, base::data.frame(Prediction = "Low confidence",
                                                        Reference = missingTumors$Reference[j],
                                                        Freq = (base::nrow(predictionsMM[predictionsMM$originalCall == missingTumors$Reference[j], ]) -
                                                                  base::nrow(predictionsMMFiltered[predictionsMMFiltered$originalCall == missingTumors$Reference[j], ])))
@@ -158,7 +158,7 @@ getConfusionMatrixPlot <- function(minorityDir,
       total$Reference[j] <- abbreviations[abbreviations[,chosenClassColumn] == total$Reference[j], "abbreviation", drop = T] %>% base::unique()
     }
 
-    newLine <- data.frame(Prediction = "Not classified",
+    newLine <- data.frame(Prediction = "Low confidence",
                           Reference = base::as.character(total$Reference[1]),
                           Freq = notClassified,
                           Domain = base::unique(total$Domain)
@@ -189,11 +189,11 @@ getConfusionMatrixPlot <- function(minorityDir,
                                                                                                 base::unique(c(confusionPlotDF$Reference, confusionPlotDF$Prediction,
                                                                                                     missingTumors$Reference))]))
 
-  missingNotClassified <- base::levels(confusionPlotDF$Prediction)[base::levels(confusionPlotDF$Prediction) %notin% confusionPlotDF[confusionPlotDF$Prediction == "Not classified","Reference"] ]
-  missingNotClassified <- missingNotClassified[missingNotClassified != "Not classified"]
+  missingNotClassified <- base::levels(confusionPlotDF$Prediction)[base::levels(confusionPlotDF$Prediction) %notin% confusionPlotDF[confusionPlotDF$Prediction == "Low confidence","Reference"] ]
+  missingNotClassified <- missingNotClassified[missingNotClassified != "Low confidence"]
 
   for (i in base::seq(1:base::length(missingNotClassified))) {
-    missingNotClassifiedDF <- base::data.frame(Prediction = "Not classified",
+    missingNotClassifiedDF <- base::data.frame(Prediction = "Low confidence",
                                          Reference = missingNotClassified[i],
                                          Freq = 0,
                                          Domain = linkClassAndDomain[linkClassAndDomain[,"abbreviation"] == missingNotClassified[i],domainColumn]    )
