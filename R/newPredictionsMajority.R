@@ -10,8 +10,6 @@
 #' which RNA-transcripts were considered for transformation in the analysis ($nonZeroGenes),
 #' the metadata file associated to the reference cohort ($metaDataRef),
 #' and metadata for the performed run ($metaDataRun).
-#' @param countDataRef Matrix containing the RNA-transcript per million data for the reference cohort.
-#' Samples are in the columns, different RNA-transcripts in the rows.
 #' @param countDataNew Matrix containing the RNA-transcript per million data for the new samples to be classified.
 #' Samples are in the columns, different RNA-transcripts in the rows.
 #' @param outputDir Directory in which you would like to store the R-object containing the results. Default is today's date.
@@ -22,7 +20,6 @@
 #' @export
 #'
 newPredictionsMajority <- function(createdModelsMajority,
-                                   countDataRef,
                                    countDataNew,
                                    outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                    saveModel = T
@@ -38,7 +35,7 @@ newPredictionsMajority <- function(createdModelsMajority,
       }
     }
   }
-
+ countDataRef <- createdModelsMajority$countDataRef
   # Make sure you have CPM counts
   countDataNew <- apply(countDataNew,2,function(x) (x/sum(x))*1E6)
   countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
@@ -54,13 +51,11 @@ newPredictionsMajority <- function(createdModelsMajority,
   dataLogRef <- log(countDataRef +1)
   dataLogNew <- log(countDataNew + 1)
 
-  dataLogNonZero <- dataLogRef[createdModelsMajority$nonZeroGenes,]
-  dataLogNewNonZero <- dataLogNew[createdModelsMajority$nonZeroGenes, , drop = F]
-  testSamples <- colnames(dataLogNewNonZero)
+  testSamples <- colnames(dataLogNew)
 
   result <- obtainPredictionMajorityClassifier(rotationsAndScalingsList = createdModelsMajority$rotationsAndScalingsList,
-                                     dataTrain = dataLogNonZero,
-                                     dataTest = dataLogNewNonZero,
+                                     dataTrain = dataLogRef,
+                                     dataTest = dataLogNew,
                                      metaDataRef = createdModelsMajority$metaDataRef,
                                      classColumn = createdModelsMajority$metaDataRun$classColumn,
                                      nModels = createdModelsMajority$metaDataRun$nModels,

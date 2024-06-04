@@ -27,7 +27,9 @@
 #' which samples were present in each training data subset ($samplesTrainDefList),
 #' which RNA-transcripts were considered for transformation in the analysis ($nonZeroGenes),
 #' the metadata file associated to the reference cohort ($metaDataRef),
-#' and metadata for the performed run ($metaDataRun).
+#' the metadata for the performed run ($metaDataRun),
+#' and the matrix containing the RNA-transcript per million data that was used to create the scaling
+#' and is needed for eventual classifications of new samples ($countDataRef).
 #'
 #' @export
 #' @import caret
@@ -49,7 +51,7 @@ createScalingsMajority <-  function(countDataRef,
                                     saveModel = T
 
 ) {
-
+  countDataOG <- countDataRef
   `%notin%` <- base::Negate(`%in%`)
   if (sampleColumn %notin% base::colnames(metaDataRef)) {
     base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
@@ -169,7 +171,8 @@ createScalingsMajority <-  function(countDataRef,
                                 samplesTrainDefList = samplesTrainDefList,
                                 nonZeroGenes = nonZeroGenes,
                                 metaDataRef = metaDataRef,
-                                metaDataRun = metaDataRun)
+                                metaDataRun = metaDataRun,
+                                countDataRef = countDataOG)
 
   if (saveModel == T) {
 
