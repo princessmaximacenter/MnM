@@ -120,10 +120,10 @@ calculateSeparateF1 <- function(
   meanNumbers <- accuracyDF %>%
     dplyr::group_by(nCases, tumorType) %>%
     dplyr::summarise(
-      meanPrecision = base::mean(Precision),
-      meanF1 = base::mean(F1),
-      meanRecall = base::mean(Recall),
-      meanSensitivity = base::mean(Sensitivity)
+      meanPrecision = base::mean(Precision, na.rm = T),
+      meanF1 = base::mean(F1, na.rm = T),
+      meanRecall = base::mean(Recall, na.rm = T),
+      meanSensitivity = base::mean(Sensitivity, na.rm = T)
     )
 
   if (crossValidation == T) {

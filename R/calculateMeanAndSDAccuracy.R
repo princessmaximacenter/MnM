@@ -123,25 +123,25 @@ calculateMeanAndSDAccuracy <- function(
   meanNumbers <- accuracyDF %>%
     dplyr::group_by(nCases) %>%
     dplyr::summarise(
-      meanFractionCorrect = base::mean(fractionCorrect),
-      meanFractionCorrectFiltered = base::mean(fractionCorrectFiltered),
-      meanFractionIncorrect = base::mean(1 - fractionCorrect),
-      meanFractionIncorrectFiltered = base::mean(1 - fractionCorrectFiltered),
+      meanFractionCorrect = base::mean(fractionCorrect, na.rm = T),
+      meanFractionCorrectFiltered = base::mean(fractionCorrectFiltered, na.rm =T),
+      meanFractionIncorrect = base::mean(1 - fractionCorrect, na.rm =T),
+      meanFractionIncorrectFiltered = base::mean(1 - fractionCorrectFiltered, na.rm = T),
       sdFractionCorrect = stats::sd(fractionCorrect),
       sdFractionCorrectFiltered = stats::sd(fractionCorrectFiltered),
-      meanCasesFiltered = base::round(base::mean(nSamplesFiltered), digits = 0),
-      meanPrecision = base::mean(Precision),
-      meanF1 = base::mean(F1),
-      meanFractionCorrect2 = base::mean(fractionCorrect2),
-      meanFractionCorrect3 = base::mean(fractionCorrect3),
+      meanCasesFiltered = base::round(base::mean(nSamplesFiltered, na.rm = T), digits = 0),
+      meanPrecision = base::mean(Precision, na.rm =T),
+      meanF1 = base::mean(F1, na.rm =T),
+      meanFractionCorrect2 = base::mean(fractionCorrect2, na.rm = T),
+      meanFractionCorrect3 = base::mean(fractionCorrect3, na.rm = T),
       sdFractionCorrect2 = stats::sd(fractionCorrect2),
       sdFractionCorrect3 = stats::sd(fractionCorrect3),
-      meanRecall = base::mean(Recall),
+      meanRecall = base::mean(Recall, na.rm = T),
       medianF1 = stats::median(F1),
       sdPrecision = stats::sd(Precision),
       sdF1 = stats::sd(F1),
       sdRecall = stats::sd(Recall),
-      meanSamples = base::mean(nSamples)
+      meanSamples = base::mean(nSamples, na.rm = T)
     )
 
   if (crossValidation == T) {
