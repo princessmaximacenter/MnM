@@ -8,16 +8,19 @@
 #' Samples are in the columns, different RNA-transcripts in the rows.
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
 #' @param saveModel Do you want to save the results in an R object?
-#'
+#' @param correctRibo Do you want to perform a correction for the ribodepletion protocol on your dataset? Default is TRUE.
 #' @return R-object containing the final classifications ($classifications) for the samples,
 #' the probabilities associated to the different classifications ($probability),
 #' the metadata file associated to the reference cohort ($metaDataRef)
 #'  and the metadata for the performed run ($metaDataRun).
 #' @export
 
-newPredictionsMinority <- function(createdModelsMinority, countDataNew,
+newPredictionsMinority <- function(createdModelsMinority,
+                                   countDataNew,
                                    outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
-                                   saveModel = T) {
+                                   saveModel = T,
+                                   correctRibo = T
+                                   ) {
   # Find the predictions for the test data
   # PREPARE DATA
   if (saveModel == T) {
@@ -32,16 +35,17 @@ newPredictionsMinority <- function(createdModelsMinority, countDataNew,
   }
 
   countDataNew <- base::apply(countDataNew,2,function(x) (x/base::sum(x))*1E6)
-
+  if (correctRibo == T) {
   countDataNew <- predictRiboCounts(riboModel = createdModelsMinority$riboModelList$riboModel, data = countDataNew)
-
+  }
   dataLogNew <- base::log(countDataNew + 1) %>% base::t() %>% base::as.data.frame()
   dataLogNew <- dataLogNew[ , createdModelsMinority$reducedFeatures, drop = F]
 
   # Also create test data and specify which biomaterial IDs are in there
   #testSamples <- rownames(dataLogNew)
 
-  result <- predictTest(modelList = createdModelsMinority$modelList, testData = dataLogNew)
+  result <- predictTest(modelList = createdModelsMinority$modelList,
+                        testData = dataLogNew)
 
   base::print("Finished with classifying results")
 
@@ -52,10 +56,6 @@ newPredictionsMinority <- function(createdModelsMinority, countDataNew,
 
   classificationList$metaDataRun <- createdModelsMinority$metaDataRun
   if (saveModel == T) {
-    #directory <- outputDir
-    #filename <- paste0(outputDir, "/minorityClassifierResult.rds")
-    #if (!dir.exists(outputDir)) {
-      #dir.create(outputDir) }
     filename <- base::paste0(outputDir, "/minorityClassifierResult.rds")
 
     base::saveRDS(classificationList, file = filename)

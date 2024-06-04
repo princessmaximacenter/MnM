@@ -18,7 +18,7 @@
 #' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
 #' Please supply it as a vector. This is needed for ribo-depletion correction model.
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
-#' @param correctRibo Do you want to perform a correction for the ribodepletion protocol on your dataset?
+#' @param correctRibo Do you want to perform a correction for the ribodepletion protocol on your dataset? Default is TRUE.
 
 #' @return List containing the UMAP-transformed datapoints ($dataUMAP), the abbreviations used to name the UMAP-transformed datapoints, and the ribodepletion correction model ($riboModelList).
 #' @export
@@ -35,7 +35,7 @@ createUMAPcohort <- function(countDataRef,
                              proteinCodingGenes,
                              whichSeed = 1) {
 
-  `%notin%` <- Negate(`%in%`)
+  `%notin%` <- base::Negate(`%in%`)
 
   if (sampleColumn %notin% base::colnames(metaDataRef)) {
     base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
@@ -48,15 +48,15 @@ createUMAPcohort <- function(countDataRef,
   }
 
   if (base::nrow(metaDataRef) != base::ncol(countDataRef)) {
-    stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
+    base::stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
   }
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
   if (base::all(base::rownames(metaDataRef) %notin% base::colnames(countDataRef))) {
-    stop("Your input data is not as required. Please make sure your sample IDs are within the row names of the metadata, and in the column names of the count data")
+    base::stop("Your input data is not as required. Please make sure your sample IDs are within the row names of the metadata, and in the column names of the count data")
   }
 
   if (base::is.numeric(countDataRef) != T) {
-    stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix. Non-available measurements are not allowed.")
+    base::stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix. Non-available measurements are not allowed.")
 
   }
 

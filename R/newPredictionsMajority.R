@@ -14,7 +14,7 @@
 #' Samples are in the columns, different RNA-transcripts in the rows.
 #' @param outputDir Directory in which you would like to store the R-object containing the results. Default is today's date.
 #' @param saveModel Do you want to save the resulting predictions in an R object? Default is TRUE.
-#'
+#' @param correctRibo Do you want to perform a correction for the ribodepletion protocol on your dataset? Default is TRUE.
 #' @return R-object containing the final classifications ($classifications) for the samples,
 #' and the probabilities associated to the different classifications ($probability).
 #' @export
@@ -22,7 +22,8 @@
 newPredictionsMajority <- function(createdModelsMajority,
                                    countDataNew,
                                    outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
-                                   saveModel = T
+                                   saveModel = T,
+                                   correctRibo = T
 ) {
 
   if (saveModel == T) {
@@ -40,11 +41,13 @@ newPredictionsMajority <- function(createdModelsMajority,
   countDataNew <- apply(countDataNew,2,function(x) (x/sum(x))*1E6)
   countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
 
-
+  if (correctRibo == T) {
   countDataNew <- predictRiboCounts(riboModel = createdModelsMajority$riboModelList$riboModel,
                                     data = countDataNew)
+
   countDataRef<- predictRiboCounts(riboModel = createdModelsMajority$riboModelList$riboModel,
                                    data = countDataRef)
+  }
 
 
   # Log-transform data
