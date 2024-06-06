@@ -1,0 +1,700 @@
+---
+title: "Tutorial M&M"
+author: "Fleur Wallis"
+date: "2024-06-06"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#renv::init()
+```
+
+# Goal
+
+The goal of this tutorial is to familiarize yourself with `MnM`: the
+package to run M&M, a pan-cancer ensemble-based classifier for pediatric
+malignancies.
+
+In short, M&M is an classifier that facilitates infrequently occurring
+tumor (sub)type classifications, for help during the diagnostic process
+in pediatric oncology. To accomplish this, two different classifiers
+were created and integrated: a Minority classifier tailored towards
+correct classification of rare tumor (sub)types, and a Majority
+classifier with more predictive power for high frequency malignancies.
+The integration eventually results in the creation of the Minority &
+Majority classifier: M&M in short.
+
+Discussed will be:
+
+-   Requirements for data format
+
+-   Cohort visualization using UMAP
+
+-   10x cross-validation setup
+
+    -   Minority classifier
+
+    -   Majority classifier
+
+-   Final classifier setup
+
+    -   Minority classifier
+
+    -   Majority classifier
+
+-   Result integration of separate classifiers into M&M
+
+Furthermore, the tutorial will give an overview of functions that could
+be used to visualize the results. Please note that the tutorial does not
+cover all possible visualizations at this point in time.
+
+# Install packages
+
+For this tutorial, the `tidyverse` and  `MnM` package need to be installed and loaded.
+The installation file for MnM is within this folder and is called:
+MnM_1.0.1.tar.gz.
+
+1)  Download package `remotes` and use function *install_local* to
+    install the MnM package from file 'MnM_1.0.1.tar.gz'. Make sure to
+    specify dependencies = T.
+
+This will automatically install the `MnM` package in R.
+
+## Q1:
+
+a)  Install the `MnM` package.
+
+b)  Load the`tidyverse` and `MnM` package.
+
+```{r}
+
+if(!require("MnM")) {
+  remotes::install_local("./MnM_1.0.1.tar.gz", dependencies = T)
+}
+library("tidyverse")
+library("MnM")
+```
+
+
+# Data formats
+
+The metadata and count data have been added to the folder 'input'. As a
+first step, we will try to see what information is present within the
+metadata overview and count data object. Note that the count data is
+already normalized to transcripts per million reads (TPM).
+
+## Q2:
+
+a)  Read in the reference cohort metadata file
+    'ClassifierMetadataReferenceBALL.csv' from the **input** directory
+    using the function *read.csv,* using the provided code. Notice that
+    there is a *header* within in the file, and the file contains
+    *rownames* within the first row. The resulting object is called
+    'metaDataRef'.
+
+b)  Inspect what sample information is stored within the column names of
+    the metadata using the *colnames* function. Show the first 6 rows of
+    the metadata dataframe.
+
+c)  Read in the count data file 'countDataReferenceBALL.csv' within the
+    input directory using the function *read.csv,* again using the
+    provided code. Notice that there is again a *header* within in the
+    file, and the file contains *rownames*. The dataframe needs to be
+    converted it into a matrix for use within `MnM`, using the function
+    *as.matrix*. The resulting object is called 'countDataRef'.
+
+d)  Check what information is present within the column names and row
+    names of the count data. It is advised to not print the complete
+    dataframe, as it might crash R due to the dimensions of the object
+    (58804 rows, 268 columns).
+
+```{r}
+#a 
+metaDataRef <- read.csv("./input/ClassifierMetadataReferenceBALL.csv",
+                        header = T,
+                          row.names = 1) 
+
+# b
+
+
+# c
+countDataRef <- read.csv("./input/countDataReferenceBALL.csv", 
+                         header = T,
+                           row.names = 1) %>% as.matrix()
+
+# d
+
+
+```
+
+For M&M to function, the sample IDs should be present both within the
+count data set and within the metadata. Where the count data contains
+the sample IDs within the column names, the metadata should contain the
+sample IDs within a separate column.
+
+## Q3:
+
+a)  Check how the count data samples can be linked to the metadata
+    information. In other words: Which column within the metadata
+    contains the column names of the count data? Use the functions
+    *colnames* (count data) and *head* (metadata).
+b)  Check if all samples from the count data are present within the
+    metadata, using the linking of the datasets found in **Q3a**. You
+    could use the function *all* in combination with the %in% operator
+    for this purpose, to check whether the column names of the count
+    data are within the sample column of the metadata. Use the code for
+    checking whether all samples from the metadata are present in the
+    count data as an example, and alter it accordingly.
+c)  Select only the samples from the count dataset that are present
+    within the metadata overview by running the provided code.
+
+```{r}
+# a 
+
+# b
+# provided code
+all(metaDataRef$sampleID %in% colnames(countDataRef))
+
+#c
+countDataRef <- countDataRef[, metaDataRef$sampleID]
+```
+
+Let's explore our metadata a bit more. For M&M to function, it's
+important to know in which columns the tumor subtypes, tumor types and
+tumor domain labels are stored.
+
+## Q4:
+
+a)  Check the first entries within the metadata. Then try to find out
+    which column contains information on:
+    a)  The tumor subtype labels?
+    b)  The tumor type labels?
+    c)  The tumor domain labels?
+
+```{r}
+
+#a 
+
+#b 
+
+#c
+
+```
+
+For computational classification, it's key to have enough information
+available for all labels. Often, labels with not enough available
+samples will be removed to guarantee good classifier performance.
+
+M&M also follows this procedure, where tumor subtypes with less than 3
+samples are removed from the dataset within the cross-validation and
+final classifier creation setup.
+
+## Q5:
+
+a)  Check if there are tumor subtypes that have less than 3 available
+    samples within the dataset. Use the function *table* for this
+    purpose. Example code to see how many tumor types have less than 3
+    samples available is placed below. Please edit the code so that it
+    portrays how many **subtypes** have less than 3 available samples.
+b)  Write down which tumor subtype(s) have not enough samples available.
+    We will after classifier generation check whether these tumor
+    subtypes have indeed be removed from the classifier output.
+
+```{r}
+# a
+table(metaDataRef$tumorType)[table(metaDataRef$tumorType) < 3] # example code
+
+#b 
+
+```
+
+# Cohort visualization
+
+Before starting your analysis, it's always good to visualize your data,
+to see what data you have. For example, plotting the total reads per
+sample and the total reads per RNA-transcript can help see whether there
+are outliers with much higher values than the others.
+
+## Q6:
+
+a)  How is the number of total RNA counts distributed per sample? Run
+    the plotting function provided below. How can you see from the
+    barplot that the data is TPM-normalized?
+b)  How is the number of total counts distributed over the
+    RNA-transcripts? Run the plotting function provided below. Are there
+    clear outliers?
+
+```{r}
+# Plot per sample the total reads
+# a
+barplot(colSums(countDataRef), xlab = "sample IDs", ylab = "total number of RNA reads")
+
+# b
+totalCountsPerRNATranscript <- rowSums(countDataRef)
+#totalCountsPerRNATranscript <- totalCountsPerRNATranscript[totalCountsPerRNATranscript > 5 & totalCountsPerRNATranscript < 1e3]
+lattice::histogram(log(totalCountsPerRNATranscript), xlab = "Number of reads per RNA-transcript (log-scale)", ylab = "Frequency", main = "Histogram overview reads per RNA-transcript")
+
+```
+
+Within `MnM,` there is a visualization function available that will
+create a UMAP-transformed dataset: *createUMAPcohort*. For that to
+function, it's important to:
+
+-   specify the tumor subtype, tumor type and tumor domain labels found
+    before within the metadata
+-   specify which RNA-transcripts belong to proteins, to allow for
+    correction for the lab protocol efficiency (ribodepletion). This
+    should be supplied as a vector with the RNA-transcript names.
+
+c\. Load the needed protein coding gene names from the file
+'proteinCodingGenesGencode31.csv' located in the directory **input**,
+using the function *read.csv*. Please note that there is a column name,
+but no row names this time. Turn it into a vector containing all protein
+coding gene names, using the functions *as.vector* and *deframe*. Run
+the provided code below.
+
+d\. Look up the documentation for the function *createUMAPcohort* and
+decide which arguments should be filled out with the tumor subtype,
+tumor type and tumor domain labels, and for the protein coding gene
+names.
+
+e\. Fill out the 'classColumn', 'higherClassColumn' and 'domainColumn'
+based on the columns within the metadata, found in question 4.
+
+f\. Fill out the name of the protein coding genes vector under
+'proteinCodingGenes'.
+
+g\. Run the *createUMAPcohort* function with the now filled out
+parameters. Store the results in the object 'dataUMAPList'. Please note
+the function will specify that there are no abbreviations supplied -
+this is correct. In case we would like to use different, abbreviated
+labels within the UMAP, they can be supplied within the parameter
+'abbreviations'.
+
+```{r}
+# c
+proteinCodingGenes <- read.csv("./input/proteinCodingGenesGencode31.csv", header = T) %>%
+    as.vector() %>% deframe()
+
+# d
+?createUMAPcohort
+
+# e + f + g
+dataUMAPList <- createUMAPcohort(
+  countDataRef = countDataRef,
+  metaDataRef = metaDataRef,
+  classColumn = " ",
+  higherClassColumn = " ",
+  domainColumn = " ",
+  sampleColumn = " ",
+  proteinCodingGenes = proteinCodingGenes
+)
+
+```
+
+The function *plotCohortUMAP* can be used on the object returned from
+*createUMAPcohort* to show which data points we have available. For this
+purpose, we need to specify which domain we would like to visualize and
+whether we would like to visualize the tumor type or subtype.
+
+Please check the documentation on how to specify which domain we would
+like to visualize and how to specify the visualization level (domain,
+tumor type, tumor subtype) within the function *plotCohortUMAP*. Please
+note that the argument 'tumorType' will not be needed to be filled out -
+this argument is only needed in case you would like to visualize the
+tumor subtypes within one tumor type. In this case, however, we only
+have one tumor type within the whole dataset, coming from one domain.
+
+h\. Run the function *plotCohortUMAP* for visualization on the 1)
+domain, 2) tumor type and 3) subtype level, by using different values
+for the parameters 'domain' and 'subtype'. Check what is the name of the
+domain all our data points belong to from the domain column within the
+metadata.
+
+```{r}
+
+# h1: Domain
+
+plotCohortUMAP(dataUMAPList = dataUMAPList, 
+               domain = NA) 
+
+# h2: Tumor type
+
+# h3: Tumor subtype
+
+```
+
+# Cross-validation
+
+Now that we have generated the correct input data, it is time to run the
+10x cross-validation setup of M&M. We will start with generating the
+minority classifier models, which are focused on correct classifications
+of lowly abundant tumor (sub)types.
+
+## Q7:
+
+a)  Check the code provided below to fill out the required arguments
+    within the function *tenFoldCrossValidationMinority*. Look into the
+    documentation of the function to see which values should be supplied
+    for the arguments. **Many of the arguments are the same as for the
+    *createUMAPCohort* function.**
+b)  Take note of the 'outputDir' argument. This is where a map will be
+    created, where the generated models will be saved automatically on
+    your computer. Substitute "todaysDate" with the date of today.
+c)  Run the function 'tenFoldCrossValidationMinority' with the required
+    arguments. Store the results in an object called 'minority'.
+
+Please keep in mind that the classifier will need to run for
+approximately 5 minutes.
+
+```{r}
+
+
+?tenFoldCrossValidationMinority
+
+# provided code
+minority <- tenFoldCrossValidationMinority(
+  countDataRef = countDataRef,
+  metaDataRef = metaDataRef,
+  sampleColumn = " ",
+  classColumn = " ",
+  higherClassColumn = " ",
+  domainColumn = " ",
+  nModels = 10,
+  outputDir = "todaysDate",
+  proteinCodingGenes = proteinCodingGenes
+)
+```
+
+Now that we have run the minority classifier, let's check what has been
+stored in the 'minority' object.
+
+## Q8:
+
+a)  Which separate objects are stored in minority? Run the provided code
+    with the *names* function for this purpose.
+b)  Look at the names of the objects within minority. Which object
+    contains our sample classifications?
+c)  Within the sample classifications object, check out what information
+    is present using the *head* function. Which condition needs to be
+    met within the classification object for a classification to be
+    considered correct?
+d)  Please determine how many classifications are correct within the
+    classification object. Use the *filter* function for this purpose,
+    running the code provided below. Subsequently, determine the
+    accuracy from the results.
+
+```{r}
+
+# a 
+names(minority)
+
+# b
+
+# c
+
+# d
+minority$classifications %>% filter(originalCall == predict) %>% nrow()
+
+# accuracy
+
+
+```
+
+Now we will run the 10x cross-validation of the majority classifier,
+which is focused on correct classification of classes with higher
+frequency labels.
+
+## Q9:
+
+a)  Check the code provided below to fill out the required arguments
+    within the function *tenFoldCrossValidationMajority*. Look into the
+    documentation of the function to see which values should be supplied
+    for the arguments.
+b)  Fill out the parameters in the same way as for the Minority
+    classifier. Substitute "todaysDate" with the date of today.
+c)  Run the function *tenFoldCrossValidationMajority* with the required
+    arguments. Store the results in 'majority'.
+d)  Check what are the components of object 'majority' using again the
+    *names* function. Are there differences between the components of
+    'minority' and 'majority'?
+
+```{r}
+
+# a
+?tenFoldCrossValidationMajority
+
+# b + c
+
+majority <- tenFoldCrossValidationMajority(
+  countDataRef = countDataRef,
+  metaDataRef = metaDataRef,
+  classColumn = " ",
+  higherClassColumn = " ",
+  domainColumn = " ",
+  sampleColumn = " ",
+  nModels = 10,
+  proteinCodingGenes = proteinCodingGenes,
+  outputDir = "todaysDate"
+)
+
+# d
+names(majority) 
+
+```
+
+We will visualize the results of the separate classifiers now. Use the
+function *combineSeparateClassifierAccuracies* for this purpose. Please
+note that we only want to visualize the results on tumor subtype level,
+as we have only included B-ALL as the tumor type.
+
+## Q10:
+
+a)  Fill out the required parameters for the function
+    *combineSeparateClassifierAccuracies*. Please check the
+    documentation of the function to see what is done. Note that the
+    directories in which the models are stored are equal to the
+    'outputDir' argument from before (today's date). Run the function on
+    the subtype level and return a plot.
+b)  What do you notice in the performances? And are we performing better
+    with M&M than with the separate classifiers?
+
+```{r}
+# a
+
+?combineSeparateClassifierAccuracies
+combineSeparateClassifierAccuracies(
+  minorityDir = "todaysDate",
+  majorityDir = "todaysDate",
+  subtype = T/F,
+  returnPlot = T/F
+                                )
+# b
+
+```
+
+The next step is to integrate the different classifications, to come to
+a final classification label per sample. We will make use of the
+function *integrateMM* for that. The function integrateMM can provide
+classifications on multiple levels, meaning it can convert the current
+tumor subtype classifications back to the parent tumor type.
+
+## Q11:
+
+a)  Look up the documentation for the function *integrateMM.*
+b)  Which parameter specifies the level at which we want to integrate
+    the classifications?
+c)  Run the function *integrateMM* on the [tumor subtype
+    level]{.underline} classifications by chosing what to fill out in
+    the arguments in the provided code. Check within the documentation
+    what will be your final output of the *integrateMM* function and
+    extract the final classifications from there using the provided
+    code.
+d)  Determine the accuracy for the classifications based on the
+    highest-scoring classification label. Please ignore the second and
+    third highest-scoring classification labels.
+e)  If we filter the classifications based on a probability score
+    threshold of 0.72, what is the resulting precision (accuracy within
+    filtered set)?
+f)  Check out the individual errors using the provided code. Which tumor
+    subtype gets confused most often? Does this make biological sense?
+
+```{r}
+
+# a 
+?integrateMM
+
+# b 
+
+# c
+subtypeBALLClassifications <- integrateMM(minority = minority,
+                        majority = majority,
+                        subtype = T/F)
+
+predictionsMMFinal <- subtypeBALLClassifications$predictionsMMFinal
+
+# d
+
+# e
+
+# f
+
+predictionsMMFinal %>% filter(originalCall != predict) %>%
+select(originalCall) %>% table()
+
+```
+
+We want to check whether our classifications have a balanced accuracy
+across different frequency groups. With frequency groups, we mean the
+number of samples that have been encountered for a particular tumor
+entity. Checking the accuracy across frequency groups can be done with
+the functions *calculateMeanAndSDAccuracy* and *plotMeanSDAccuracy*.
+
+## Q12:
+
+a)  Look up the documentation for the function
+    *calculateMeanAndSDAccuracy*. Supply the same values to the
+    arguments as in the *combineSeparateClassifierAccuracies* function
+    to the code supplied below, by altering the filled out values. For
+    the probability score threshold, use 0.72.
+b)  Run the provided code for the generation of a plot showing the
+    accuracy over the different frequency groups. Is the performance
+    consistent?
+c)  Is the precision for all samples the same as calculated before in
+    question 11e?
+
+```{r}
+
+meanAndSDPlotTrainSubtype <- calculateMeanAndSDAccuracy(
+  minorityDir = "todaysDate",
+  majorityDir = "todaysDate",
+  subtype = T/F,
+  probabilityThreshold = 0
+)
+
+
+
+plotMeanSDAccuracy(meanAndSDPlotTrain = meanAndSDPlotTrainSubtype) 
+
+```
+
+# New sample classification
+
+The most important aspect of a classifier is that it can classify new
+incoming samples in the clinic. In the next section, we will perform
+classification for new samples. The code has already been filled out.
+
+## Q13:
+
+a)  Read in the test metadata file 'ClassifierMetadataTestBALL.csv'
+    using the code provided below. Check which columns are in there.
+    Make sure to put the sample IDs in the rownames, for later use.
+b)  Read in the test count data file 'countDataTestBALL.csv' using the
+    code provided below.
+
+```{r}
+
+# a
+metaDataTest <- read.csv("./input/ClassifierMetadataTestBALL.csv",
+                         header = T)
+rownames(metaDataTest) <- metaDataTest$sampleID
+# b 
+countDataTest <- read.csv("./input/countDataTestBALL.csv", header = T, row.names = 1) %>% as.matrix()
+
+```
+
+## Q14:
+
+a)  Run the functions *createModelsMinority* and
+    *createScalingsMajority* by filling out the required parameters with
+    the correct values. These functions are the equivalent of the
+    *tenFoldCrossValidationMinority* and
+    *tenFoldCrossValidationMajority* functions, but now to generate one
+    final Minority and Majority classifier based on all the available
+    samples within the reference cohort. Look up the function
+    documentation for extra explanation.
+
+b)  Run the code in *newPredictionsMinority* with the filled out
+    required parameters to generate minority classifications for the
+    test samples stored in 'countDataTest'. Save the models within the
+    directory 'testResults', within the output folder of today's date.
+    Use the provided code, but alter the *outputDir* parameter to
+    reflect today's date.
+
+c)  Run the code in *newPredictionsMajority* with the filled out
+    required parameters to generate majority classifications for the
+    test samples stored in 'countDataTest'. Be sure to save the models
+    within the directory 'testResults', within the output folder of
+    today's date. Use the provided code, but alter the *outputDir*
+    parameter to reflect today's date.
+
+d)  Integrate the two models' classifications using the function
+    *integrateMM* again by filling out the required parameters, in the
+    same way as for the cross-validation setup.
+
+```{r}
+# a 
+
+?createModelsMinority
+?createScalingsMajority
+
+# Generate Minority classifier models
+modelsMinority <- createModelsMinority(
+  countDataRef = countDataRef,
+  metaDataRef = metaDataRef,
+  classColumn = " ",
+  higherClassColumn = " ",
+  domainColumn = " ",
+  sampleColumn = " ",
+  nModels = 10,
+  outputDir = "todaysDate/testResults",
+  proteinCodingGenes = proteinCodingGenes
+)
+
+# Generate Majority classifier models
+modelsMajority <- createScalingsMajority(
+  countDataRef = countDataRef,
+  metaDataRef = metaDataRef,
+ sampleColumn = " ",
+  classColumn = " ",
+  higherClassColumn = " ",
+  domainColumn = " ",
+  nModels = 10,
+  outputDir = "todaysDate/testResults",
+  proteinCodingGenes =  proteinCodingGenes
+)
+
+# b
+
+predictionsTestMinority <- newPredictionsMinority(
+                       createdModelsMinority = modelsMinority,
+                       outputDir = "./todaysDate/testResults",
+                       countDataNew = countDataTest
+
+                      )
+
+# c
+predictionsTestMajority <- newPredictionsMajority(createdModelsMajority = modelsMajority,
+                       countDataNew = countDataTest,
+                      outputDir = "./todaysDate/testResults",
+                      countDataRef = countDataRef) 
+
+# d
+predictionsMMTestList <- integrateMM(minority,
+                        majority,
+                        subtype)
+
+
+predictionsMMTest <- predictionsMMTestList$predictionsMMFinal
+
+```
+
+The classifications now do not have an 'originalCall', meaning their
+true positive label. This is caused by the fact that we are trying to
+classify for a new patient sample what tumor it came from.
+
+## Q15:
+
+a)  Add the column 'originalCall' to the test data, using tumor subtype
+    information from the test metadata object (metaDataTest). Use the
+    provided code.
+b)  Is the test accuracy comparable to the 10x cross-validation
+    accuracy? In other words, do we see signs of overfitting happening
+    on the training data set?
+
+```{r}
+# a
+# Match diagnostic label to samples
+predictionsMMTest$originalCall <- metaDataTest[rownames(predictionsMMTest),"tumorSubtype"]
+
+# b
+
+```
+
+This concludes the tutorial for now. If you have remaining questions,
+please reach out to **p.kemmeren[AT]prinsesmaximacentrum.nl** (orcid ID:
+0000-0003-2237-7354)
