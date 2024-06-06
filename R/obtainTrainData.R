@@ -3,7 +3,7 @@
 #' This function is used to generate different training subsets for the different models within the M&M setup.
 #'
 #' @param metaDataRef Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
 #' @param maxSamplesPerType How many samples should we maximally use per tumor subtype?
 #' @param nModels How many models should be created for the classifier?
 #'

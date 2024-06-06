@@ -37,8 +37,8 @@ plotConfusionMatrix <- function(domain = NA,
                                                            abbreviation %in% base::as.character(base::unique(c(DomainDF$Reference, DomainDF$Prediction))) )
     abbreviationsExtra <- abbreviations %>% dplyr::filter(Domain != domain,
                                                           abbreviation %in% base::as.character(base::unique(c(DomainDF$Reference, DomainDF$Prediction))),
-                                                          Domain != "Not classified")
-    domainSubtypes <- c("Not classified", base::unique(abbreviationsDomain$abbreviation), base::unique(abbreviationsExtra$abbreviation))
+                                                          Domain != "Low confidence")
+    domainSubtypes <- c("Low confidence", base::unique(abbreviationsDomain$abbreviation), base::unique(abbreviationsExtra$abbreviation))
     #domainSubtypes <- c(unique(abbreviationsDomain$abbreviation))
     DomainDF$Prediction <- base::as.character(DomainDF$Prediction) %>% base::factor(. , levels = domainSubtypes)
 
@@ -59,7 +59,7 @@ plotConfusionMatrix <- function(domain = NA,
 
     notClassifiedDF <- base::data.frame(
       Prediction = domainSubtypes,
-      Reference = "Not classified",
+      Reference = "Low confidence",
       Freq = 0,
       Domain = NA)
 

@@ -11,7 +11,7 @@ getTopClassifications(minority, MMProbabilityList, higherClassColumn, subtype)
 
 \item{MMProbabilityList}{List of all the samples containing the probabilities for the different sample predictions from the integrated M&M classifier.}
 
-\item{higherClassColumn}{Column name within metadata-file that contains the tumor type labels.}
+\item{higherClassColumn}{Name of column name within metadata-file that contains the tumor type labels.}
 
 \item{subtype}{Do you want to obtain the predictions on the tumor subtype classification level?
 If so, use \emph{subtype = T}. If you want to obtain tumor type predictions instead, use \emph{subtype = F}.}

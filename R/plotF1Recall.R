@@ -18,7 +18,7 @@
 #'
 #' If dataMeanF1 is specified: Plot showing the tumor population group frequency averages for F1 scores,
 #' together with the individual values of the tumor (sub)types that are part of the frequency group.
-#'
+#' @import ggplot2 dplyr remotes
 #' @export
 #'
 plotF1Recall <- function(separateMeanF1,
@@ -26,12 +26,12 @@ plotF1Recall <- function(separateMeanF1,
                          whichSeed = 1) {
 
 
-  if (require("ungeviz") == F) {
+  if (base::requireNamespace("ungeviz") == F) {
     remotes::install_github("fwallis/ungeviz")
   }
 
   base::set.seed(whichSeed)
-  separateMeanF1 %<>% dplyr::filter(!is.na(meanF1))
+  separateMeanF1 %<>% dplyr::filter(!base::is.na(meanF1))
   meanNumbersTrain2 <- separateMeanF1 %>% dplyr::arrange(nCases, meanF1, meanRecall)
   meanNumbersTrain2$tumorType <- base::factor(meanNumbersTrain2$tumorType,
                                         levels = unique(meanNumbersTrain2$tumorType))

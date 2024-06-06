@@ -9,9 +9,9 @@
 #' @param outputDir Directory where the generated model for predicting the protein fraction should be stored.
 #' @param saveRiboModels Do you want to save the riboModel? Default is FALSE.
 #' @import glmnet
+#' @importFrom stats coef
 #' @return list containing the corrected count data ($counts) and the essentials needed to correct new data using the same model ($modelList).
 
-#'
 riboCorrectCounts <- function(data,
                               proteinCodingGenes,
                               outputDir,
@@ -21,7 +21,7 @@ riboCorrectCounts <- function(data,
   proteinCodingFraction <- base::apply(data[proteinCodingGenes[proteinCodingGenes %in% base::rownames(data)],],2,base::sum)/1E6
 
   # We calculate the mean gene expression
-  meanGenes <- base::apply(data,1,mean)
+  meanGenes <- base::apply(data,1,base::mean)
 
   # We only select the 5000 genes with the highest expression
   highMeanGenes <- base::names(meanGenes)[base::order(meanGenes,decreasing = T)][c(1:5000)]
@@ -34,14 +34,14 @@ riboCorrectCounts <- function(data,
 
   normalizedData <- base::apply(data,2,function(x) (x[highMeanGenes]-meanGenes)/varGenes)
 
-  set.seed(1)
+  base::set.seed(1)
   # Do cross-validation for glmnet, generalized linear model, Lasso and Elastic-Net Regularized
   modelCV <- glmnet::cv.glmnet(x = base::t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian")
 
 
   model <- glmnet::glmnet(x = base::t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian",lambda = modelCV$lambda.1se)
 
-  allCoefficients <- base::as.matrix(coef(model))[base::which(as.matrix(coef(model)) > 0),]
+  allCoefficients <- base::as.matrix(stats::coef(model))[base::which(base::as.matrix(stats::coef(model)) > 0),]
   relevantCoefficients <- c(allCoefficients[1],allCoefficients[-1][allCoefficients[-1] > 0.01])
 
   predictProteinCoding <- 1-(relevantCoefficients[1] + base::t(normalizedData[base::names(relevantCoefficients)[-1],]) %*% relevantCoefficients[-1])

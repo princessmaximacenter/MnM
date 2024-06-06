@@ -3,7 +3,7 @@
 #' Function to extract the top 3 tumor (sub)type classifications for samples, with their accompanying probability scores.
 #' @param minority R-object that contains the results from the Minority classifier.
 #' @param MMProbabilityList List of all the samples containing the probabilities for the different sample predictions from the integrated M&M classifier.
-#' @param higherClassColumn Column name within metadata-file that contains the tumor type labels.
+#' @param higherClassColumn Name of column name within metadata-file that contains the tumor type labels.
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
 #' If so, use _subtype = T_. If you want to obtain tumor type predictions instead, use _subtype = F_.
 #'
@@ -16,10 +16,10 @@ getTopClassifications <- function(minority,
                                    subtype) {
 
 
-  if ("originalCall" %in% colnames(minority$classifications)) {
+  if ("originalCall" %in% base::colnames(minority$classifications)) {
   predictions <- minority$classifications[base::names(MMProbabilityList), c("predict", "originalCall")]
   if(subtype == F) {
-    predictions$originalCall <- minority$metaDataRef[rownames(predictions), higherClassColumn]
+    predictions$originalCall <- minority$metaDataRef[base::rownames(predictions), higherClassColumn]
   }
   } else {
     predictions <- minority$classifications[, "predict", drop = F]
@@ -31,9 +31,9 @@ getTopClassifications <- function(minority,
   predictions$predict3 <- NA
   predictions$probability3 <- NA
 
-  for (i in seq(1:base::length(MMProbabilityList))) {
+  for (i in base::seq(1:base::length(MMProbabilityList))) {
     allProbs <- MMProbabilityList[[i]]
-    numbersProbs <- as.vector(allProbs)
+    numbersProbs <- base::as.vector(allProbs)
     names(numbersProbs) <- base::names(allProbs)
     numbersProbs <- base::sort(numbersProbs, decreasing = T)
     highestProbability <- numbersProbs[1]

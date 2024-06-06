@@ -18,7 +18,7 @@ extractIndividualValuesF1(
 \item{metaDataRef}{Metadata file containing the links between the samples and
 the tumor (sub)type diagnosis within the reference cohort.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor (sub)type labels.}
+\item{classColumn}{Name of column in the metadata file that contains the tumor (sub)type labels.}
 
 \item{probabilityThreshold}{What is the probability score threshold you would like to use to call a classification 'confident'?}
 

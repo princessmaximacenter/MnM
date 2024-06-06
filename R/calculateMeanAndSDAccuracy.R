@@ -18,7 +18,6 @@
 #'The total amount of samples within each frequency range ($meanSamples) is also specified.
 #' Lastly, it's specified whether a cross-validation (Train) or test (Test) type was used.
 #' @export
-#' @import stats
 #'
 calculateMeanAndSDAccuracy <- function(
   minorityDir,
@@ -29,22 +28,22 @@ calculateMeanAndSDAccuracy <- function(
          probabilityThreshold
          ) {
 
-  `%notin%` <- Negate(`%in%`)
-  if ("minorityClassifierResult.rds" %notin% list.files(minorityDir)) {
+  `%notin%` <- base::Negate(`%in%`)
+  if ("minorityClassifierResult.rds" %notin% base::list.files(minorityDir)) {
     crossValidation <- T
-  allDirsMinority <- list.dirs(minorityDir, recursive = F)
-  allDirsMajority <- list.dirs(majorityDir, recursive = F)
-  selectedDirsMinority <- allDirsMinority[grep("seed", allDirsMinority)]
-  selectedDirsMajority <- allDirsMajority[grep("seed", allDirsMajority)]
+  allDirsMinority <- base::list.dirs(minorityDir, recursive = F)
+  allDirsMajority <- base::list.dirs(majorityDir, recursive = F)
+  selectedDirsMinority <- allDirsMinority[base::grep("seed", allDirsMinority)]
+  selectedDirsMajority <- allDirsMajority[base::grep("seed", allDirsMajority)]
 
-  print(paste0("Found ",length(selectedDirsMajority), " directories with different cross-validation runs.",
+  base::print(base::paste0("Found ",base::length(selectedDirsMajority), " directories with different cross-validation runs.",
   " Calculating average performance values for all combined."))
-  if (length(selectedDirsMinority) != length(selectedDirsMajority)) {
-    stop("The number of models for the minority and majority classifier are not the same.
+  if (base::length(selectedDirsMinority) != base::length(selectedDirsMajority)) {
+    base::stop("The number of models for the minority and majority classifier are not the same.
          Please check your models within the minorityDir and majorityDir that the
          same seeds have been used for the generation of a minority and a majority classifier.")
   } else if (!all.equal(selectedDirsMajority, selectedDirsMinority) ) {
-    stop("Please make sure you run the crossvalidation with the same seed for complementary classifications,
+    base::stop("Please make sure you run the crossvalidation with the same seed for complementary classifications,
          and store them in the same directory.")
   }
   } else {
@@ -52,32 +51,32 @@ calculateMeanAndSDAccuracy <- function(
     crossValidation <- F
   }
 
-  for (i in seq(1:length(selectedDirsMajority))) {
+  for (i in base::seq(1:base::length(selectedDirsMajority))) {
     if (crossValidation == T) {
-    minorityDoc <- paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
-    majorityDoc <- paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
+    minorityDoc <- base::paste0(selectedDirsMinority[i],"/crossValidationMinorityResults.rds")
+    majorityDoc <- base::paste0(selectedDirsMajority[i],"/crossValidationMajorityResults.rds")
     } else {
-      minorityDoc <- paste0(minorityDir, "/minorityClassifierResult.rds")
-      majorityDoc <- paste0(majorityDir, "/majorityClassifierResult.rds")
+      minorityDoc <- base::paste0(minorityDir, "/minorityClassifierResult.rds")
+      majorityDoc <- base::paste0(majorityDir, "/majorityClassifierResult.rds")
     }
-    minority <- readRDS(minorityDoc)
-    majority <- readRDS(majorityDoc)
+    minority <- base::readRDS(minorityDoc)
+    majority <- base::readRDS(majorityDoc)
     if (i == 1) {
     classColumn <- minority$metaDataRun$classColumn
     higherClassColumn <- minority$metaDataRun$higherClassColumn
 
-    if (!is.na(metaDataTest)[1]) {
+    if (!base::is.na(metaDataTest)[1]) {
       base::print("Checking the performance for the test set based on values provided in dataframe 'metaDataTest'.")
 
-      if (classColumn %notin% colnames(metaDataTest)) {
+      if (classColumn %notin% base::colnames(metaDataTest)) {
         base::print("Please note that the wanted column for the tumor subtype labels cannot be found within 'metaDataTest'.")
         base::print("Either change the column with the tumor subtype labels to the name: ", classColumn)
-        stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
-      } else if (higherClassColumn %notin% colnames(metaDataTest)) {
+        base::stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
+      } else if (higherClassColumn %notin% base::colnames(metaDataTest)) {
 
         base::print("Please note that the wanted column for the tumor type labels cannot be found within 'metaDataTest'.")
         base::print("Either change the column with the tumor type labels to the name: ", higherClassColumn)
-        stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
+        base::stop("Alternatively, use the function 'classColumns()' to substitute the class-column names within M&M's reference metadata to the name of your liking that's present within your own metaDataTest.")
       } else {
         base::print(base::paste0("Found columns ", classColumn, " and ", higherClassColumn, " within metaDataTest specifying the tumor subtype, and tumor type."))
 
@@ -117,32 +116,32 @@ calculateMeanAndSDAccuracy <- function(
     if (i == 1) {
       accuracyDF <- fractionsCorrect
     } else {
-      accuracyDF <- rbind(accuracyDF, fractionsCorrect)
+      accuracyDF <- base::rbind(accuracyDF, fractionsCorrect)
     }
   }
 
   meanNumbers <- accuracyDF %>%
     dplyr::group_by(nCases) %>%
     dplyr::summarise(
-      meanFractionCorrect = base::mean(fractionCorrect),
-      meanFractionCorrectFiltered = base::mean(fractionCorrectFiltered),
-      meanFractionIncorrect = base::mean(1 - fractionCorrect),
-      meanFractionIncorrectFiltered = base::mean(1 - fractionCorrectFiltered),
+      meanFractionCorrect = base::mean(fractionCorrect, na.rm = T),
+      meanFractionCorrectFiltered = base::mean(fractionCorrectFiltered, na.rm =T),
+      meanFractionIncorrect = base::mean(1 - fractionCorrect, na.rm =T),
+      meanFractionIncorrectFiltered = base::mean(1 - fractionCorrectFiltered, na.rm = T),
       sdFractionCorrect = stats::sd(fractionCorrect),
       sdFractionCorrectFiltered = stats::sd(fractionCorrectFiltered),
-      meanCasesFiltered = base::round(base::mean(nSamplesFiltered), digits = 0),
-      meanPrecision = base::mean(Precision),
-      meanF1 = base::mean(F1),
-      meanFractionCorrect2 = base::mean(fractionCorrect2),
-      meanFractionCorrect3 = base::mean(fractionCorrect3),
+      meanCasesFiltered = base::round(base::mean(nSamplesFiltered, na.rm = T), digits = 0),
+      meanPrecision = base::mean(Precision, na.rm =T),
+      meanF1 = base::mean(F1, na.rm =T),
+      meanFractionCorrect2 = base::mean(fractionCorrect2, na.rm = T),
+      meanFractionCorrect3 = base::mean(fractionCorrect3, na.rm = T),
       sdFractionCorrect2 = stats::sd(fractionCorrect2),
       sdFractionCorrect3 = stats::sd(fractionCorrect3),
-      meanRecall = base::mean(Recall),
+      meanRecall = base::mean(Recall, na.rm = T),
       medianF1 = stats::median(F1),
       sdPrecision = stats::sd(Precision),
       sdF1 = stats::sd(F1),
       sdRecall = stats::sd(Recall),
-      meanSamples = base::mean(nSamples)
+      meanSamples = base::mean(nSamples, na.rm = T)
     )
 
   if (crossValidation == T) {

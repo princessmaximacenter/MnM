@@ -4,10 +4,10 @@
 #' @param countDataRef Matrix containing the RNA-transcript per million data. Samples are in the columns,
 #' different RNA-transcripts in the rows.
 #' @param metaDataRef Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
-#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param sampleColumn Column in the metadata file that contains the sample identifiers.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Name of column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Name of column in the metadata file that contains the tumor domain labels.
+#' @param sampleColumn Name of column in the metadata file that contains the sample identifiers.
 #' @param meanExpression Selection criterion for the RNA-transcripts,
 #' specifying what the minimum mean expression of an RNA-transcript should be for it to be included in the F-statistic analysis.
 #' Default is 5.
@@ -77,7 +77,8 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
     if (!base::dir.exists(outputDir)) {
       checkDirectory <- base::tryCatch(base::dir.create(outputDir))
       if (checkDirectory == F) {
-        base::stop("The directory you want the classification to be saved in cannot be created due to an error in the directory path. Please check the spelling of your specified outputDir.")
+        base::stop(base::paste0("The directory you want the classification to be saved in cannot be created due to an error in the directory path.",
+                                " Please check the spelling of your specified outputDir - it is probable the parent-directory does not exist."))
       }
     }
 
@@ -107,14 +108,10 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
   # Make sure you have CPM counts
   countDataRef <- base::apply(countDataRef,2,function(x) (x/base::sum(x))*1E6)
 
-  if (!base::dir.exists(outputDir)) {
-    base::dir.create(outputDir)}
   directory <- outputDir#paste0(outputDir, format(as.Date(Sys.Date(), "%Y-%m-%d"), "%m_%d_%Y"), "/")
   modelDirectory <- base::paste0(directory, "/seed", whichSeed)
-  if (!base::dir.exists(directory)) {
-    base::dir.create(directory)
-    base::dir.create(modelDirectory)
-  } else if (!base::dir.exists(modelDirectory)){
+
+  if (!base::dir.exists(modelDirectory)){
     base::dir.create(modelDirectory)
   }
 
@@ -138,7 +135,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
   dataLogRef <- base::log(countDataRef +1) %>% base::t() %>% base::as.data.frame()
 
   # Specify max samples per tumor type
-  if (is.na(maxSamplesPerType)) {
+  if (base::is.na(maxSamplesPerType)) {
     maxSamplesPerType <- base::ceiling(stats::median(base::table(metaDataRef[, classColumn])))
   }
 

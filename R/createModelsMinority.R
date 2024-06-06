@@ -5,10 +5,10 @@
 #' @param countDataRef Matrix containing the RNA-transcript per million data. Samples are in the columns,
 #' different RNA-transcripts in the rows.
 #' @param metaDataRef Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
-#' @param domainColumn Column in the metadata file that contains the tumor domain labels.
-#' @param sampleColumn Column in the metadata file that contains the sample identifiers.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Name of column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Name of column in the metadata file that contains the tumor domain labels.
+#' @param sampleColumn Name of column in the metadata file that contains the sample identifiers.
 #' @param nModels How many models should be created for the Minority classifier?
 #' Default is 100.
 #' @param meanExpression Selection criterion for the RNA-transcripts,
@@ -52,43 +52,40 @@ createModelsMinority <-  function(countDataRef,
 
 ) {
 
-  `%notin%` <- Negate(`%in%`)
-
-  if (sampleColumn %notin% colnames(metaDataRef)) {
-    stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
-  } else if (classColumn %notin% colnames(metaDataRef)) {
-    stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
-  } else if (higherClassColumn %notin% colnames(metaDataRef)){
-    stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
-  } else if (domainColumn %notin% colnames(metaDataRef)) {
-    stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
+  `%notin%` <- base::Negate(`%in%`)
+  if (sampleColumn %notin% base::colnames(metaDataRef)) {
+    base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
+  } else if (classColumn %notin% base::colnames(metaDataRef)) {
+    base::stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
+  } else if (higherClassColumn %notin% base::colnames(metaDataRef)){
+    base::stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
+  } else if (domainColumn %notin% base::colnames(metaDataRef)) {
+    base::stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
   }
 
-  rownames(metaDataRef) <- metaDataRef[, sampleColumn]
+  base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
   # Make sure the metadata and count data are in the right format and same order
-  if (nrow(metaDataRef) != ncol(countDataRef)) {
-    stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
-  } else if (all(rownames(metaDataRef) %notin% colnames(countDataRef))) {
-    stop("Your input data is not as required. Please make sure your sample IDs are within the row names of the metadata, and in the column names of the count data")
+  if (base::nrow(metaDataRef) != base::ncol(countDataRef)) {
+    base::stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
+  } else if (base::all(base::rownames(metaDataRef) %notin% colnames(countDataRef))) {
+    base::stop("Your input data is not as required. Please make sure your sample IDs are stored in the sampleColumn, and in the column names of the count data")
   }
 
-  if (is.numeric(countDataRef) != T) {
-    stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.")
+  if (base::is.numeric(countDataRef) != T) {
+    base::stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.")
 
   }
 
   # Include a statement to store the classColumn, higherClassColumn and domainColumn
-  print(paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
-  print(base::unique(metaDataRef[,classColumn])[1:3])
+  base::print(base::paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
+  base::print(base::unique(metaDataRef[,classColumn])[1:3])
 
-  print(paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
-  print(base::unique(metaDataRef[,higherClassColumn])[1:3])
+  base::print(base::paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
+  base::print(base::unique(metaDataRef[,higherClassColumn])[1:3])
 
-  print(paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
-  print(base::unique(metaDataRef[,domainColumn])[1:3])
-  print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
-
-
+  base::print(base::paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
+  base::print(base::unique(metaDataRef[,domainColumn])[1:3])
+  base::print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
 
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
   if (base::length(tumorEntitiesWithTooFewSamples) >0) {
@@ -98,43 +95,52 @@ createModelsMinority <-  function(countDataRef,
     #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
 
   }
-  countDataRef <- countDataRef[, rownames(metaDataRef)]
+
+  if (!base::dir.exists(outputDir)) {
+    checkDirectory <- base::tryCatch(base::dir.create(outputDir))
+    if (checkDirectory == F) {
+      base::stop(base::paste0("The directory you want the classification to be saved in cannot be created due to an error in the directory path.",
+      " Please check the spelling of your specified outputDir - it is probable the parent-directory does not exist."))
+    }
+  }
+
+  countDataRef <- countDataRef[, base::rownames(metaDataRef)]
   # Make sure you have CPM counts
-  countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
+  countDataRef <- base::apply(countDataRef,2,function(x) (x/base::sum(x))*1E6)
 
   directory <- outputDir
 
   # Correct for ribosomal protein contamination
-  riboCountFile <- paste0(directory, "modelListRiboCounts.rds")
-  if (!file.exists(riboCountFile)) {
+  riboCountFile <- base::paste0(directory, "modelListRiboCounts.rds")
+  if (!base::file.exists(riboCountFile)) {
 
-    set.seed(whichSeed)
+    base::set.seed(whichSeed)
     riboModelList <- riboCorrectCounts(data = countDataRef,
                                        proteinCodingGenes = proteinCodingGenes,
                                        outputDir = directory
     )
 
   } else {
-    riboModelList <- readRDS(riboCountFile)
+    riboModelList <- base::readRDS(riboCountFile)
 
   }
   countDataRef <- riboModelList$counts
 
   # Log-transform data
-  dataLogRef <- log(countDataRef +1) %>% t() %>% as.data.frame()
+  dataLogRef <- base::log(countDataRef +1) %>% base::t() %>% base::as.data.frame()
 
   # Specify max samples per tumor type
-  if (is.na(maxSamplesPerType)) {
-    maxSamplesPerType <- ceiling(median(base::table(metaDataRef[, classColumn])))
+  if (base::is.na(maxSamplesPerType)) {
+    maxSamplesPerType <- base::ceiling(stats::median(base::table(metaDataRef[, classColumn])))
   }
 
   # Remove genes with mean expression for ANOVA
-  meanVals <- apply(countDataRef, 1, mean)
+  meanVals <- base::apply(countDataRef, 1, base::mean)
   countDataRef <- countDataRef[meanVals >= meanExpression,]
 
-  print("We will now start with the selection of ANOVA-genes")
+  base::print("We will now start with the selection of ANOVA-genes")
   # Set seed for reproducibility
-  set.seed(whichSeed)
+  base::set.seed(whichSeed)
 
 
   # Run an ANOVA to select the top n genes from the training data for use in the further classification process
@@ -143,23 +149,23 @@ createModelsMinority <-  function(countDataRef,
                                          nANOVAgenes = nANOVAgenes, # How many ANOVA genes
                                          classColumn = classColumn)
 
-  print("We have finished with the ANOVA gene selection")
+  base::print("We have finished with the ANOVA gene selection")
   # Select the ANOVA genes within the log-transformed data
   dataLogRef <- dataLogRef[ ,interestingANOVAgenes]
 
   # Select biomaterial IDs as training data per model
-  set.seed(whichSeed)
+  base::set.seed(whichSeed)
   samplesTrainDefList <- obtainTrainData(metaDataRef = metaDataRef,
                                          classColumn = classColumn,
                                          nModels = nModels,
                                          maxSamplesPerType = maxSamplesPerType)
 
   # Add class label to the dataset
-  dataLogRef$class <- as.character(metaDataRef[rownames(dataLogRef),classColumn])
+  dataLogRef$class <- base::as.character(metaDataRef[rownames(dataLogRef),classColumn])
 
-  print("Starting to reduce features")
+  base::print("Starting to reduce features")
   # Reduce features using RF feature importance for accuracy
-  set.seed(whichSeed)
+  base::set.seed(whichSeed)
   reducedFeatures <- reduceFeatures(dataTrain = dataLogRef,
                                     samplesTrainDefList = samplesTrainDefList,
                                     ntree = 500,
@@ -169,17 +175,17 @@ createModelsMinority <-  function(countDataRef,
 
   dataLogRef <- dataLogRef[,c(reducedFeatures, "class")]
 
-  print("Initiating RF")
+  base::print("Initiating RF")
 
   # Start the modelling of the data within the different compositions of training data
-  set.seed(whichSeed)
+  base::set.seed(whichSeed)
   modelList <- obtainModelsMinorityClassifier(dataTrain = dataLogRef,
                                     samplesTrainDefList = samplesTrainDefList,
                                     nModels = nModels,
                                     ntree = ntree)
 
   # Store the settings of the classifier run within the resulting object
-  metaDataRun <- data.frame(nModels = nModels,
+  metaDataRun <- base::data.frame(nModels = nModels,
                             classColumn = classColumn,
                             higherClassColumn = higherClassColumn,
                             domainColumn = domainColumn,
@@ -188,18 +194,16 @@ createModelsMinority <-  function(countDataRef,
                             nFeatures = nFeatures,
                             whichSeed = whichSeed)
 
-  createdModelsMinority <- list(modelList = modelList,
+  createdModelsMinority <- base::list(modelList = modelList,
                                 riboModelList = riboModelList,
                                 reducedFeatures = reducedFeatures,
                                 metaDataRef = metaDataRef,
                                 metaDataRun = metaDataRun)
 
   if (saveModel == T) {
-  filename <- paste0(directory, "/createdModelsMinority.rds")
-  if (!dir.exists(directory)) {
-    dir.create(directory) }
-  saveRDS(createdModelsMinority, file = filename)
-  print(paste0("Please find the generated R-object with the created minority classification models within ", filename))
+  filename <- base::paste0(directory, "/createdModelsMinority.rds")
+  base::saveRDS(createdModelsMinority, file = filename)
+  base::print(base::paste0("Please find the generated R-object with the created minority classification models within ", filename))
   }
   return(createdModelsMinority)
 }

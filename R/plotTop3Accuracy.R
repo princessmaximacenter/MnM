@@ -27,7 +27,7 @@ plotTop3Accuracy <- function(meanAndSDPlotTrain,
   names_to = "topN",
   values_to = "fractionsCorrect"
   )
-  top23Longer$fractionCorrectPercent <- base::paste0(base::round(top23Longer$fractionsCorrect * 100, 1), "%")
+  top23Longer$fractionCorrectPercent <- base::paste0(base::round(top23Longer$fractionsCorrect * 100, 0), "%")
 
   top23Longer <- top23Longer %>% tidyr::pivot_longer(cols = c("sdFractionCorrect", "sdFractionCorrect2", "sdFractionCorrect3"),
                                              names_to = "whichFraction",

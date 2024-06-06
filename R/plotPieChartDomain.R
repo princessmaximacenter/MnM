@@ -6,9 +6,9 @@
 #' with the labels being present on both the classColumn and higherClassColumn level.
 #' @param domain Which domain do you want to plot? This name should be present in the
 #' domainColumn of the metadata.
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
-#' @param domainColumn Column in the metadata file that contains the domain labels.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Name of column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Name of column in the metadata file that contains the domain labels.
 #' @param textSizeClass What size should the letters have for the tumor type?
 #' @param textSizeSubspec What size should the letters have for the tumor subtype?
 #' @param freqSameTumorType How many subtypes belong to one tumor type? In order of the tumor types.

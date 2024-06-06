@@ -6,7 +6,7 @@
 #' @export
 getAccuracyPerClass <- function(predictions) {
 
-  classes <- predictions[, "originalCall"] %>% unique()
+  classes <- predictions[, "originalCall"] %>% base::unique()
 
 
   for (i in base::seq(1:base::length(classes))) {
@@ -16,7 +16,7 @@ getAccuracyPerClass <- function(predictions) {
     accuracyDF <- base::data.frame(
       accuracy = base::nrow(correct) / base::nrow(predictionsFiltered))
 
-    rownames(accuracyDF) <- classes[i]
+    base::rownames(accuracyDF) <- classes[i]
     if (i == 1) {
       accuracyDFTotal <- accuracyDF
     } else {

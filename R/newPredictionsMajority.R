@@ -10,22 +10,20 @@
 #' which RNA-transcripts were considered for transformation in the analysis ($nonZeroGenes),
 #' the metadata file associated to the reference cohort ($metaDataRef),
 #' and metadata for the performed run ($metaDataRun).
-#' @param countDataRef Matrix containing the RNA-transcript per million data for the reference cohort.
-#' Samples are in the columns, different RNA-transcripts in the rows.
 #' @param countDataNew Matrix containing the RNA-transcript per million data for the new samples to be classified.
 #' Samples are in the columns, different RNA-transcripts in the rows.
 #' @param outputDir Directory in which you would like to store the R-object containing the results. Default is today's date.
 #' @param saveModel Do you want to save the resulting predictions in an R object? Default is TRUE.
-#'
+#' @param correctRibo Do you want to perform a correction for the ribodepletion protocol on your dataset? Default is TRUE.
 #' @return R-object containing the final classifications ($classifications) for the samples,
 #' and the probabilities associated to the different classifications ($probability).
 #' @export
 #'
 newPredictionsMajority <- function(createdModelsMajority,
-                                   countDataRef,
                                    countDataNew,
                                    outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
-                                   saveModel = T
+                                   saveModel = T,
+                                   correctRibo = T
 ) {
 
   if (saveModel == T) {
@@ -38,29 +36,29 @@ newPredictionsMajority <- function(createdModelsMajority,
       }
     }
   }
-
+ countDataRef <- createdModelsMajority$countDataRef
   # Make sure you have CPM counts
   countDataNew <- apply(countDataNew,2,function(x) (x/sum(x))*1E6)
   countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
 
-
+  if (correctRibo == T) {
   countDataNew <- predictRiboCounts(riboModel = createdModelsMajority$riboModelList$riboModel,
                                     data = countDataNew)
+
   countDataRef<- predictRiboCounts(riboModel = createdModelsMajority$riboModelList$riboModel,
                                    data = countDataRef)
+  }
 
 
   # Log-transform data
   dataLogRef <- log(countDataRef +1)
   dataLogNew <- log(countDataNew + 1)
 
-  dataLogNonZero <- dataLogRef[createdModelsMajority$nonZeroGenes,]
-  dataLogNewNonZero <- dataLogNew[createdModelsMajority$nonZeroGenes, , drop = F]
-  testSamples <- colnames(dataLogNewNonZero)
+  testSamples <- colnames(dataLogNew)
 
   result <- obtainPredictionMajorityClassifier(rotationsAndScalingsList = createdModelsMajority$rotationsAndScalingsList,
-                                     dataTrain = dataLogNonZero,
-                                     dataTest = dataLogNewNonZero,
+                                     dataTrain = dataLogRef,
+                                     dataTest = dataLogNew,
                                      metaDataRef = createdModelsMajority$metaDataRef,
                                      classColumn = createdModelsMajority$metaDataRun$classColumn,
                                      nModels = createdModelsMajority$metaDataRun$nModels,
@@ -74,9 +72,6 @@ newPredictionsMajority <- function(createdModelsMajority,
 
    classificationList$metaDataRun <- createdModelsMajority$metaDataRun
 if (saveModel == T) {
-
-  if (!dir.exists(outputDir)) {
-    dir.create(outputDir) }
 
   filename <- paste0(outputDir, "/majorityClassifierResult.rds")
   saveRDS(classificationList, file = filename)

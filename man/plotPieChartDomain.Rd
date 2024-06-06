@@ -26,11 +26,11 @@ with the labels being present on both the classColumn and higherClassColumn leve
 \item{domain}{Which domain do you want to plot? This name should be present in the
 domainColumn of the metadata.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+\item{classColumn}{Name of column in the metadata file that contains the tumor subtype labels.}
 
-\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
+\item{higherClassColumn}{Name of column in the metadata file that contains the tumor type labels.}
 
-\item{domainColumn}{Column in the metadata file that contains the domain labels.}
+\item{domainColumn}{Name of column in the metadata file that contains the domain labels.}
 
 \item{textSizeClass}{What size should the letters have for the tumor type?}
 

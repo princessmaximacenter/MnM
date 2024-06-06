@@ -15,9 +15,9 @@
 #' @param saveImage Do you want to save your image? Default is FALSE.
 #' @param textSizeClass What size should the letters have for the tumor type? Default is 0.5.
 #' @param textSizeSubspec What size should the letters have for the tumor subtype? Default is 0.45.
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
-#' @param higherClassColumn Column in the metadata file that contains the tumor type labels.
-#' @param domainColumn Column in the metadata file that contains the domain labels.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
+#' @param higherClassColumn Name of column in the metadata file that contains the tumor type labels.
+#' @param domainColumn Name of column in the metadata file that contains the domain labels.
 #' @param abbreviations Dataframe containing the different tumor subtype labels with their appropriate abbreviations ($abbreviationSubtype),
 #' and tumor type labels with their appropriate abbreviations (abbreviationTumorType).
 #' Please make sure that the higherClassColumn name is used as column name within abbreviations for the tumor type labels,

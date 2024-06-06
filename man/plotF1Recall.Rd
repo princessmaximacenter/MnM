@@ -9,7 +9,7 @@ plotF1Recall(separateMeanF1, dataMeanF1 = NA, whichSeed = 1)
 \arguments{
 \item{separateMeanF1}{Dataframe obtained from function 'calculateSeparateF1'.
 Contains all the calculated F1 scores and associated recall rates per tumor (sub)type.
-For this setup, filterOrNot within calculateSeparateF1 should be put to F.}
+For this setup, filterOrNot within 'calculateSeparateF1' should be put to FALSE.}
 
 \item{dataMeanF1}{Dataframe obtained from function 'calculateMeanAndSDAccuracy'.
 Contains all the calculated F1 scores and associated recall rates stratified by population frequency.}
@@ -24,7 +24,7 @@ If dataMeanF1 is specified: Plot showing the tumor population group frequency av
 together with the individual values of the tumor (sub)types that are part of the frequency group.
 }
 \description{
-The plotF1Recall function can be used in two ways, to generate different plot types.
+The 'plotF1Recall' function can be used in two ways, to generate different plot types.
 One plot shows the tumor population group frequency averages for F1 scores, together with the individual F1-values.
 No recall is displayed in this plot.
 }

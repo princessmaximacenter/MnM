@@ -8,7 +8,7 @@
 #' @param countDataRef Matrix containing the RNA-transcript per million data. Samples are in the columns,
 #' different RNA-transcripts in the rows.
 #' @param nANOVAgenes How many RNA-transcripts should we select using the F-statistic of ANOVA?
-#' @param classColumn Column in the metadata file that contains the tumor subtype labels.
+#' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
 #'
 #' @return Vector containing the names of the most interesting RNA-transcripts according to the F-statistic of ANOVA.
 #' @import utils

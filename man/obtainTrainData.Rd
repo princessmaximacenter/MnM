@@ -14,7 +14,7 @@ obtainTrainData(
 \arguments{
 \item{metaDataRef}{Metadata file containing the links between the samples and the tumor domain, type and subtype diagnosis.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+\item{classColumn}{Name of column in the metadata file that contains the tumor subtype labels.}
 
 \item{maxSamplesPerType}{How many samples should we maximally use per tumor subtype?}
 

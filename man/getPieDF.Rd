@@ -14,9 +14,9 @@ and tumor type labels (higherClassColumn) with their appropriate abbreviations (
 Please make sure that the higherClassColumn name is used as column name within abbreviationsCombi for the tumor type labels,
 and classColumn name for the tumor subtype labels.}
 
-\item{higherClassColumn}{Column in the metadata file that contains the tumor type labels.}
+\item{higherClassColumn}{Name of column in the metadata file that contains the tumor type labels.}
 
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
+\item{classColumn}{Name of column in the metadata file that contains the tumor subtype labels.}
 }
 \value{
 Dataframe containing the different labels within our dataset with their frequencies.

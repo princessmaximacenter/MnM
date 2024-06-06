@@ -17,17 +17,19 @@ plotCohortUMAP(
 \item{dataUMAPList}{List containing the UMAP coordinate data
 and the desired abbreviation for the tumor type ($abbreviation), resulting from the function 'createUMAPcohort'}
 
-\item{domain}{Which domain do you want to plot the tumor types for? If not specified, visualization will be performed on the domain level by default.}
+\item{domain}{Which domain do you want to visualize the tumor types for (for example: domain = "Hemato")?
+If not specified, visualization will be performed on the domain level.}
 
-\item{subtype}{In case domain is specified: Do you want to visualize on the tumor subtype level (TRUE) or on the tumor type level (FALSE)?}
+\item{subtype}{Do you want to visualize on the tumor subtype level (TRUE) or on the tumor type level (FALSE)?
+Only possible when the domain is specified (e.g. domain = "Hemato"), otherwise visualization will
+automatically take place on the domain level.}
 
 \item{tumorType}{If domain is specified and subtype = TRUE, there's a possibility to plot the tumor subtypes for only one tumor type.
-Please specify which tumor type you would like to visualize within this parameter.}
+If that is desired, fill out the tumor type that you would like to visualize at 'tumorType' (for example: tumorType = "B-ALL")}
 
 \item{plotColors}{Which colors do you want to use for the tumor types? If not specified, default ggplot2 colors will be used.}
 
-\item{useLabels}{Do you want to supply labels within the plot?
-If that would be desired, fill out the tumor type that you would like to visualize at 'tumorType' (for example: "B-ALL").}
+\item{useLabels}{Do you want to supply labels within the plot?}
 }
 \value{
 ggplot with only the datapoints of the selected domain,
@@ -35,5 +37,6 @@ color coded by the tumor type (subtype = F) or tumor subtype (subtype = T).
 }
 \description{
 Function to plot the UMAP coordinates for the different tumor (sub)type samples
-belonging to one domain or tumor type.
+belonging to one domain or tumor type. Coloring and labeling can be performed based on the
+sample's tumor domain, tumor type and tumor subtype labels.
 }

@@ -7,7 +7,6 @@
 getPrincipalComponents(
   dataTrain,
   samplesTrainDefList,
-  classColumn,
   nModels = 100,
   nFeatures = 2500,
   nComps = 100
@@ -17,8 +16,6 @@ getPrincipalComponents(
 \item{dataTrain}{Data to be used for model training, containing the all samples available within the training dataset.}
 
 \item{samplesTrainDefList}{List of different training data sample subsets used for subsetting the available training dataset (dataTrain).}
-
-\item{classColumn}{Column in the metadata file that contains the tumor subtype labels.}
 
 \item{nModels}{How many models should be created for the classifier?}
 
