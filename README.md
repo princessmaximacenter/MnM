@@ -24,4 +24,4 @@ RNA TPM-normalized count data and metadata of the reference cohort and test coho
 
 ## Contact
 
-In case of questions, suggestions or additional comments, please reach out to us via **p.kemmeren\@prinsesmaximacentrum.nl** (orcid ID: 0000-0003-2237-7354).
+In case of questions, suggestions or additional comments, please reach out to us via **p.kemmeren[AT]prinsesmaximacentrum.nl** (orcid ID: 0000-0003-2237-7354).
