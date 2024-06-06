@@ -20,7 +20,7 @@ remotes::install_github("princessmaximacenter/MnM/", dependencies = T)
 
 Please see the supplied tutorial, vignettes, and documentation within R on how to properly use all functions. If you wish to familiarize yourself with `MnM`, the tutorial is the best starting point.
 
-RNA TPM-normalized count data and metadata of the reference cohort and test cohort can be obtained from ArrayExpress (accession E-MTAB-14038). The final resulting pre-trained models, which can be used to classify new incoming RNA-samples, can be obtained from Zenodo or dataverse (UNDECIDED).
+RNA TPM-normalized count data and metadata of the reference cohort and test cohort can be obtained from ArrayExpress (accession E-MTAB-14038). The final resulting pre-trained models, which can be used to classify new incoming RNA-samples, can be obtained from Zenodo in the near future.
 
 ## Contact
 
