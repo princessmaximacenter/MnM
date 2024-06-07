@@ -54,12 +54,12 @@ cover all possible visualizations at this point in time.
 
 # Install packages
 
-For this tutorial, the `tidyverse` and  `MnM` package need to be installed and loaded.
-The installation file for MnM is within this folder and is called:
-MnM_1.0.1.tar.gz.
+For this tutorial, the `tidyverse` and `MnM` package need to be
+installed and loaded. The MnM package can be installed from the [MnM
+Github page](https://github.com/princessmaximacenter/MnM).
 
-1)  Download package `remotes` and use function *install_local* to
-    install the MnM package from file 'MnM_1.0.1.tar.gz'. Make sure to
+1)  Download package `remotes` and use function *install_github* to
+    install the MnM package from the Github directory. Make sure to
     specify dependencies = T.
 
 This will automatically install the `MnM` package in R.
@@ -73,12 +73,11 @@ b)  Load the`tidyverse` and `MnM` package.
 ```{r}
 
 if(!require("MnM")) {
-  remotes::install_local("./MnM_1.0.1.tar.gz", dependencies = T)
+  remotes::install_github("princessmaximacenter/MnM", dependencies = T)
 }
 library("tidyverse")
 library("MnM")
 ```
-
 
 # Data formats
 
