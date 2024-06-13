@@ -16,16 +16,17 @@ knitr::opts_chunk$set(echo = TRUE)
 # Goal
 
 The goal of this tutorial is to familiarize yourself with `MnM`: the
-package to run M&M, a pan-cancer ensemble-based classifier for
-pediatric malignancies.
+package to run [M&M, a pan-cancer ensemble-based classifier for
+pediatric
+tumors](https://www.medrxiv.org/content/10.1101/2024.06.06.24308366v1).
 
 In short, M&M is an classifier that facilitates infrequently occurring
 tumor (sub)type classifications, for help during the diagnostic process
 in pediatric oncology. To accomplish this, two different classifiers
 were created and integrated: a Minority classifier tailored towards
 correct classification of rare tumor (sub)types, and a Majority
-classifier with more predictive power for high frequency malignancies.
-The integration eventually results in the creation of the Minority &
+classifier with more predictive power for high frequency tumors. The
+integration eventually results in the creation of the Minority &
 Majority classifier: M&M in short.
 
 Discussed will be:
@@ -831,6 +832,79 @@ predictionsMMTest %>% filter(originalCall == predict)  %>% dim()# 90
 90 / nrow(predictionsMMTest) # 86
 
 "Very comparable accuracy, so no apparent overfitting"
+```
+
+We now have created our own models to classify the test samples with.
+However, final models have also been generated with the whole reference
+cohort as input data. These final models are available for download at
+[Zenodo](https://zenodo.org/records/11575098).
+
+## Q16:
+
+a)  Download the 'createdModelsMinority.rds' and
+    'createdModelsMajority.rds' from the Zenodo directory and move them
+    to the tutorial input directory (DataTutorial/input/).
+b)  Read in the rds-objects using the code from below. Please make sure
+    you have put the models correctly within the input directory of the
+    tutorial directory.
+c)  Run the code in *newPredictionsMinority* with the filled out
+    required parameters to generate minority classifications for the
+    test samples stored in 'countDataTest'. Save the models within the
+    directory 'testResultsPretrainedModel', within the output folder of
+    today's date. Use the provided code, but alter the *outputDir*
+    parameter to reflect today's date.
+d)  Run the code in *newPredictionsMajority* with the filled out
+    required parameters to generate majority classifications for the
+    test samples stored in 'countDataTest'. Be sure to save the models
+    within the directory 'testResultsPretrainedModel', within the output
+    folder of today's date. Use the provided code, but alter the
+    *outputDir* parameter to reflect today's date.
+e)  Integrate the two models' classifications using the function
+    *integrateMM* again by filling out the required parameters, in the
+    same way as for Q14d.
+f)  Add the originalCall column again, and check how many errors were
+    made by M&M. Which classifier performs better, the pretrained one or
+    the classifier trained only on the B-ALL samples? Does that make
+    sense?
+
+```{r}
+# b
+modelsMinority <- readRDS("~/Downloads/createdModelsMinority.rds")
+modelsMajority <- readRDS("~/Downloads/createdModelsMajority.rds")
+
+# Provided code
+#modelsMinority <- readRDS("input/createdModelsMinority.rds")
+#modelsMajority <- readRDS("input/createdModelsMajority.rds")
+
+# c
+predictionsTestMinority <- newPredictionsMinority(
+                       createdModelsMinority = modelsMinority,
+                       outputDir = "~/Desktop/probi/",
+                       countDataNew = countDataTest
+                      )
+
+# d
+predictionsTestMajority <- newPredictionsMajority(createdModelsMajority = modelsMajority,
+                       countDataNew = countDataTest,
+                      outputDir = "~/Desktop/probi/",
+                      ) 
+
+# e
+predictionsMMTestList <- integrateMM(predictionsTestMinority,
+                        predictionsTestMajority,
+                        subtype = T)
+
+
+predictionsMMTest <- predictionsMMTestList$predictionsMMFinal
+
+# f
+predictionsMMTest$originalCall <- metaDataTest[rownames(predictionsMMTest),"tumorSubtype"]
+
+predictionsMMTest %>% filter(originalCall == predict)  %>% dim()# 89
+89 / nrow(predictionsMMTest) # 86
+
+# The new classifier for only B-ALL subtype classifications performs better. This comes as no surprise, as the full model also has to discriminate 51 other tumor types and many tumor subtypes. However, the difference in the error count is negligible (1 sample). Therefore, the performance of M&M is considered remarkable. 
+
 ```
 
 This concludes the tutorial for now. If you have remaining questions,
