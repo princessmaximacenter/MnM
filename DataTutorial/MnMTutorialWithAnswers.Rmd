@@ -828,7 +828,7 @@ b)  Is the test accuracy comparable to the 10x cross-validation
 predictionsMMTest$originalCall <- metaDataTest[rownames(predictionsMMTest),"tumorSubtype"]
 
 # 
-predictionsMMTest %>% filter(originalCall == predict)  %>% dim()# 89
+predictionsMMTest %>% filter(originalCall == predict)  %>% dim()# 90
 90 / nrow(predictionsMMTest) # 86
 
 "Very comparable accuracy, so no apparent overfitting"
