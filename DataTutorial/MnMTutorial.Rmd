@@ -16,16 +16,17 @@ knitr::opts_chunk$set(echo = TRUE)
 # Goal
 
 The goal of this tutorial is to familiarize yourself with `MnM`: the
-package to run M&M, a pan-cancer ensemble-based classifier for pediatric
-malignancies.
+package to run [M&M, a pan-cancer ensemble-based classifier for
+pediatric
+tumors](https://www.medrxiv.org/content/10.1101/2024.06.06.24308366v1).
 
 In short, M&M is an classifier that facilitates infrequently occurring
 tumor (sub)type classifications, for help during the diagnostic process
 in pediatric oncology. To accomplish this, two different classifiers
 were created and integrated: a Minority classifier tailored towards
 correct classification of rare tumor (sub)types, and a Majority
-classifier with more predictive power for high frequency malignancies.
-The integration eventually results in the creation of the Minority &
+classifier with more predictive power for high frequency tumors. The
+integration eventually results in the creation of the Minority &
 Majority classifier: M&M in short.
 
 Discussed will be:
