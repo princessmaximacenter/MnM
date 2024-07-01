@@ -8,7 +8,8 @@ newPredictionsMinority(
   createdModelsMinority,
   countDataNew,
   outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
-  saveModel = T
+  saveModel = T,
+  correctRibo = T
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ Samples are in the columns, different RNA-transcripts in the rows.}
 \item{outputDir}{Directory in which you would like to store the R-object containing the results.}
 
 \item{saveModel}{Do you want to save the results in an R object?}
+
+\item{correctRibo}{Do you want to perform a correction for the ribodepletion protocol on your dataset? Default is TRUE.}
 }
 \value{
 R-object containing the final classifications ($classifications) for the samples,

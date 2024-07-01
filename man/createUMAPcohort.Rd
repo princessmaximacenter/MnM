@@ -32,7 +32,7 @@ the tumor (sub)type diagnosis within the reference cohort.}
 
 \item{sampleColumn}{Name of column in the metadata file that contains the sample identifiers.}
 
-\item{correctRibo}{Do you want to perform a correction for the ribodepletion protocol on your dataset?}
+\item{correctRibo}{Do you want to perform a correction for the ribodepletion protocol on your dataset? Default is TRUE.}
 
 \item{abbreviations}{Optional. Dataframe containing the links between the tumor (sub)type,
 the abbreviation required in the plot, and the domain.}
