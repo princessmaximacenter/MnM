@@ -1,6 +1,6 @@
 Package: MnM
 Title: M&M: A pan-cancer classifier for pediatric malignancies
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: 
     person("Fleur", "Wallis", , "fleurwallis@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0001-6889-3429"))

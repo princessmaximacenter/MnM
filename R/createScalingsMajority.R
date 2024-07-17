@@ -171,8 +171,9 @@ createScalingsMajority <-  function(countDataRef,
                                 samplesTrainDefList = samplesTrainDefList,
                                 nonZeroGenes = nonZeroGenes,
                                 metaDataRef = metaDataRef,
-                                metaDataRun = metaDataRun,
-                                countDataRef = countDataOG)
+                                metaDataRun = metaDataRun#,
+                                #countDataRef = countDataOG
+                                )
 
   if (saveModel == T) {
 
