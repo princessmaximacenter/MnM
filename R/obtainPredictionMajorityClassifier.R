@@ -4,7 +4,6 @@
 #'
 #' @param rotationsAndScalingsList List containing both the derived PCA-transformation information ($prList)
 #' and the information needed to scale new sample input data to center the features around 0 ($scaleFeaturesList).
-#' @param dataTrain Data to be used for training, containing the all samples available within the training dataset.
 #' @param dataTest New samples for which the classifier should provide a classification label.
 #' @param metaDataRef Metadata file containing the links between the samples and the tumor subtype diagnosis.
 #' @param testSamples test sample IDs matching with samples from the test data.
@@ -17,7 +16,6 @@
 #' @import kknn
 #'
 obtainPredictionMajorityClassifier <- function(rotationsAndScalingsList,
-                                     dataTrain,
                                      dataTest,
                                      metaDataRef,
                                      testSamples,

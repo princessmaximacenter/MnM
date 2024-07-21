@@ -118,8 +118,6 @@ createScalingsMajority <-  function(countDataRef,
     }
   }
 
-  countDataOG <- countDataRef
-
   # Make sure you have CPM counts
   countDataRef <- base::apply(countDataRef,2,function(x) (x/base::sum(x))*1E6)
 
@@ -204,8 +202,8 @@ createScalingsMajority <-  function(countDataRef,
                                 riboModelList = riboModelList,
                                 nonZeroGenes = nonZeroGenes,
                                 metaDataRef = metaDataRef,
-                                metaDataRun = metaDataRun,
-                                countDataRef = countDataOG
+                                metaDataRun = metaDataRun#,
+                                #countDataRef = countDataOG
                                 )
 
   if (saveModel == T) {

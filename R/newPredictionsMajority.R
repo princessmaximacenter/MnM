@@ -36,28 +36,22 @@ newPredictionsMajority <- function(createdModelsMajority,
       }
     }
   }
- countDataRef <- createdModelsMajority$countDataRef
   # Make sure you have CPM counts
   countDataNew <- apply(countDataNew,2,function(x) (x/sum(x))*1E6)
-  countDataRef <- apply(countDataRef,2,function(x) (x/sum(x))*1E6)
 
   if (correctRibo == T) {
   countDataNew <- predictRiboCounts(riboModel = createdModelsMajority$riboModelList$riboModel,
                                     data = countDataNew)
 
-  countDataRef<- predictRiboCounts(riboModel = createdModelsMajority$riboModelList$riboModel,
-                                   data = countDataRef)
   }
 
 
   # Log-transform data
-  dataLogRef <- log(countDataRef +1)
   dataLogNew <- log(countDataNew + 1)
 
   testSamples <- colnames(dataLogNew)
 
   result <- obtainPredictionMajorityClassifier(rotationsAndScalingsList = createdModelsMajority$rotationsAndScalingsList,
-                                     dataTrain = dataLogRef,
                                      dataTest = dataLogNew,
                                      metaDataRef = createdModelsMajority$metaDataRef,
                                      classColumn = createdModelsMajority$metaDataRun$classColumn,

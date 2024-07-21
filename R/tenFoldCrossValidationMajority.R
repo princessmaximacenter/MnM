@@ -179,7 +179,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
     )
 
     result <- obtainPredictionMajorityClassifier(rotationsAndScalingsList = rotationsAndScalingsList,
-                                       dataTrain = dataCV,
+                                       #dataTrain = dataCV,
                                        dataTest = testDataCV,
                                        metaDataRef = metaDataCV,
                                        testSamples = testSamples,

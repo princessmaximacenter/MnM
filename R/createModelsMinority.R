@@ -186,7 +186,6 @@ createModelsMinority <-  function(countDataRef,
   dataLogRef <- dataLogRef[,c(reducedFeatures, "class")]
 
   ##### UPSIMPLER INTEGRATION START #####
-  # TODO: Add the upsimpler integration here, modifing the dataLogRef AND the samplesTrainDefList
   # In contrast to the majority classifier, here all model subsets have the same feature set
   # This means we can upsample only once: the dataLogRef df directly
   if (!is.null(upsimplerModule)) {
