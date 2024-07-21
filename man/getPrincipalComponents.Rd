@@ -4,22 +4,12 @@
 \alias{getPrincipalComponents}
 \title{Get PCA transformation Majority Classifier}
 \usage{
-getPrincipalComponents(
-  dataTrain,
-  samplesTrainDefList,
-  nModels = 100,
-  nFeatures = 2500,
-  nComps = 100
-)
+getPrincipalComponents(samplesPerModel, nComps = 100)
 }
 \arguments{
-\item{dataTrain}{Data to be used for model training, containing the all samples available within the training dataset.}
-
-\item{samplesTrainDefList}{List of different training data sample subsets used for subsetting the available training dataset (dataTrain).}
-
-\item{nModels}{How many models should be created for the classifier?}
-
-\item{nFeatures}{How many of the most variable RNA-transcripts within the dataset should we select for principal component analysis (PCA)?}
+\item{samplesPerModel}{List of different training data sample subsets used for subsetting the available training dataset.
+These contain the actual samples, not just the IDs (as they were selected by \code{selectFeaturesMajority} or
+as returned by \code{upsimplerResampling}).}
 
 \item{nComps}{How many principal components will be selected after PCA?}
 }
@@ -29,6 +19,6 @@ and the information needed to scale new sample input data to center the features
 }
 \description{
 Function to find the optimal principal component analysis (PCA) transformation of the reference cohort
-so that a maximal variance within the data is explained. With the parameters, the number of variable features
-and the eventual total number of principal components can be adjusted.
+so that a maximal variance within the data is explained. With the parameters, the eventual total number
+of principal components can be adjusted.
 }

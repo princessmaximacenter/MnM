@@ -16,6 +16,9 @@
 #' @param nComps How many principal components will be selected after PCA?
 #' @param nFeatures How many of the most variable RNA-transcripts within the dataset should we select for principal component analysis (PCA)?
 #' @param maxNeighbors What is the maximum number of neigbors to be used for the weighted _k_-nearest neighbor algorithm?
+#' @param upsimplerModule The upsimpler Python package as imported by \code{reticulate}. If not specified, no upsampling will be performed.
+#' @param upsimplerArgs List of arguments to be passed to the upsimpler algorithm, separately for the initialization of the
+#' \code{Upsimpler} class ($init), as well as for the \code{upsimple} method ($upsimple).
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param outputDir Directory in which you would like to store the R-object containing the results. Default is today's date.
 #' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
@@ -45,13 +48,14 @@ createScalingsMajority <-  function(countDataRef,
                                     nComps = 100,
                                     nFeatures = 2500,
                                     maxNeighbors = 25,
+                                    upsimplerModule = NULL,
+                                    upsimplerArgs = NULL,
                                     whichSeed = 1,
                                     outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                     proteinCodingGenes,
                                     saveModel = T
 
 ) {
-  countDataOG <- countDataRef
   `%notin%` <- base::Negate(`%in%`)
   if (sampleColumn %notin% base::colnames(metaDataRef)) {
     base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
@@ -92,6 +96,8 @@ createScalingsMajority <-  function(countDataRef,
   if (base::length(tumorEntitiesWithTooFewSamples) >0) {
 
     metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
+    # also remove them from the count data
+    countDataRef <- countDataRef[, base::rownames(metaDataRef)]
     base::print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
     #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
 
@@ -104,6 +110,16 @@ createScalingsMajority <-  function(countDataRef,
                               " Please check the spelling of your specified outputDir - it is probable the parent-directory does not exist."))
     }
   }
+
+  # an extra check for upsimpler #
+  if (!is.null(upsimplerModule)) {
+    if (is.null(upsimplerArgs)) {
+      base::stop("Upsimpler module was provided, but no argument list. Aborting.")
+    }
+  }
+
+  countDataOG <- countDataRef
+
   # Make sure you have CPM counts
   countDataRef <- base::apply(countDataRef,2,function(x) (x/base::sum(x))*1E6)
 
@@ -148,11 +164,28 @@ createScalingsMajority <-  function(countDataRef,
 
   base::print("samplesTrainDefList created")
 
+  samplesPerModel <- selectFeaturesMajority(dataTrain = dataLogNonZero,
+                                            samplesTrainDefList = samplesTrainDefList,
+                                            nFeatures = nFeatures)
 
-  rotationsAndScalingsList <- getPrincipalComponents(dataTrain = dataLogNonZero,
-                                                     samplesTrainDefList,
-                                                     nModels = nModels,
-                                                     nFeatures = nFeatures,
+  ##### UPSIMPLER INTEGRATION START #####
+  if (!is.null(upsimplerModule)) {
+    targetSampleID <- upsimplerArgs$upsimple$target_sample_id
+    targetSample <- list(id = targetSampleID,
+                         data = dataLogNonZero[, targetSampleID, drop = F] %>% as.data.frame)
+
+    samplesPerModel <- upsimplerResampling(samplesPerModel,
+                                           metaDataRef,
+                                           classColumn,
+                                           sampleColumn,
+                                           targetSample = targetSample,
+                                           upsimplerModule = upsimplerModule,
+                                           upsimplerArgs = upsimplerArgs,
+                                           whichSeed = whichSeed)
+  }
+  ###### UPSIMPLER INTEGRATION END ######
+
+  rotationsAndScalingsList <- getPrincipalComponents(samplesPerModel = samplesPerModel,
                                                      nComps = nComps)
 
   # Store the settings of the classifier run within the resulting object
@@ -160,6 +193,7 @@ createScalingsMajority <-  function(countDataRef,
                             classColumn = classColumn,
                             higherClassColumn = higherClassColumn,
                             domainColumn = domainColumn,
+                            sampleColumn = sampleColumn,
                             maxSamplesPerType = maxSamplesPerType,
                             maxNeighbors = maxNeighbors,
                             nFeatures = nFeatures,
@@ -168,11 +202,11 @@ createScalingsMajority <-  function(countDataRef,
 
   createdModelsMajority <- base::list(rotationsAndScalingsList = rotationsAndScalingsList,
                                 riboModelList = riboModelList,
-                                samplesTrainDefList = samplesTrainDefList,
                                 nonZeroGenes = nonZeroGenes,
                                 metaDataRef = metaDataRef,
                                 metaDataRun = metaDataRun,
-                                countDataRef = countDataOG)
+                                countDataRef = countDataOG
+                                )
 
   if (saveModel == T) {
 

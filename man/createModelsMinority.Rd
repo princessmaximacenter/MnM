@@ -17,6 +17,8 @@ createModelsMinority(
   maxSamplesPerType = 3,
   ntree = 500,
   nFeatures = 300,
+  upsimplerModule = NULL,
+  upsimplerArgs = NULL,
   whichSeed = 1,
   outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
   proteinCodingGenes,
@@ -52,6 +54,11 @@ Default is 5.}
 
 \item{nFeatures}{How many features should we keep after determining the most important RNA-transcripts using the Random Forest Importance Score?
 Default is 300.}
+
+\item{upsimplerModule}{The upsimpler Python package as imported by \code{reticulate}. If not specified, no upsampling will be performed.}
+
+\item{upsimplerArgs}{List of arguments to be passed to the upsimpler algorithm, separately for the initialization of the
+\code{Upsimpler} class ($init), as well as for the \code{upsimple} method ($upsimple).}
 
 \item{whichSeed}{For reproducibility, the seed can be specified with this parameter. Default is 1.}
 

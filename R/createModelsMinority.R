@@ -19,6 +19,9 @@
 #' @param ntree How many trees should we use during the weighted Random Forest procedure? Default is 500.
 #' @param nFeatures How many features should we keep after determining the most important RNA-transcripts using the Random Forest Importance Score?
 #' Default is 300.
+#' @param upsimplerModule The upsimpler Python package as imported by \code{reticulate}. If not specified, no upsampling will be performed.
+#' @param upsimplerArgs List of arguments to be passed to the upsimpler algorithm, separately for the initialization of the
+#' \code{Upsimpler} class ($init), as well as for the \code{upsimple} method ($upsimple).
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter. Default is 1.
 #' @param outputDir Directory in which you would like to store the R-object containing the results. Default is today's date.
 #' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
@@ -45,6 +48,8 @@ createModelsMinority <-  function(countDataRef,
                                   maxSamplesPerType = 3,
                                   ntree = 500,
                                   nFeatures = 300,
+                                  upsimplerModule = NULL,
+                                  upsimplerArgs = NULL,
                                   whichSeed = 1,
                                   outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                   proteinCodingGenes,
@@ -104,6 +109,11 @@ createModelsMinority <-  function(countDataRef,
     }
   }
 
+  # an extra check for upsimpler #
+  if (!is.null(upsimplerModule) && is.null(upsimplerArgs)) {
+    base::stop("Upsimpler module was provided, but no argument list. Aborting.")
+  }
+
   countDataRef <- countDataRef[, base::rownames(metaDataRef)]
   # Make sure you have CPM counts
   countDataRef <- base::apply(countDataRef,2,function(x) (x/base::sum(x))*1E6)
@@ -161,7 +171,7 @@ createModelsMinority <-  function(countDataRef,
                                          maxSamplesPerType = maxSamplesPerType)
 
   # Add class label to the dataset
-  dataLogRef$class <- base::as.character(metaDataRef[rownames(dataLogRef),classColumn])
+  dataLogRef$class <- base::as.character(metaDataRef[rownames(dataLogRef), classColumn])
 
   base::print("Starting to reduce features")
   # Reduce features using RF feature importance for accuracy
@@ -174,6 +184,66 @@ createModelsMinority <-  function(countDataRef,
                                     nANOVAgenes = nANOVAgenes)
 
   dataLogRef <- dataLogRef[,c(reducedFeatures, "class")]
+
+  ##### UPSIMPLER INTEGRATION START #####
+  # TODO: Add the upsimpler integration here, modifing the dataLogRef AND the samplesTrainDefList
+  # In contrast to the majority classifier, here all model subsets have the same feature set
+  # This means we can upsample only once: the dataLogRef df directly
+  if (!is.null(upsimplerModule)) {
+    targetSampleID <- upsimplerArgs$upsimple$target_sample_id
+    # the data were transposed and a class column was added, so we need to remove it
+    # and make it as upsimplerResampling expects it to be
+    sanitizedDataLogRef <- dataLogRef %>% select(-class) %>% base::t() %>% base::as.data.frame()
+    targetSample <- list(id = targetSampleID,
+                         data = sanitizedDataLogRef[, targetSampleID, drop = F] %>% base::as.data.frame())
+    # Apply the upsimpler algorithm
+    sanitizedDataLogRef <- upsimplerResampling(sampleSets = list(sanitizedDataLogRef),
+                                               metaDataRef = metaDataRef,
+                                               classColumn = classColumn,
+                                               sampleColumn = sampleColumn,
+                                               targetSample = targetSample,
+                                               upsimplerModule = upsimplerModule,
+                                               upsimplerArgs = upsimplerArgs,
+                                               whichSeed = whichSeed)
+    sanitizedDataLogRef <- sanitizedDataLogRef[[1]]
+    dataLogRef <- sanitizedDataLogRef %>% base::t() %>% base::as.data.frame()
+
+    # Update the samplesTrainDefList to reflect the new dataLogRef, which means the following:
+    # 1. Find all samples (rownames) in dataLogRef that are of the form <original ID>_S<number>
+    # 2. samplesTrainDefList is a list of character vectors. Go in each character vector and
+    #    whenever you encounter on original ID for which there is a corresponding <original ID>_S<number>,
+    #    replace the original ID with the <original ID>_S<number>
+
+    # first, find all samples from the dataref that are of the same class as the target sample
+    samplesOfTargetClass <- base::rownames(metaDataRef)[metaDataRef[, classColumn] == metaDataRef[targetSampleID, classColumn]]
+
+    # second, find the samples that are of the form <original ID>_S<number>
+    synthSamples <- base::rownames(dataLogRef)[base::grepl("_S[0-9]+$", base::rownames(dataLogRef))]
+
+    # sanity check: assert that the length is the same except for the target (seed) sample
+    if (base::length(samplesOfTargetClass) != base::length(synthSamples) + 1) {
+      base::stop("INTERNAL ERROR - bug in createModelsMinority.R")
+    }
+
+    # now make a "translation map" from the original names to the synthetic names:
+    # All synth samples are of the form <seedID>_S<number>. Map the seedID (from the original samples) to itself
+    # and the rest arbitrarily to the synth samples
+    samplesOfTargetClass <- samplesOfTargetClass[samplesOfTargetClass != targetSampleID]
+    transmap <- stats::setNames(c(targetSampleID, synthSamples), c(targetSampleID, samplesOfTargetClass))
+    # apply this map to each char vector in samplesTrainDefList, and keep each element unnamed
+    samplesTrainDefList <- lapply(samplesTrainDefList, function(x) {
+      x_mapped <- x %>% purrr::map_chr(~ifelse(. %in% names(transmap), transmap[.], .))
+      base::names(x_mapped) <- NULL
+      x_mapped
+    })
+
+    # Add back the class label to the dataset (accounting for the synths as well)
+    dataLogRef$class <- metaDataRef[base::gsub("_S[0-9]+$", "", base::rownames(dataLogRef)), classColumn]
+  }
+  assign("SAMPLES_TRAIN_DEF_LIST", samplesTrainDefList, envir = .GlobalEnv)
+  assign("UPSIMPLER_DATA", dataLogRef, envir = .GlobalEnv)
+  assign("UPSIMPLER_METADATA", metaDataRef, envir = .GlobalEnv)
+  ###### UPSIMPLER INTEGRATION END ######
 
   base::print("Initiating RF")
 

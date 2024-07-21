@@ -16,6 +16,8 @@ createScalingsMajority(
   nComps = 100,
   nFeatures = 2500,
   maxNeighbors = 25,
+  upsimplerModule = NULL,
+  upsimplerArgs = NULL,
   whichSeed = 1,
   outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
   proteinCodingGenes,
@@ -46,6 +48,11 @@ different RNA-transcripts in the rows.}
 
 \item{maxNeighbors}{What is the maximum number of neigbors to be used for the weighted \emph{k}-nearest neighbor algorithm?}
 
+\item{upsimplerModule}{The upsimpler Python package as imported by \code{reticulate}. If not specified, no upsampling will be performed.}
+
+\item{upsimplerArgs}{List of arguments to be passed to the upsimpler algorithm, separately for the initialization of the
+\code{Upsimpler} class ($init), as well as for the \code{upsimple} method ($upsimple).}
+
 \item{whichSeed}{For reproducibility, the seed can be specified with this parameter.}
 
 \item{outputDir}{Directory in which you would like to store the R-object containing the results. Default is today's date.}
@@ -62,7 +69,9 @@ the model to correct for the ribodepletion efficacy ($riboModelList),
 which samples were present in each training data subset ($samplesTrainDefList),
 which RNA-transcripts were considered for transformation in the analysis ($nonZeroGenes),
 the metadata file associated to the reference cohort ($metaDataRef),
-and metadata for the performed run ($metaDataRun).
+the metadata for the performed run ($metaDataRun),
+and the matrix containing the RNA-transcript per million data that was used to create the scaling
+and is needed for eventual classifications of new samples ($countDataRef).
 }
 \description{
 This function is used to obtain the PCA-rotations and data scalings centered around zero
