@@ -93,14 +93,24 @@ createScalingsMajority <-  function(countDataRef,
   base::print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
 
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
-  if (base::length(tumorEntitiesWithTooFewSamples) >0) {
-
-    metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
-    # also remove them from the count data
-    countDataRef <- countDataRef[, base::rownames(metaDataRef)]
-    base::print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
-    #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
-
+  if (base::length(tumorEntitiesWithTooFewSamples) > 0) {
+    # there are tumor entities (classes) with less than 3 samples
+    # if upsimpler and its args are provided, we can upsample these classes
+    # otherwise, we need to remove them
+    msg <- "You have labels within your dataset that have less than 3 available samples."
+    if (!is.null(upsimplerModule) && !is.null(upsimplerArgs)) {
+      msg <- base::paste(msg, "Please note that these classes will be upsampled (upsimpler was provided).")
+      # define the classes and the respective samples than need to be dealt with
+      classesToUpsample <- tumorEntitiesWithTooFewSamples
+      # select a single sample from each of these classes and make it a vector
+      seedSamples <- base::lapply(classesToUpsample, function(x) {
+        base::sample(metaDataRef[metaDataRef[, classColumn] == x, sampleColumn], 1)
+      }) %>% base::unlist()
+    } else {
+      metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
+      msg <- base::paste(msg, "Please note samples with these labels have been removed.")
+    }
+    base::print(msg)
   }
 
   if (!base::dir.exists(outputDir)) {
@@ -108,13 +118,6 @@ createScalingsMajority <-  function(countDataRef,
     if (checkDirectory == F) {
       base::stop(base::paste0("The directory you want the classification to be saved in cannot be created due to an error in the directory path.",
                               " Please check the spelling of your specified outputDir - it is probable the parent-directory does not exist."))
-    }
-  }
-
-  # an extra check for upsimpler #
-  if (!is.null(upsimplerModule)) {
-    if (is.null(upsimplerArgs)) {
-      base::stop("Upsimpler module was provided, but no argument list. Aborting.")
     }
   }
 
@@ -167,19 +170,44 @@ createScalingsMajority <-  function(countDataRef,
                                             nFeatures = nFeatures)
 
   ##### UPSIMPLER INTEGRATION START #####
-  if (!is.null(upsimplerModule)) {
-    targetSampleID <- upsimplerArgs$upsimple$target_sample_id
-    targetSample <- list(id = targetSampleID,
-                         data = dataLogNonZero[, targetSampleID, drop = F] %>% as.data.frame)
+  if (!is.null(upsimplerModule) && !is.null(upsimplerArgs) && length(seedSamples) > 0) {
+    # things are more complicated here than in Minority: each model has a different
+    # feature set. Therefore, we will take the union of all features in all models,
+    # upsample the target classes, and then distribute the synths to the models,
+    # keeping only the corresponding features for each model.
+    allMajorityFeatures <- base::lapply(samplesPerModel, base::rownames) %>% base::unlist() %>% base::unique()
 
-    samplesPerModel <- upsimplerResampling(samplesPerModel,
-                                           metaDataRef,
-                                           classColumn,
-                                           sampleColumn,
-                                           targetSample = targetSample,
-                                           upsimplerModule = upsimplerModule,
-                                           upsimplerArgs = upsimplerArgs,
-                                           whichSeed = whichSeed)
+    # Apply the upsimpler algorithm
+    upsimplerArgs$init$dataDF <- dataLogNonZero[allMajorityFeatures,] %>% base::t() %>% base::as.data.frame()
+    upsimplerArgs$init$metadataDF <- metaDataRef
+    upsimplerArgs$init$class_col <- classColumn
+
+    upsimpler <- do.call(upsimplerModule$Upsimpler, upsimplerArgs$init)
+
+    synths <- applyUpsimpler(upsimpler = upsimpler,
+                             upsimplerArgs = upsimplerArgs$upsimple,
+                             targetSampleIDs = seedSamples,
+                             metadataDF = metaDataRef,
+                             classColumn = classColumn,
+                             sampleColumn = sampleColumn)
+
+    # distribute the synths to the models
+    synthsPerModel <- obtainTrainData(metaDataRef = synths$synthMetadataDF,
+                                      classColumn = classColumn,
+                                      nModels = nModels,
+                                      maxSamplesPerType = maxSamplesPerType)
+
+    # map synthsPerModel from sample IDs to the actual data
+    synths$synthDataDF %<>% base::t() %>% base::as.data.frame()
+    for (i in base::seq_along(synthsPerModel)) {
+      synthsPerModel[[i]] <- synths$synthDataDF[base::rownames(samplesPerModel[[i]]), synthsPerModel[[i]]]
+    }
+    synths$synthDataDF %<>% base::t() %>% base::as.data.frame()
+
+    # add the synths to the training data
+    samplesPerModel <- base::lapply(base::seq_along(samplesPerModel), function(i) {
+      base::cbind(samplesPerModel[[i]], synthsPerModel[[i]])
+    })
   }
   ###### UPSIMPLER INTEGRATION END ######
 
@@ -202,9 +230,12 @@ createScalingsMajority <-  function(countDataRef,
                                 riboModelList = riboModelList,
                                 nonZeroGenes = nonZeroGenes,
                                 metaDataRef = metaDataRef,
-                                metaDataRun = metaDataRun#,
-                                #countDataRef = countDataOG
-                                )
+                                metaDataRun = metaDataRun)
+
+  # if upsampling was performed, add the synths to the result
+  if (!is.null(upsimplerModule) && !is.null(upsimplerArgs) && length(seedSamples) > 0) {
+    createdModelsMajority$synthsPerModel <- synthsPerModel
+  }
 
   if (saveModel == T) {
 

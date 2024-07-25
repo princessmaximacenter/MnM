@@ -93,12 +93,24 @@ createModelsMinority <-  function(countDataRef,
   base::print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
 
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
-  if (base::length(tumorEntitiesWithTooFewSamples) >0) {
-
-    metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
-    base::print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
-    #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
-
+  if (base::length(tumorEntitiesWithTooFewSamples) > 0) {
+    # there are tumor entities (classes) with less than 3 samples
+    # if upsimpler and its args are provided, we can upsample these classes
+    # otherwise, we need to remove them
+    msg <- "You have labels within your dataset that have less than 3 available samples."
+    if (!is.null(upsimplerModule) && !is.null(upsimplerArgs)) {
+      msg <- base::paste(msg, "Please note that these classes will be upsampled (upsimpler was provided).")
+      # define the classes and the respective samples than need to be dealt with
+      classesToUpsample <- tumorEntitiesWithTooFewSamples
+      # select a single sample from each of these classes and make it a vector
+      seedSamples <- base::lapply(classesToUpsample, function(x) {
+        base::sample(metaDataRef[metaDataRef[, classColumn] == x, sampleColumn], 1)
+      }) %>% base::unlist()
+    } else {
+      metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
+      msg <- base::paste(msg, "Please note samples with these labels have been removed.")
+    }
+    base::print(msg)
   }
 
   if (!base::dir.exists(outputDir)) {
@@ -107,11 +119,6 @@ createModelsMinority <-  function(countDataRef,
       base::stop(base::paste0("The directory you want the classification to be saved in cannot be created due to an error in the directory path.",
       " Please check the spelling of your specified outputDir - it is probable the parent-directory does not exist."))
     }
-  }
-
-  # an extra check for upsimpler #
-  if (!is.null(upsimplerModule) && is.null(upsimplerArgs)) {
-    base::stop("Upsimpler module was provided, but no argument list. Aborting.")
   }
 
   countDataRef <- countDataRef[, base::rownames(metaDataRef)]
@@ -188,60 +195,43 @@ createModelsMinority <-  function(countDataRef,
   ##### UPSIMPLER INTEGRATION START #####
   # In contrast to the majority classifier, here all model subsets have the same feature set
   # This means we can upsample only once: the dataLogRef df directly
-  if (!is.null(upsimplerModule)) {
-    targetSampleID <- upsimplerArgs$upsimple$target_sample_id
-    # the data were transposed and a class column was added, so we need to remove it
-    # and make it as upsimplerResampling expects it to be
-    sanitizedDataLogRef <- dataLogRef %>% select(-class) %>% base::t() %>% base::as.data.frame()
-    targetSample <- list(id = targetSampleID,
-                         data = sanitizedDataLogRef[, targetSampleID, drop = F] %>% base::as.data.frame())
+  if (!is.null(upsimplerModule) && !is.null(upsimplerArgs) && length(seedSamples) > 0) {
+    # the data are "normal" at this point (samples are in rows, features in columns),
+    # so no need to change anything
+    sanitizedDataLogRef <- dataLogRef %>% select(-class)
+
     # Apply the upsimpler algorithm
-    sanitizedDataLogRef <- upsimplerResampling(sampleSets = list(sanitizedDataLogRef),
-                                               metaDataRef = metaDataRef,
-                                               classColumn = classColumn,
-                                               sampleColumn = sampleColumn,
-                                               targetSample = targetSample,
-                                               upsimplerModule = upsimplerModule,
-                                               upsimplerArgs = upsimplerArgs,
-                                               whichSeed = whichSeed)
-    sanitizedDataLogRef <- sanitizedDataLogRef[[1]]
-    dataLogRef <- sanitizedDataLogRef %>% base::t() %>% base::as.data.frame()
+    upsimplerArgs$init$dataDF <- sanitizedDataLogRef
+    upsimplerArgs$init$metadataDF <- metaDataRef
+    upsimplerArgs$init$class_col <- classColumn
 
-    # Update the samplesTrainDefList to reflect the new dataLogRef, which means the following:
-    # 1. Find all samples (rownames) in dataLogRef that are of the form <original ID>_S<number>
-    # 2. samplesTrainDefList is a list of character vectors. Go in each character vector and
-    #    whenever you encounter on original ID for which there is a corresponding <original ID>_S<number>,
-    #    replace the original ID with the <original ID>_S<number>
+    upsimpler <- do.call(upsimplerModule$Upsimpler, upsimplerArgs$init)
 
-    # first, find all samples from the dataref that are of the same class as the target sample
-    samplesOfTargetClass <- base::rownames(metaDataRef)[metaDataRef[, classColumn] == metaDataRef[targetSampleID, classColumn]]
+    synths <- applyUpsimpler(upsimpler = upsimpler,
+                             upsimplerArgs = upsimplerArgs$upsimple,
+                             targetSampleIDs = seedSamples,
+                             metadataDF = metaDataRef,
+                             classColumn = classColumn,
+                             sampleColumn = sampleColumn)
 
-    # second, find the samples that are of the form <original ID>_S<number>
-    synthSamples <- base::rownames(dataLogRef)[base::grepl("_S[0-9]+$", base::rownames(dataLogRef))]
+    dataLogRef <- base::rbind(sanitizedDataLogRef, synths$synthDataDF)
 
-    # sanity check: assert that the length is the same except for the target (seed) sample
-    if (base::length(samplesOfTargetClass) != base::length(synthSamples) + 1) {
-      base::stop("INTERNAL ERROR - bug in createModelsMinority.R")
-    }
+    # synths metadata is a single column; we need to add the other columns
+    # in order to rbind it to the original metadata
+    synths$synthMetadataDF[base::setdiff(base::names(metaDataRef), base::names(synths$synthMetadataDF))] <- NA
+    metaDataRef <- base::rbind(metaDataRef, synths$synthMetadataDF)
 
-    # now make a "translation map" from the original names to the synthetic names:
-    # All synth samples are of the form <seedID>_S<number>. Map the seedID (from the original samples) to itself
-    # and the rest arbitrarily to the synth samples
-    samplesOfTargetClass <- samplesOfTargetClass[samplesOfTargetClass != targetSampleID]
-    transmap <- stats::setNames(c(targetSampleID, synthSamples), c(targetSampleID, samplesOfTargetClass))
-    # apply this map to each char vector in samplesTrainDefList, and keep each element unnamed
-    samplesTrainDefList <- lapply(samplesTrainDefList, function(x) {
-      x_mapped <- x %>% purrr::map_chr(~ifelse(. %in% names(transmap), transmap[.], .))
-      base::names(x_mapped) <- NULL
-      x_mapped
-    })
+    # Update the samplesTrainDefList to reflect the new dataLogRef (i.e., including the synths),
+    # by breaking the synths up into the different models
+    synthSamplesTrainDefList <- obtainTrainData(metaDataRef = synths$synthMetadataDF,
+                                                classColumn = classColumn,
+                                                nModels = nModels,
+                                                maxSamplesPerType = maxSamplesPerType)
+    samplesTrainDefList <- base::Map(base::c, samplesTrainDefList, synthSamplesTrainDefList)
 
-    # Add back the class label to the dataset (accounting for the synths as well)
-    dataLogRef$class <- metaDataRef[base::gsub("_S[0-9]+$", "", base::rownames(dataLogRef)), classColumn]
+    # Add back the class label to the dataset
+    dataLogRef$class <- base::as.character(metaDataRef[rownames(dataLogRef), classColumn])
   }
-  assign("SAMPLES_TRAIN_DEF_LIST", samplesTrainDefList, envir = .GlobalEnv)
-  assign("UPSIMPLER_DATA", dataLogRef, envir = .GlobalEnv)
-  assign("UPSIMPLER_METADATA", metaDataRef, envir = .GlobalEnv)
   ###### UPSIMPLER INTEGRATION END ######
 
   base::print("Initiating RF")
@@ -268,6 +258,11 @@ createModelsMinority <-  function(countDataRef,
                                 reducedFeatures = reducedFeatures,
                                 metaDataRef = metaDataRef,
                                 metaDataRun = metaDataRun)
+
+  # if upsampling was performed, add the synths to the output
+  if (!is.null(upsimplerModule) && !is.null(upsimplerArgs) && length(seedSamples) > 0) {
+    createdModelsMinority$synths <- synths
+  }
 
   if (saveModel == T) {
   filename <- base::paste0(directory, "/createdModelsMinority.rds")
