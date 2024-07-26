@@ -169,50 +169,133 @@ createScalingsMajority <-  function(countDataRef,
                                             samplesTrainDefList = samplesTrainDefList,
                                             nFeatures = nFeatures)
 
-  ##### UPSIMPLER INTEGRATION START #####
+  ##### UPSIMPLER INTEGRATION PART 1 START #####
   if (!is.null(upsimplerModule) && !is.null(upsimplerArgs) && length(seedSamples) > 0) {
     # things are more complicated here than in Minority: each model has a different
-    # feature set. Therefore, we will take the union of all features in all models,
-    # upsample the target classes, and then distribute the synths to the models,
-    # keeping only the corresponding features for each model.
-    allMajorityFeatures <- base::lapply(samplesPerModel, base::rownames) %>% base::unlist() %>% base::unique()
+    # feature set. According to the upsimplerArgs$maj_strategy, we will either:
+    # - "hom": homogeneous upsampling (i.e., on the union of all features for all models)
+    # - "het-": heterogeneous upsampling (i.e., on the features of each model separately, before PCA)
+    # - "het+": heterogeneous upsampling (i.e., on the features of each model separately, after PCA)
+    if (upsimplerArgs$maj_strategy == "hom") {
 
-    # Apply the upsimpler algorithm
-    upsimplerArgs$init$dataDF <- dataLogNonZero[allMajorityFeatures,] %>% base::t() %>% base::as.data.frame()
-    upsimplerArgs$init$metadataDF <- metaDataRef
-    upsimplerArgs$init$class_col <- classColumn
+      base::print("Homogeneous upsampling strategy selected")
 
-    upsimpler <- do.call(upsimplerModule$Upsimpler, upsimplerArgs$init)
+      allMajorityFeatures <- base::lapply(samplesPerModel, base::rownames) %>% base::unlist() %>% base::unique()
 
-    synths <- applyUpsimpler(upsimpler = upsimpler,
-                             upsimplerArgs = upsimplerArgs$upsimple,
-                             targetSampleIDs = seedSamples,
-                             metadataDF = metaDataRef,
-                             classColumn = classColumn,
-                             sampleColumn = sampleColumn)
+      # Apply the upsimpler algorithm
+      upsimplerArgs$init$dataDF <- dataLogNonZero[allMajorityFeatures,] %>% base::t() %>% base::as.data.frame()
+      upsimplerArgs$init$metadataDF <- metaDataRef
+      upsimplerArgs$init$class_col <- classColumn
 
-    # distribute the synths to the models
-    synthsPerModel <- obtainTrainData(metaDataRef = synths$synthMetadataDF,
-                                      classColumn = classColumn,
-                                      nModels = nModels,
-                                      maxSamplesPerType = maxSamplesPerType)
+      upsimpler <- do.call(upsimplerModule$Upsimpler, upsimplerArgs$init)
 
-    # map synthsPerModel from sample IDs to the actual data
-    synths$synthDataDF %<>% base::t() %>% base::as.data.frame()
-    for (i in base::seq_along(synthsPerModel)) {
-      synthsPerModel[[i]] <- synths$synthDataDF[base::rownames(samplesPerModel[[i]]), synthsPerModel[[i]]]
+      synths <- applyUpsimpler(upsimpler = upsimpler,
+                               upsimplerArgs = upsimplerArgs$upsimple,
+                               targetSampleIDs = seedSamples,
+                               metadataDF = metaDataRef,
+                               classColumn = classColumn,
+                               sampleColumn = sampleColumn)
+
+      # distribute the synths to the models
+      synthsPerModel <- obtainTrainData(metaDataRef = synths$synthMetadataDF,
+                                        classColumn = classColumn,
+                                        nModels = nModels,
+                                        maxSamplesPerType = maxSamplesPerType)
+
+      # map synthsPerModel from sample IDs to the actual data
+      synths$synthDataDF %<>% base::t() %>% base::as.data.frame()
+      for (i in base::seq_along(synthsPerModel)) {
+        synthsPerModel[[i]] <- synths$synthDataDF[base::rownames(samplesPerModel[[i]]), synthsPerModel[[i]]]
+      }
+      synths$synthDataDF %<>% base::t() %>% base::as.data.frame()
+
+      # add the synths to the training data
+      samplesPerModel <- base::lapply(base::seq_along(samplesPerModel), function(i) {
+        base::cbind(samplesPerModel[[i]], synthsPerModel[[i]])
+      })
+
+      # synths metadata is a single column; we need to add the other columns
+      # in order to rbind it to the original metadata
+      synths$synthMetadataDF[base::setdiff(base::names(metaDataRef), base::names(synths$synthMetadataDF))] <- NA
+      metaDataRef <- base::rbind(metaDataRef, synths$synthMetadataDF)
+
+    } else if (upsimplerArgs$maj_strategy == "het-") {
+
+      base::print("Heterogeneous upsampling strategy selected (before feature extraction via PCA)")
+      # Apply the upsimpler algorithm
+      synthsPerModel <- base::list()
+      for (i in base::seq_along(samplesPerModel)) {
+        upsimplerArgs$init$dataDF <- samplesPerModel[[i]] %>% base::t() %>% base::as.data.frame()
+        upsimplerArgs$init$metadataDF <- metaDataRef
+        upsimplerArgs$init$class_col <- classColumn
+
+        upsimpler <- do.call(upsimplerModule$Upsimpler, upsimplerArgs$init)
+
+        synths <- applyUpsimpler(upsimpler = upsimpler,
+                                 upsimplerArgs = upsimplerArgs$upsimple,
+                                 targetSampleIDs = seedSamples,
+                                 metadataDF = metaDataRef,
+                                 classColumn = classColumn,
+                                 sampleColumn = sampleColumn)
+
+        # add the synths to the training data
+        samplesPerModel[[i]] <- base::cbind(samplesPerModel[[i]], synths$synthDataDF %>% base::t() %>% base::as.data.frame())
+        # append the synths metadata to the original metadata
+        synths$synthMetadataDF[base::setdiff(base::names(metaDataRef), base::names(synths$synthMetadataDF))] <- NA
+        # append them row by row, only if the synths are not already present in the metadata
+        for (j in base::seq_len(base::nrow(synths$synthMetadataDF))) {
+          if (!(base::rownames(synths$synthMetadataDF)[j] %in% base::rownames(metaDataRef))) {
+            metaDataRef <- base::rbind(metaDataRef, synths$synthMetadataDF[j,])
+          }
+        }
+
+        synthsPerModel[[i]] <- synths$synthDataDF
+      }
     }
-    synths$synthDataDF %<>% base::t() %>% base::as.data.frame()
 
-    # add the synths to the training data
-    samplesPerModel <- base::lapply(base::seq_along(samplesPerModel), function(i) {
-      base::cbind(samplesPerModel[[i]], synthsPerModel[[i]])
-    })
   }
-  ###### UPSIMPLER INTEGRATION END ######
+  ####### UPSIMPLER INTEGRATION PART 1 END #######
 
   rotationsAndScalingsList <- getPrincipalComponents(samplesPerModel = samplesPerModel,
                                                      nComps = nComps)
+
+  ###### UPSIMPLER INTEGRATION PART 2 START ######
+  if (!is.null(upsimplerModule) && !is.null(upsimplerArgs) && length(seedSamples) > 0 && upsimplerArgs$maj_strategy == "het+") {
+    base::print("Heterogeneous upsampling strategy selected (after feature extraction via PCA)")
+    # Apply the upsimpler algorithm
+    synthsPerModel <- base::list()
+    for (i in base::seq_along(rotationsAndScalingsList$prList)) {
+      upsimplerArgs$init$dataDF <- rotationsAndScalingsList$prList[[i]]$x %>% base::as.data.frame()
+      upsimplerArgs$init$metadataDF <- metaDataRef
+      upsimplerArgs$init$class_col <- classColumn
+
+      # in PCA space, negative values are not a problem
+      upsimplerArgs$upsimple$neg_strategy <- NULL
+
+      upsimpler <- do.call(upsimplerModule$Upsimpler, upsimplerArgs$init)
+
+      synths <- applyUpsimpler(upsimpler = upsimpler,
+                               upsimplerArgs = upsimplerArgs$upsimple,
+                               targetSampleIDs = seedSamples,
+                               metadataDF = metaDataRef,
+                               classColumn = classColumn,
+                               sampleColumn = sampleColumn)
+
+      # add the synths to the training data
+      rotationsAndScalingsList$prList[[i]]$x <- base::rbind(rotationsAndScalingsList$prList[[i]]$x, synths$synthDataDF)
+      # append the synths metadata to the original metadata
+      synths$synthMetadataDF[base::setdiff(base::names(metaDataRef), base::names(synths$synthMetadataDF))] <- NA
+      # append them row by row, only if the synths are not already present in the metadata
+      for (j in base::seq_len(base::nrow(synths$synthMetadataDF))) {
+        if (!(base::rownames(synths$synthMetadataDF)[j] %in% base::rownames(metaDataRef))) {
+          metaDataRef <- base::rbind(metaDataRef, synths$synthMetadataDF[j,])
+        }
+      }
+
+      synthsPerModel[[i]] <- synths$synthDataDF
+    }
+  }
+  ####### UPSIMPLER INTEGRATION PART 2 END #######
 
   # Store the settings of the classifier run within the resulting object
   metaDataRun <- base::data.frame(nModels = nModels,
