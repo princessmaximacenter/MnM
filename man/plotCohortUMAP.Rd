@@ -10,7 +10,8 @@ plotCohortUMAP(
   subtype = F,
   tumorType = NA,
   plotColors = NA,
-  useLabels = T
+  useLabels = T,
+  labelSize = 4
 )
 }
 \arguments{

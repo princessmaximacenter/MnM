@@ -6,10 +6,10 @@
 \usage{
 newPredictionsMajority(
   createdModelsMajority,
-  countDataRef,
   countDataNew,
   outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
-  saveModel = T
+  saveModel = T,
+  correctRibo = T
 )
 }
 \arguments{
@@ -21,15 +21,14 @@ which RNA-transcripts were considered for transformation in the analysis ($nonZe
 the metadata file associated to the reference cohort ($metaDataRef),
 and metadata for the performed run ($metaDataRun).}
 
-\item{countDataRef}{Matrix containing the RNA-transcript per million data for the reference cohort.
-Samples are in the columns, different RNA-transcripts in the rows.}
-
 \item{countDataNew}{Matrix containing the RNA-transcript per million data for the new samples to be classified.
 Samples are in the columns, different RNA-transcripts in the rows.}
 
 \item{outputDir}{Directory in which you would like to store the R-object containing the results. Default is today's date.}
 
 \item{saveModel}{Do you want to save the resulting predictions in an R object? Default is TRUE.}
+
+\item{correctRibo}{Do you want to perform a correction for the ribodepletion protocol on your dataset? Default is TRUE.}
 }
 \value{
 R-object containing the final classifications ($classifications) for the samples,

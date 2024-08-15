@@ -62,7 +62,9 @@ the model to correct for the ribodepletion efficacy ($riboModelList),
 which samples were present in each training data subset ($samplesTrainDefList),
 which RNA-transcripts were considered for transformation in the analysis ($nonZeroGenes),
 the metadata file associated to the reference cohort ($metaDataRef),
-and metadata for the performed run ($metaDataRun).
+the metadata for the performed run ($metaDataRun),
+and the matrix containing the RNA-transcript per million data that was used to create the scaling
+and is needed for eventual classifications of new samples ($countDataRef).
 }
 \description{
 This function is used to obtain the PCA-rotations and data scalings centered around zero
