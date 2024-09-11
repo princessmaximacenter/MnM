@@ -14,34 +14,29 @@
 #' and the information needed to scale new sample input data to center the features around 0 ($scaleFeaturesList).
 #'
 getPrincipalComponents <- function(dataTrain,
+                                   scaleFeaturesList,
          samplesTrainDefList,
          nModels = 100,
-         nFeatures = 2500,
          nComps = 100
 ) {
 
   # The RNA-transcripts are in the columns right now, so the variance should be determined per column
 
   prList <- base::list()
-  scaleFeaturesList <- base::list()
   for (i in base::seq(1:nModels)) {
-    base::print(base::paste("Working on model", i))
+    base::cat(base::paste("Working on model", i, "\n"))
     samplesTrainDef <- samplesTrainDefList[[i]]
+
+    meanGenes <- scaleFeaturesList[[i]]$meanGenes
+
+    sdGenes <- scaleFeaturesList[[i]]$sdGenes
+
+    varFeatures <- scaleFeaturesList[[i]]$varFeatures
 
     train.data <- dataTrain[, samplesTrainDef]
 
-    varGenes <- base::apply(train.data,1 ,stats::var)
-
-    varFeatures <- base::names(varGenes)[base::order(varGenes,decreasing = T)][c(1:nFeatures)]
-
     dataTrainFiltered <- base::as.data.frame(train.data) %>%
       dplyr::filter(base::rownames(.) %in% varFeatures)
-
-    meanGenes <- base::apply(dataTrainFiltered, 1, base::mean,
-                       na.rm = T)
-
-
-    sdGenes <- base::apply(dataTrainFiltered, 1, stats::sd)
 
     dataScale <- base::apply(dataTrainFiltered[varFeatures,], 2, function(x) (x-meanGenes[varFeatures])/sdGenes[varFeatures])
 
@@ -49,10 +44,6 @@ getPrincipalComponents <- function(dataTrain,
                  rank.=nComps)
 
     prList[[i]] <- pr
-    scaleFeatures <- base::list(varFeatures = varFeatures,
-                          meanGenes = meanGenes,
-                          sdGenes = sdGenes)
-    scaleFeaturesList[[i]] <- scaleFeatures
 
     rotationsAndScalingsList <- base::list(prList = prList,
                                      scaleFeaturesList = scaleFeaturesList)
