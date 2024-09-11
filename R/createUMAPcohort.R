@@ -60,6 +60,15 @@ createUMAPcohort <- function(countDataRef,
 
   }
 
+  checkFormatInputData(sampleColumn = sampleColumn,
+                       classColumn = classColumn,
+                       higherClassColumn = higherClassColumn,
+                       domainColumn = domainColumn,
+                       metaDataRef = metaDataRef,
+                       countDataRef = countDataRef,
+                       saveModel = F
+  )
+
   if (base::is.na(abbreviations)[1]) {
 
     abbreviations <- metaDataRef[, c(domainColumn, classColumn, higherClassColumn)] %>% base::unique()
