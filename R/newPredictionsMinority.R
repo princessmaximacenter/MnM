@@ -19,25 +19,53 @@ newPredictionsMinority <- function(createdModelsMinority,
                                    countDataNew,
                                    outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                    saveModel = T,
-                                   correctRibo = T
+                                   correctRibo = T,
+                                   whichKimputation = 10
                                    ) {
   # Find the predictions for the test data
   # PREPARE DATA
-  if (saveModel == T) {
-    #directory <- outputDir
+  `%notin%` <<- Negate(`%in%`)
+  checkFormatTestData(countDataNew = countDataNew,
+                     countDataRef = createdModelsMinority$countDataRef,
+                     outputDir = outputDir,
+                     saveModel = saveModel)
 
-    if (!dir.exists(outputDir)) {
-      checkDirectory <- base::tryCatch(base::dir.create(outputDir))
-      if (checkDirectory == F) {
-        stop("The directory you want the classification to be saved in cannot be created due to an error in the directory path. Please check the spelling of your specified outputDir.")
-      }
-    }
-  }
+  # if (saveModel == T) {
+  #   #directory <- outputDir
+  #
+  #   if (!dir.exists(outputDir)) {
+  #     checkDirectory <- base::tryCatch(base::dir.create(outputDir))
+  #     if (checkDirectory == F) {
+  #       stop("The directory you want the classification to be saved in cannot be created due to an error in the directory path. Please check the spelling of your specified outputDir.")
+  #     }
+  #   }
+  # }
 
   countDataNew <- base::apply(countDataNew,2,function(x) (x/base::sum(x))*1E6)
-  if (correctRibo == T) {
-  countDataNew <- predictRiboCounts(riboModel = createdModelsMinority$riboModelList$riboModel, data = countDataNew)
+
+
+  # Missing gene imputation
+  neededGenesClassification <- createdModelsMinority$reducedFeatures
+
+  neededGenesRibocorrect <- names(createdModelsMinority$riboModelList$riboModel$varGenes)
+  neededGenes <- unique(c(neededGenesClassification, neededGenesRibocorrect))
+  missingGenes <- neededGenes[neededGenes %notin% rownames(countDataNew)]
+
+  if (base::length(missingGenes) > 0) {
+    cat(paste0("There are ", length(missingGenes), " genes missing from the dataset.\nImputing their values.\n"))
+    countDataNew <- calculateMissingGenes(countDataNew = countDataNew,
+                                          neededGenes = neededGenes,
+                                          countDataRef = createdModelsMinority$countDataRef,
+                                          whichK = whichKimputation)
   }
+
+  # Ribo correction if needed
+  if (correctRibo == T) {
+    cat("\nStarting the ribocorrection procedure.\n")
+    countDataNew <- predictRiboCounts(riboModel = createdModelsMinority$riboModelList$riboModel,
+                                      data = countDataNew)
+  }
+  # Log transformation
   dataLogNew <- base::log(countDataNew + 1) %>% base::t() %>% base::as.data.frame()
   dataLogNew <- dataLogNew[ , createdModelsMinority$reducedFeatures, drop = F]
 
@@ -47,7 +75,7 @@ newPredictionsMinority <- function(createdModelsMinority,
   result <- predictTest(modelList = createdModelsMinority$modelList,
                         testData = dataLogNew)
 
-  base::print("Finished with classifying results")
+  base::cat("\nFinished with classifying results.")
 
 
   classificationList <- convertResultToClassification(result = result,
@@ -59,7 +87,7 @@ newPredictionsMinority <- function(createdModelsMinority,
     filename <- base::paste0(outputDir, "/minorityClassifierResult.rds")
 
     base::saveRDS(classificationList, file = filename)
-  base::print(base::paste0("Please find the generated R-object with the classification results within ", filename))
+  base::cat(base::paste0("\nPlease find the generated R-object with the classification results within ", filename))
   }
   return(classificationList)
 }
