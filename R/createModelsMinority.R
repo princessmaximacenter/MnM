@@ -51,57 +51,26 @@ createModelsMinority <-  function(countDataRef,
                                   saveModel = T
 
 ) {
-
+  countDataOG <- countDataRef
   `%notin%` <- base::Negate(`%in%`)
-  if (sampleColumn %notin% base::colnames(metaDataRef)) {
-    base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
-  } else if (classColumn %notin% base::colnames(metaDataRef)) {
-    base::stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
-  } else if (higherClassColumn %notin% base::colnames(metaDataRef)){
-    base::stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
-  } else if (domainColumn %notin% base::colnames(metaDataRef)) {
-    base::stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
-  }
 
-  base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
-  # Make sure the metadata and count data are in the right format and same order
-  if (base::nrow(metaDataRef) != base::ncol(countDataRef)) {
-    base::stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
-  } else if (base::all(base::rownames(metaDataRef) %notin% colnames(countDataRef))) {
-    base::stop("Your input data is not as required. Please make sure your sample IDs are stored in the sampleColumn, and in the column names of the count data")
-  }
-
-  if (base::is.numeric(countDataRef) != T) {
-    base::stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.")
-
-  }
-
-  # Include a statement to store the classColumn, higherClassColumn and domainColumn
-  base::print(base::paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
-  base::print(base::unique(metaDataRef[,classColumn])[1:3])
-
-  base::print(base::paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
-  base::print(base::unique(metaDataRef[,higherClassColumn])[1:3])
-
-  base::print(base::paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
-  base::print(base::unique(metaDataRef[,domainColumn])[1:3])
-  base::print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
+  checkFormatInputData(sampleColumn = sampleColumn,
+                       classColumn = classColumn,
+                       higherClassColumn = higherClassColumn,
+                       domainColumn = domainColumn,
+                       metaDataRef = metaDataRef,
+                       countDataRef = countDataRef,
+                       outputDir = outputDir)
 
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
+  base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
+
   if (base::length(tumorEntitiesWithTooFewSamples) >0) {
 
     metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
     base::print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
     #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
 
-  }
-
-  if (!base::dir.exists(outputDir)) {
-    checkDirectory <- base::tryCatch(base::dir.create(outputDir))
-    if (checkDirectory == F) {
-      base::stop(base::paste0("The directory you want the classification to be saved in cannot be created due to an error in the directory path.",
-      " Please check the spelling of your specified outputDir - it is probable the parent-directory does not exist."))
-    }
   }
 
   countDataRef <- countDataRef[, base::rownames(metaDataRef)]
@@ -198,7 +167,9 @@ createModelsMinority <-  function(countDataRef,
                                 riboModelList = riboModelList,
                                 reducedFeatures = reducedFeatures,
                                 metaDataRef = metaDataRef,
-                                metaDataRun = metaDataRun)
+                                metaDataRun = metaDataRun,
+                                countDataRef = countDataOG,
+                                countDataRiboCorrected = countDataRef)
 
   if (saveModel == T) {
   filename <- base::paste0(directory, "/createdModelsMinority.rds")

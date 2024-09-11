@@ -50,57 +50,21 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
   `%notin%` <- base::Negate(`%in%`)
 
-  if (sampleColumn %notin% base::colnames(metaDataRef)) {
-    base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
-  } else if (classColumn %notin% base::colnames(metaDataRef)) {
-    base::stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
-  } else if (higherClassColumn %notin% base::colnames(metaDataRef)){
-    stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
-  } else if (domainColumn %notin% base::colnames(metaDataRef)) {
-    stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
-  }
+  checkFormatInputData(sampleColumn = sampleColumn,
+                       classColumn = classColumn,
+                       higherClassColumn = higherClassColumn,
+                       domainColumn = domainColumn,
+                       metaDataRef = metaDataRef,
+                       countDataRef = countDataRef,
+                       outputDir = outputDir)
+
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
-  # Make sure the metadata and count data are in the right format and same order
-  if (base::nrow(metaDataRef) != base::ncol(countDataRef)) {
-    base::stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
-  } else if (base::all(base::rownames(metaDataRef) %notin% base::colnames(countDataRef))) {
-    base::stop("Your input data is not as required. Please make sure your sample IDs are within the row names of the metadata, and in the column names of the count data")
-  }
-
-  if (base::is.numeric(countDataRef) != T) {
-    base::stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.
-         Non-available measurements are not allowed.")
-
-  }
-
-
-    if (!base::dir.exists(outputDir)) {
-      checkDirectory <- base::tryCatch(base::dir.create(outputDir))
-      if (checkDirectory == F) {
-        base::stop(base::paste0("The directory you want the classification to be saved in cannot be created due to an error in the directory path.",
-                                " Please check the spelling of your specified outputDir - it is probable the parent-directory does not exist."))
-      }
-    }
-
-
-  # Include a statement to store the classColumn, higherClassColumn and domainColumn
-  print(paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
-  print(base::unique(metaDataRef[,classColumn])[1:3])
-
-  print(paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
-  print(base::unique(metaDataRef[,higherClassColumn])[1:3])
-
-  print(paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
-  print(base::unique(metaDataRef[,domainColumn])[1:3])
-  print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
-
-
 
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
   if (base::length(tumorEntitiesWithTooFewSamples) >0) {
 
     metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
-    base::print("You have labels within your dataset that have less than 3 available samples. Please note samples with these labels have been removed.")
+    base::cat("You have labels within your dataset that have less than 3 available samples. Please note samples with these labels have been removed.\n")
 
   }
   countDataRef <- countDataRef[, base::rownames(metaDataRef)]
@@ -143,7 +107,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
   meanVals <- base::apply(countDataRef, 1, mean)
   countDataRef <- countDataRef[meanVals >= meanExpression,]
 
-  print("We will now start with the cross-validation")
+  cat("\nWe will now start with the cross-validation\n")
   # Set seed for reproducibility
   base::set.seed(whichSeed)
 
@@ -163,7 +127,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                            nANOVAgenes = nANOVAgenes,
                                            classColumn = classColumn)
 
-    base::print(base::paste("Found interesting ANOVA genes for Fold ", i))
+    base::cat(base::paste("Found interesting ANOVA genes for Fold ", i, "\n"))
     # Select the ANOVA genes within the log-transformed data
     dataLogCV <- dataLogRef[ ,interestingANOVAgenes]
 
@@ -184,7 +148,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
     #testSamples <- rownames(testDataCV)
 
     # Reduce features using RF feature importance for accuracy
-    base::print(base::paste("Working on reducing Features for Fold", i))
+    base::cat(base::paste("Working on reducing Features for Fold", i, "\n"))
     reducedFeatures <- reduceFeatures(dataTrain = dataCV,
                                       samplesTrainDefList = samplesTrainDefList,
                                       ntree = 500,
@@ -201,7 +165,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
     # Reduce features of testing data
     testDataCVReduced <- testDataCV[,reducedFeatures]
-    base::print("Initiating RF")
+    base::cat("\nInitiating RF\n")
 
     # Start the modelling of the data within the different compositions of training data
     base::set.seed(whichSeed)
@@ -211,7 +175,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                       nModels = nModels,
                                       ntree = ntree)
 
-    base::print(base::paste("Generated all models for Fold ", i))
+    base::cat(base::paste("Generated all models for Fold ", i, "\n"))
     # Find the predictions for the test data
     result <- predictTest(modelList, testDataCVReduced)
 
@@ -224,7 +188,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
     # the generated models and if feature reduction took place the features chosen per fold.
     return(featuresAndModels)
   }
-  print("Finished with generating models and results")
+  base::cat("\nFinished with generating models and results\n")
   probabilityList <- list()
 
   #modelList <- list()
@@ -262,7 +226,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
   # Check the accuracy of the current run
   accuracy <- base::sum(classifications$predict == classifications$originalCall) / base::length(classifications$originalCall)
-  print(paste("accuracy: ", accuracy))
+  base::cat(paste("\naccuracy: ", accuracy, "\n"))
 
   # Store the settings of the classifier run within the resulting object
   metaDataRun <- data.frame(nModels = nModels,
@@ -282,9 +246,9 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                          metaDataRef = metaDataRef,
                                          metaDataRun = metaDataRun)
 
-  base::print("We have finished the classification process. Please find your results in the generated object.")
+  base::cat("\nWe have finished the classification process. Please find your results in the generated object.\n")
   filename <- base::paste0(modelDirectory, "/crossValidationMinorityResults.rds")
   base::saveRDS(crossValidationMinorityResults, file = filename)
-  base::print(base::paste0("Please find the generated R-object with the classification results within ", filename))
+  base::cat(base::paste0("Please find the generated R-object with the classification results within ", filename, "\n"))
   return(crossValidationMinorityResults)
 }
