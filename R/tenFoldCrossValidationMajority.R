@@ -47,57 +47,18 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 
   `%notin%` <- base::Negate(`%in%`)
 
-  if (sampleColumn %notin% base::colnames(metaDataRef)) {
+  checkFormatInputData(sampleColumn = sampleColumn,
+                       classColumn = classColumn,
+                       higherClassColumn = higherClassColumn,
+                       domainColumn = domainColumn,
+                       metaDataRef = metaDataRef,
+                       countDataRef = countDataRef,
+                       outputDir = outputDir)
 
-    base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
-  } else if (classColumn %notin% base::colnames(metaDataRef)) {
-    base::stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
-  } else if (higherClassColumn %notin% colnames(metaDataRef)){
-    base::stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
-  } else if (domainColumn %notin% base::colnames(metaDataRef)) {
-    base::stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
-
-    stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
-  } else if (classColumn %notin% base::colnames(metaDataRef)) {
-    stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
-  } else if (higherClassColumn %notin% base::colnames(metaDataRef)){
-    stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
-  } else if (domainColumn %notin% base::colnames(metaDataRef)) {
-    stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
-  }
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
-  # Make sure the metadata and count data are in the right format and same order
-  if (base::nrow(metaDataRef) != base::ncol(countDataRef)) {
-    base::stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
-  } else if (base::all(base::rownames(metaDataRef) %notin% base::colnames(countDataRef))) {
-    base::stop("Your input data is not as required. Please make sure your sample IDs are within the sampleColumn or within the row names of the metadata, and in the column names of the count data")
-  }
-
-  if (base::is.numeric(countDataRef) != T) {
-    base::stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix.")
-
-  }
-
-  # Include a statement to store the classColumn, higherClassColumn and domainColumn
-  base::print(base::paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
-  base::print(base::unique(metaDataRef[,classColumn])[1:3])
-
-  base::print(base::paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
-  base::print(base::unique(metaDataRef[,higherClassColumn])[1:3])
-
-  base::print(base::paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
-  base::print(base::unique(metaDataRef[,domainColumn])[1:3])
-  base::print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
-
-  if (!base::dir.exists(outputDir)) {
-    checkDirectory <- base::tryCatch(base::dir.create(outputDir))
-    if (checkDirectory == F) {
-      base::stop(base::paste0("The directory you want the classification to be saved in cannot be created due to an error in the directory path.",
-                              " Please check the spelling of your specified outputDir - it is probable the parent-directory does not exist."))
-    }
-  }
 
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
+
   if (base::length(tumorEntitiesWithTooFewSamples) >0) {
 
     metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
@@ -171,12 +132,20 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                                            maxSamplesPerType = maxSamplesPerType)
 
 
-    rotationsAndScalingsList <- getPrincipalComponents(dataTrain = dataCV,
-                                                       samplesTrainDefList,
+    # This function needs to be split up into 2
+    scaleFeaturesList <- getVarFeaturesMajority(dataTrain = dataLogNonZero,
+                                                samplesTrainDefList = samplesTrainDefList,
+                                                nFeatures = nFeatures,
+                                                nModels = nModels )
+
+    base::cat("\nSelected features and calculated scaling\n")
+
+
+    rotationsAndScalingsList <- getPrincipalComponents(dataTrain = dataLogNonZero,
+                                                       scaleFeaturesList = scaleFeaturesList,
+                                                       samplesTrainDefList = samplesTrainDefList,
                                                        nModels = nModels,
-                                                       nFeatures = nFeatures,
-                                                       nComps = nComps
-    )
+                                                       nComps = nComps)
 
     result <- obtainPredictionMajorityClassifier(rotationsAndScalingsList = rotationsAndScalingsList,
                                        #dataTrain = dataCV,
