@@ -9,7 +9,7 @@ getPrincipalComponents(samplesPerModel, nComps = 100)
 \arguments{
 \item{samplesPerModel}{List of different training data sample subsets used for subsetting the available training dataset.
 These contain the actual samples, not just the IDs (as they were selected by \code{selectFeaturesMajority} or
-as returned by \code{upsimplerResampling}).}
+as returned by \code{applyUpsimplerHomogeneously} or \code{applyUpsimplerHeterogeneously}).}
 
 \item{nComps}{How many principal components will be selected after PCA?}
 }
