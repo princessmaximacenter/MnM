@@ -9,7 +9,8 @@ getAccuraciesPerTumorTypeSize(
   metaDataRef,
   classColumn,
   rounding = T,
-  probabilityThreshold
+  probabilityThreshold,
+  withoutF1 = F
 )
 }
 \arguments{

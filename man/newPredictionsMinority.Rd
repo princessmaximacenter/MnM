@@ -9,7 +9,9 @@ newPredictionsMinority(
   countDataNew,
   outputDir = paste0("./", format(as.Date(Sys.Date(), "\%Y-\%m-\%d"), "\%Y_\%m_\%d")),
   saveModel = T,
-  correctRibo = T
+  correctRibo = T,
+  CPMcorrect = T,
+  whichKimputation = 10
 )
 }
 \arguments{
@@ -26,6 +28,8 @@ Samples are in the columns, different RNA-transcripts in the rows.}
 \item{saveModel}{Do you want to save the results in an R object?}
 
 \item{correctRibo}{Do you want to perform a correction for the ribodepletion protocol on your dataset? Default is TRUE.}
+
+\item{CPMcorrect}{Do you want to make sure you have CPM counts? Put false in case when you supply a subset of RNA-transcripts at the start.}
 }
 \value{
 R-object containing the final classifications ($classifications) for the samples,

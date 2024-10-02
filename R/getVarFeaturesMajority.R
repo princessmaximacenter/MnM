@@ -1,3 +1,12 @@
+#' Extract most variable features from training dataset
+#'
+#' @param dataTrain Data to be used for model training, containing the all samples available within the training dataset.
+#' @param samplesTrainDefList List of different training data sample subsets used for subsetting the available training dataset (dataTrain).
+#' @param nFeatures How many of the most variable RNA-transcripts within the dataset should we select for principal component analysis (PCA)?
+#' @param nModels How many models should be created for the classifier?
+#'
+#' @return List containing the most variable features, portraying information needed to scale new sample input data to center the features around 0.
+#'
 getVarFeaturesMajority <- function(
     dataTrain,
     samplesTrainDefList,

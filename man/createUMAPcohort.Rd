@@ -13,6 +13,7 @@ createUMAPcohort(
   sampleColumn,
   correctRibo = T,
   abbreviations = NA,
+  noAbbreviations = F,
   proteinCodingGenes,
   whichSeed = 1
 )

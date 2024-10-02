@@ -4,7 +4,7 @@
 \alias{predictRiboCounts}
 \title{Correct new count data for ribodepletion efficacy}
 \usage{
-predictRiboCounts(riboModel, data)
+predictRiboCounts(riboModel, data, countDataRef, whichKimputation)
 }
 \arguments{
 \item{riboModel}{Model for ribocorrection, normally stored inside the R-object

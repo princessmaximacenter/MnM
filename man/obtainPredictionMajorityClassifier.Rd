@@ -6,7 +6,6 @@
 \usage{
 obtainPredictionMajorityClassifier(
   rotationsAndScalingsList,
-  dataTrain,
   dataTest,
   metaDataRef,
   testSamples,
@@ -18,8 +17,6 @@ obtainPredictionMajorityClassifier(
 \arguments{
 \item{rotationsAndScalingsList}{List containing both the derived PCA-transformation information ($prList)
 and the information needed to scale new sample input data to center the features around 0 ($scaleFeaturesList).}
-
-\item{dataTrain}{Data to be used for training, containing the all samples available within the training dataset.}
 
 \item{dataTest}{New samples for which the classifier should provide a classification label.}
 

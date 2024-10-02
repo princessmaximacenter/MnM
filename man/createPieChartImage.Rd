@@ -16,7 +16,8 @@ createPieChartImage(
   textSizeClass = 0.5,
   textSizeSubspec = 0.45,
   plotColors = NA,
-  includeNumbers = T
+  includeNumbers = T,
+  lowerLimitFraction = 0
 )
 }
 \arguments{
