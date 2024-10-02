@@ -9,6 +9,7 @@
 #' @param outputDir Directory in which you would like to store the R-object containing the results.
 #' @param saveModel Do you want to save the results in an R object?
 #' @param correctRibo Do you want to perform a correction for the ribodepletion protocol on your dataset? Default is TRUE.
+#' @param CPMcorrect Do you want to make sure you have CPM counts? Put false in case when you supply a subset of RNA-transcripts at the start.
 #' @return R-object containing the final classifications ($classifications) for the samples,
 #' the probabilities associated to the different classifications ($probability),
 #' the metadata file associated to the reference cohort ($metaDataRef)
@@ -20,6 +21,7 @@ newPredictionsMinority <- function(createdModelsMinority,
                                    outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                    saveModel = T,
                                    correctRibo = T,
+                                   CPMcorrect = T,
                                    whichKimputation = 10
                                    ) {
   # Find the predictions for the test data
@@ -30,41 +32,51 @@ newPredictionsMinority <- function(createdModelsMinority,
                      outputDir = outputDir,
                      saveModel = saveModel)
 
-  # if (saveModel == T) {
-  #   #directory <- outputDir
-  #
-  #   if (!dir.exists(outputDir)) {
-  #     checkDirectory <- base::tryCatch(base::dir.create(outputDir))
-  #     if (checkDirectory == F) {
-  #       stop("The directory you want the classification to be saved in cannot be created due to an error in the directory path. Please check the spelling of your specified outputDir.")
-  #     }
-  #   }
-  # }
 
-  countDataNew <- base::apply(countDataNew,2,function(x) (x/base::sum(x))*1E6)
+  # Make sure you have CPM counts
+  if (CPMcorrect == T) {
+    countDataNew <- base::apply(countDataNew,2,function(x) (x/base::sum(x))*1E6)
+  }
+  countDataRef <- createdModelsMinority$riboModelList$counts
 
+
+
+  # Ribo correction if needed
+  if (correctRibo == T) {
+    cat("\nStarting the ribocorrection procedure.\n")
+    countDataNew <- predictRiboCounts(riboModel = createdModelsMinority$riboModelList$riboModel,
+                                      data = countDataNew,
+                                      countDataRef = createdModelsMinority$countDataRef,
+                                      whichKimputation = whichKimputation)
+    print(dim(countDataNew))
+  }
 
   # Missing gene imputation
-  neededGenesClassification <- createdModelsMinority$reducedFeatures
-
-  neededGenesRibocorrect <- names(createdModelsMinority$riboModelList$riboModel$varGenes)
-  neededGenes <- unique(c(neededGenesClassification, neededGenesRibocorrect))
+  neededGenes <- createdModelsMinority$reducedFeatures
   missingGenes <- neededGenes[neededGenes %notin% rownames(countDataNew)]
 
   if (base::length(missingGenes) > 0) {
     cat(paste0("There are ", length(missingGenes), " genes missing from the dataset.\nImputing their values.\n"))
     countDataNew <- calculateMissingGenes(countDataNew = countDataNew,
                                           neededGenes = neededGenes,
-                                          countDataRef = createdModelsMinority$countDataRef,
+                                          countDataRef = countDataRef,
                                           whichK = whichKimputation)
+
+    print(dim(countDataNew))
   }
 
-  # Ribo correction if needed
-  if (correctRibo == T) {
-    cat("\nStarting the ribocorrection procedure.\n")
-    countDataNew <- predictRiboCounts(riboModel = createdModelsMinority$riboModelList$riboModel,
-                                      data = countDataNew)
-  }
+  #meanVals <- base::apply(countDataRef, 1, mean)
+  #countDataRef <- countDataRef[meanVals >= meanExpression,]
+  #countDataNew <- countDataNew[rownames(countDataRef),]
+  # # Perform batch correction in case it's wanted
+  # dataForAdjustment <- cbind(countDataRef, countDataNew)
+  # batch <- c(rep(1, ncol(countDataRef)), rep(2, ncol(countDataNew)))
+  #
+  # # only with genes that are used during the classification procedure
+  # set.seed(1)
+  # dataAdjusted <- sva::ComBat_seq(as.matrix(dataForAdjustment), batch=batch, group=NULL)
+  # countDataNew <- dataAdjusted[, colNa]
+
   # Log transformation
   dataLogNew <- base::log(countDataNew + 1) %>% base::t() %>% base::as.data.frame()
   dataLogNew <- dataLogNew[ , createdModelsMinority$reducedFeatures, drop = F]

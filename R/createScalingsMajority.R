@@ -150,8 +150,7 @@ createScalingsMajority <-  function(countDataRef,
                                 nonZeroGenes = nonZeroGenes,
                                 metaDataRef = metaDataRef,
                                 metaDataRun = metaDataRun,
-                                countDataRef = countDataOG,
-                                countDataRiboCorrected = countDataRef
+                                countDataRef = countDataOG
                                 )
 
   if (saveModel == T) {

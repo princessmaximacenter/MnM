@@ -168,8 +168,7 @@ createModelsMinority <-  function(countDataRef,
                                 reducedFeatures = reducedFeatures,
                                 metaDataRef = metaDataRef,
                                 metaDataRun = metaDataRun,
-                                countDataRef = countDataOG,
-                                countDataRiboCorrected = countDataRef)
+                                countDataRef = countDataOG)
 
   if (saveModel == T) {
   filename <- base::paste0(directory, "/createdModelsMinority.rds")

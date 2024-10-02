@@ -10,17 +10,30 @@
 #' @return Count data corrected for the efficacy of the ribodepletion protocol.
 #'
 #'
-predictRiboCounts <- function(riboModel, data) {
+predictRiboCounts <- function(riboModel, data, countDataRef, whichKimputation) {
   # Predict how much protein coding reads v.s. the ribosomal reads are present within the data
   relevantCoefficients <- riboModel$relevantCoefficients
-  highMeanGenes <- base::names(riboModel$meanGenes)
-  meanGenes <- riboModel$meanGenes
-  varGenes <- riboModel$varGenes
-  dataSub <- data[highMeanGenes, , drop = F]
+  highMeanGenes <- base::names(riboModel$meanGenes[names(relevantCoefficients[-1])])
+  meanGenes <- riboModel$meanGenes[names(relevantCoefficients[-1])]
+  varGenes <- riboModel$varGenes[names(relevantCoefficients[-1])]
+  dataSub <- data[highMeanGenes[highMeanGenes %in% rownames(data)], , drop = F]
+
+  dataSub <- calculateMissingGenes(countDataNew = dataSub,
+                                   neededGenes = names(varGenes),
+                                   countDataRef = countDataRef,
+                                   whichK = whichKimputation)
+
+  dataSub <- dataSub[highMeanGenes,]
   normalizedData <- base::apply(dataSub,2,function(x) (x -meanGenes[highMeanGenes])/varGenes[highMeanGenes])
 
-  predictProteinCoding <- 1-(relevantCoefficients[1] + base::t(normalizedData[base::names(relevantCoefficients)[-1], , drop = F]) %*% relevantCoefficients[-1])
+  predictProteinCoding <- 1-(relevantCoefficients[1] + base::t(normalizedData) %*% relevantCoefficients[-1])
 
+  if (length(which(predictProteinCoding < 0)) > 0) {
+    data <- data[,-c(which(predictProteinCoding < 0))]
+    normalizedData <- normalizedData[,-c(which(predictProteinCoding < 0))]
+    print(paste0("Found ", length(which(predictProteinCoding < 0)), " bad quality samples where there appears to be no protein content. Removing said samples from the classification procedure."))
+    predictProteinCoding <- predictProteinCoding[colnames(data), , drop = F]
+  }
   # Divide counts for each sample by the percentage of protein coding sequence.
   # The less protein coding reads, the higher the scale-up of eventual reads.
 

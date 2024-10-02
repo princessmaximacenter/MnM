@@ -5,13 +5,15 @@
 #' and the eventual total number of principal components can be adjusted.
 #'
 #' @param dataTrain Data to be used for model training, containing the all samples available within the training dataset.
+#' @param scaleFeaturesList List containing the most variable features,
+#' portraying information needed to scale new sample input data to center the features around 0.
+#' This information is the output from function 'getVarFeaturesMajority'.
 #' @param samplesTrainDefList List of different training data sample subsets used for subsetting the available training dataset (dataTrain).
 #' @param nModels How many models should be created for the classifier?
-#' @param nFeatures How many of the most variable RNA-transcripts within the dataset should we select for principal component analysis (PCA)?
 #' @param nComps How many principal components will be selected after PCA?
 #'
-#' @return List containing both the derived PCA-transformation information ($prList)
-#' and the information needed to scale new sample input data to center the features around 0 ($scaleFeaturesList).
+#' @return List containing both the derived PCA-transformation information ($prList), and the most variable features,
+#' portraying information needed to scale new sample input data to center the features around 0 ($scaleFeaturesList)
 #'
 getPrincipalComponents <- function(dataTrain,
                                    scaleFeaturesList,
