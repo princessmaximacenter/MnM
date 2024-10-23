@@ -176,7 +176,12 @@ getAccuraciesPerTumorTypeSize <- function(predictionsMM,
                          dplyr::filter(predict == originalCall | predict2 == originalCall |
                                          predict3 == originalCall) %>% base::nrow(.)) / base::nrow(predictionsMM)
 
-  recall <- base::table(filteredResultTest[,"originalCall"]) / patientsPerTumor[base::names(patientsPerTumor) %in% base::names(base::table(filteredResultTest[,"originalCall"]))]
+  predictionsMM$originalCall <- factor(predictionsMM$originalCall)
+  filteredResultTest$originalCall <- factor(filteredResultTest$originalCall, levels = levels(predictionsMM$originalCall))
+  #recall <- base::table(filteredResultTest[,"originalCall"]) / patientsPerTumor[base::names(patientsPerTumor) %in% base::names(base::table(filteredResultTest[,"originalCall"]))]
+
+  recall <- base::table(filteredResultTest[,"originalCall"]) / base::table(predictionsMM[, "originalCall"])
+
   if (withoutF1 == F) {
     tumorConfusionMatrixSelection <- tumorConfusionMatrix$byClass %>% base::as.data.frame()
     tumorConfusionMatrixSelection$F1[is.na(tumorConfusionMatrixSelection$F1)] <- 0
