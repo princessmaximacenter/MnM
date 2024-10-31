@@ -56,7 +56,8 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                        domainColumn = domainColumn,
                        metaDataRef = metaDataRef,
                        countDataRef = countDataRef,
-                       outputDir = outputDir)
+                       outputDir = outputDir,
+                       saveModel = F)
 
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
 
@@ -64,7 +65,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
   if (base::length(tumorEntitiesWithTooFewSamples) >0) {
 
     metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
-    base::cat("You have labels within your dataset that have less than 3 available samples. Please note samples with these labels have been removed.\n")
+    base::cat("\nYou have labels within your dataset that have less than 3 available samples. \nPlease note samples with these labels have been removed.\n")
 
   }
   countDataRef <- countDataRef[, base::rownames(metaDataRef)]
