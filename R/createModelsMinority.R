@@ -60,7 +60,8 @@ createModelsMinority <-  function(countDataRef,
                        domainColumn = domainColumn,
                        metaDataRef = metaDataRef,
                        countDataRef = countDataRef,
-                       outputDir = outputDir)
+                       outputDir = outputDir,
+                       saveModel = saveModel)
 
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
