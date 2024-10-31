@@ -51,7 +51,7 @@ createScalingsMajority <-  function(countDataRef,
                                     saveModel = T
 
 ) {
-  #countDataOG <- countDataRef
+  countDataOG <- countDataRef
   `%notin%` <- base::Negate(`%in%`)
 
   checkFormatInputData(sampleColumn = sampleColumn,
@@ -60,7 +60,8 @@ createScalingsMajority <-  function(countDataRef,
                        domainColumn = domainColumn,
                        metaDataRef = metaDataRef,
                        countDataRef = countDataRef,
-                       outputDir = outputDir
+                       outputDir = outputDir,
+                       saveModel = saveModel
                        )
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
 
@@ -133,6 +134,13 @@ createScalingsMajority <-  function(countDataRef,
                                                      nModels = nModels,
                                                      nComps = nComps)
 
+
+  vectorK <- trainKNNClassifier(rotationsAndScalingsList = rotationsAndScalingsList,
+                                metaDataRef = metaDataRef,
+                                classColumn = classColumn,
+                                nModels = nModels,
+                                maxNeighbors = maxNeighbors)
+
   # Store the settings of the classifier run within the resulting object
   metaDataRun <- base::data.frame(nModels = nModels,
                             classColumn = classColumn,
@@ -150,7 +158,8 @@ createScalingsMajority <-  function(countDataRef,
                                 nonZeroGenes = nonZeroGenes,
                                 metaDataRef = metaDataRef,
                                 metaDataRun = metaDataRun,
-                                countDataRef = countDataOG
+                                countDataRef = countDataOG,
+                                vectorK = vectorK
                                 )
 
   if (saveModel == T) {

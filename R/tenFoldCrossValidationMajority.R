@@ -14,7 +14,7 @@
 #' @param maxSamplesPerType How many samples should we maximally use per tumor (sub)type?
 #' @param nFeatures How many of the most variable genes within the dataset should we select for principal component analysis (PCA)?
 #' @param nComps How many principal components will be selected after PCA?
-#' @param maxNeighbors What is the maximum number of neigbours to be used for the weighted _k_-nearest neighbor algorithm?
+#' @param maxNeighbors What is the maximum number of neighbors to be used for the weighted _k_-nearest neighbor algorithm?
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param outputDir Directory in which you would like to store the R-object containing the results. Default is today's date.
 #' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
@@ -53,7 +53,8 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                        domainColumn = domainColumn,
                        metaDataRef = metaDataRef,
                        countDataRef = countDataRef,
-                       outputDir = outputDir)
+                       outputDir = outputDir,
+                       saveModel = F)
 
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
 
@@ -62,7 +63,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
   if (base::length(tumorEntitiesWithTooFewSamples) >0) {
 
     metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
-    base::print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
+    base::cat("\nYou have labels within your dataset that have less than 3 available samples. \nPlease note samples with these labels have been removed.\n")
     #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
 
   }
@@ -147,14 +148,19 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                                                        nModels = nModels,
                                                        nComps = nComps)
 
+    vectorK <- trainKNNClassifier(rotationsAndScalingsList = rotationsAndScalingsList,
+                                  metaDataRef = metaDataCV,
+                                  classColumn = classColumn,
+                                  nModels = nModels,
+                                  maxNeighbors = maxNeighbors)
+
     result <- obtainPredictionMajorityClassifier(rotationsAndScalingsList = rotationsAndScalingsList,
-                                       #dataTrain = dataCV,
                                        dataTest = testDataCV,
                                        metaDataRef = metaDataCV,
                                        testSamples = testSamples,
                                        classColumn = classColumn,
                                        nModels = nModels,
-                                       maxNeighbors = maxNeighbors
+                                       vectorK = vectorK
     )
 
     featuresAndModels <- list(result = result)
