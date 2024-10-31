@@ -154,7 +154,7 @@ calculateMeanAndSDAccuracy <- function(
     sdPrecision = stats::sd(Precision),
     sdF1 = stats::sd(F1))
 
-    meanNumbers2 <- cbind(meanNumbers, newDF)
+    meanNumbers2 <- cbind(meanNumbers, newDF[,-1])
     meanNumbers <- meanNumbers2
   }
 
