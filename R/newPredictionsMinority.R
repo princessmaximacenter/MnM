@@ -37,7 +37,6 @@ newPredictionsMinority <- function(createdModelsMinority,
   if (CPMcorrect == T) {
     countDataNew <- base::apply(countDataNew,2,function(x) (x/base::sum(x))*1E6)
   }
-  countDataRef <- createdModelsMinority$riboModelList$counts
 
 
 
@@ -48,7 +47,7 @@ newPredictionsMinority <- function(createdModelsMinority,
                                       data = countDataNew,
                                       countDataRef = createdModelsMinority$countDataRef,
                                       whichKimputation = whichKimputation)
-    print(dim(countDataNew))
+
   }
 
   # Missing gene imputation
@@ -57,43 +56,31 @@ newPredictionsMinority <- function(createdModelsMinority,
 
   if (base::length(missingGenes) > 0) {
     cat(paste0("There are ", length(missingGenes), " genes missing from the dataset.\nImputing their values.\n"))
+    countDataRef <- createdModelsMinority$riboModelList$counts
+
     countDataNew <- calculateMissingGenes(countDataNew = countDataNew,
                                           neededGenes = neededGenes,
                                           countDataRef = countDataRef,
                                           whichK = whichKimputation)
 
-    print(dim(countDataNew))
   }
-
-  #meanVals <- base::apply(countDataRef, 1, mean)
-  #countDataRef <- countDataRef[meanVals >= meanExpression,]
-  #countDataNew <- countDataNew[rownames(countDataRef),]
-  # # Perform batch correction in case it's wanted
-  # dataForAdjustment <- cbind(countDataRef, countDataNew)
-  # batch <- c(rep(1, ncol(countDataRef)), rep(2, ncol(countDataNew)))
-  #
-  # # only with genes that are used during the classification procedure
-  # set.seed(1)
-  # dataAdjusted <- sva::ComBat_seq(as.matrix(dataForAdjustment), batch=batch, group=NULL)
-  # countDataNew <- dataAdjusted[, colNa]
 
   # Log transformation
   dataLogNew <- base::log(countDataNew + 1) %>% base::t() %>% base::as.data.frame()
   dataLogNew <- dataLogNew[ , createdModelsMinority$reducedFeatures, drop = F]
 
-  # Also create test data and specify which biomaterial IDs are in there
-  #testSamples <- rownames(dataLogNew)
-
+  # Get classifications from the individual models for new dataset
   result <- predictTest(modelList = createdModelsMinority$modelList,
                         testData = dataLogNew)
 
   base::cat("\nFinished with classifying results.")
 
-
+  # Convert individual model classifications into majority voted classification
   classificationList <- convertResultToClassification(result = result,
                                                          metaDataRef = createdModelsMinority$metaDataRef,
                                                          addOriginalCall = F)
 
+  # Store settings used during the classification procedure
   classificationList$metaDataRun <- createdModelsMinority$metaDataRun
   if (saveModel == T) {
     filename <- base::paste0(outputDir, "/minorityClassifierResult.rds")
