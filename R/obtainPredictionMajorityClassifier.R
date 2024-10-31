@@ -8,9 +8,8 @@
 #' @param metaDataRef Metadata file containing the links between the samples and the tumor subtype diagnosis.
 #' @param testSamples test sample IDs matching with samples from the test data.
 #' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
-#' @param maxNeighbors What is the maximum number of neighbors to be used for the weighted _k_-nearest neighbor algorithm?
 #' @param nModels How many models should be created for the Majority classifier?
-#'
+#' @param vectorK Vector generated within the function 'trainKNNClassifier', calculating the optimal value for _k_ given the dataset and knn-model.
 #' @return Dataframe containing the classifications for the _nModels_ different generated models, with the different folds
 #' in the columns and the different samples to be predicted in the rows.
 #' @import kknn
@@ -21,7 +20,8 @@ obtainPredictionMajorityClassifier <- function(rotationsAndScalingsList,
                                      testSamples,
                                      classColumn,
                                      maxNeighbors = 25,
-                                     nModels = 100
+                                     nModels = 100,
+                                     vectorK
 ) {
   for (i in base::seq(1:nModels)) {
     base::print(base::paste0("Working on model ", i))
@@ -38,19 +38,12 @@ obtainPredictionMajorityClassifier <- function(rotationsAndScalingsList,
 
     rotatedTrainData$class <- base::as.factor(metaDataRef[base::rownames(rotatedTrainData),classColumn])
 
-    rotatedTrainDataK <- rotatedTrainData[base::grep("\\.",base::rownames(rotatedTrainData),invert=T),]
-
-    kTrain <- kknn::train.kknn(class~., rotatedTrainDataK,
-                         distance = 1,
-                         kernel = "optimal",
-                         scale=F,ks=c(1:maxNeighbors))
-
     model <- kknn::kknn(class~., rotatedTrainData,
                   rotatedTestSamples,
                   distance = 1,
                   kernel = "optimal",
                   scale= T,
-                  k= kTrain$best.parameters$k)
+                  k= vectorK[i])
 
     prediction <- base::as.character(model$fitted.values)
 
