@@ -77,7 +77,7 @@ newPredictionsMajority <- function(createdModelsMajority,
                                      classColumn = createdModelsMajority$metaDataRun$classColumn,
                                      nModels = createdModelsMajority$metaDataRun$nModels,
                                      testSamples = testSamples,
-                                     maxNeighbors = createdModelsMajority$metaDataRun$maxNeighbors
+                                     vectorK = createdModelsMajority$vectorK
   )
 
    classificationList <- convertResultToClassification(result = result,
