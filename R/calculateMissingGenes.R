@@ -25,18 +25,34 @@ calculateMissingGenes <- function(countDataRef,
   countDataNewSubset <- newDataFrame[neededGenes,]
   countDataRefSubset <- countDataRef[neededGenes, ]
 
-  combiSubset <- cbind(countDataRefSubset, countDataNewSubset)
-
   hush=function(code){
     sink("NUL") # use /dev/null in UNIX
     tmp = code
     sink()
     return(tmp)
   }
-  imputedDataComplete <- hush(impute::impute.knn(as.matrix(combiSubset), k = whichK))
 
-  imputedData <- imputedDataComplete$data[missingGenes,colnames(countDataNewSubset)]
+  # Subdivide dataset in chunks so that there are always more reference samples than samples to impute
+
+  howManySplits <- ceiling(ncol(newDataFrame) / 500)
+
+  splits <- rep(1:howManySplits, each = 500)
+  splits <- splits[1:ncol(newDataFrame)]
+
+  for (i in unique(splits)) {
+    combiSubset <- cbind(countDataRefSubset, countDataNewSubset[,splits == i])
+    imputedDataComplete <- hush(impute::impute.knn(as.matrix(combiSubset), k = whichK))
+
+    imputedData <- imputedDataComplete$data[missingGenes,colnames(countDataNewSubset[,splits == i])]
+
+    if (i == 1) {
+      imputedDataTotal <- imputedData
+    } else {
+      imputedDataTotal <- cbind(imputedDataTotal, imputedData)
+    }
+  }
+
   countDataNewTotal <- rbind(countDataNew,
-                              imputedData)
+                             imputedDataTotal)
   return(countDataNewTotal)
 }
