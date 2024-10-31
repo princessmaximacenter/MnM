@@ -32,6 +32,7 @@ createUMAPcohort <- function(countDataRef,
                              sampleColumn,
                              correctRibo = T,
                              abbreviations = NA,
+                             noAbbreviations = F,
                              proteinCodingGenes,
                              whichSeed = 1) {
 
@@ -92,13 +93,21 @@ createUMAPcohort <- function(countDataRef,
   }
   # Log-transform data
   dataLogRef <- base::log(countDataRef +1) %>% base::t() %>% base::as.data.frame()
-  abbreviations %<>% dplyr::filter(!!dplyr::sym(classColumn) %in% base::unique(metaDataRef[, classColumn]),
-                            !!dplyr::sym(higherClassColumn) %in% base::unique(metaDataRef[, higherClassColumn])
-                            )
-  metaDataJoined <- dplyr::left_join(metaDataRef, abbreviations[,c(classColumn, "abbreviationTumorType", "abbreviationSubtype")])
 
-  base::rownames(metaDataJoined) <- base::rownames(metaDataRef)
-  metaDataRef <- metaDataJoined
+  if (noAbbreviations == F) {
+    abbreviations %<>% dplyr::filter(!!dplyr::sym(classColumn) %in% base::unique(metaDataRef[, classColumn]),
+                                     !!dplyr::sym(higherClassColumn) %in% base::unique(metaDataRef[, higherClassColumn])
+    )
+    metaDataJoined <- dplyr::left_join(metaDataRef, abbreviations[,c(classColumn, "abbreviationTumorType", "abbreviationSubtype")])
+
+    base::rownames(metaDataJoined) <- base::rownames(metaDataRef)
+    metaDataRef <- metaDataJoined
+  } else {
+    metaDataRef$abbreviationTumorType <- metaDataRef[, higherClassColumn]
+    metaDataRef$abbreviationSubtype <- metaDataRef[, classColumn]
+
+  }
+
 
   base::set.seed(whichSeed)
   dataLogUMAP <- dataLogRef %>%
@@ -109,8 +118,15 @@ createUMAPcohort <- function(countDataRef,
   dataUMAP <- dataLogUMAP$layout %>%
     base::as.data.frame()
 
-  dataUMAP$abbreviationTumorType <- metaDataRef[base::rownames(dataUMAP), "abbreviationTumorType"]
-  dataUMAP$abbreviationSubtype <- metaDataRef[base::rownames(dataUMAP), "abbreviationSubtype"]
+  if (noAbbreviations == F) {
+    dataUMAP$abbreviationTumorType <- metaDataRef[base::rownames(dataUMAP), "abbreviationTumorType"]
+    dataUMAP$abbreviationSubtype <- metaDataRef[base::rownames(dataUMAP), "abbreviationSubtype"]
+  } else if (noAbbreviations == T) {
+    dataUMAP$abbreviationTumorType <- metaDataRef[base::rownames(dataUMAP),higherClassColumn]
+    dataUMAP$abbreviationSubtype <- metaDataRef[base::rownames(dataUMAP),classColumn]
+
+  }
+
   dataUMAP$Domain <- metaDataRef[base::rownames(dataUMAP), domainColumn]
 
 
@@ -120,7 +136,7 @@ createUMAPcohort <- function(countDataRef,
 
   #dataUMAP <- cbind(dataUMAP, dataLogRef[, c("subclass","Domain", "abbreviation"), drop = F])
   dataUMAPList <- base::list(dataUMAP = dataUMAP,
-                       abbreviations = abbreviations)
+                             abbreviations = abbreviations)
 
   if (correctRibo == T) {
     dataUMAPList$riboModelList <- riboModelList
