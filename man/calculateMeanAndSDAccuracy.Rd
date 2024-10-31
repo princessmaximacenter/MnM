@@ -10,8 +10,7 @@ calculateMeanAndSDAccuracy(
   metaDataTest = NA,
   subtype = F,
   rounding = F,
-  probabilityThreshold,
-  withoutF1 = F
+  probabilityThreshold
 )
 }
 \arguments{
