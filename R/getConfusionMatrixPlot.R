@@ -99,8 +99,6 @@ getConfusionMatrixPlot <- function(minorityDir,
 
   }
 
-
-
   predictionsMMFiltered <- predictionsMM %>% dplyr::filter(probability1 > probabilityThreshold)
 
   tumorConfusionMatrix <- caret::confusionMatrix(factor(predictionsMMFiltered$predict,
