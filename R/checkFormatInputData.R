@@ -4,7 +4,7 @@ checkFormatInputData <- function(sampleColumn,
                                  domainColumn,
                                  metaDataRef,
                                  countDataRef,
-                                 outputDir = NA,
+                                 outputDir = "NA",
                                  saveModel) {
 
   if (sampleColumn %notin% base::colnames(metaDataRef)) {
@@ -31,15 +31,19 @@ checkFormatInputData <- function(sampleColumn,
   }
 
   # Include a statement to store the classColumn, higherClassColumn and domainColumn
-  base::print(base::paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ", classColumn, ', containing values such as: '))
-  base::print(base::unique(metaDataRef[,classColumn])[1:3])
+  base::cat(base::paste0("The column used for tumor subtypes labels within the metadata, used for model training purposes, is: ",
+                           classColumn, '\nThis column contains values such as: \n'))
+  base::cat(paste0(base::unique(metaDataRef[,classColumn])[1:3]), "\n")
 
-  base::print(base::paste0("The column used for tumor type labels within the metadata, is: ", higherClassColumn,', containing values such as: '))
-  base::print(base::unique(metaDataRef[,higherClassColumn])[1:3])
+  base::cat(base::paste0("\nThe column used for tumor type labels within the metadata, is: ",
+                         higherClassColumn,'\nThis column contains values such as: \t'))
+  base::cat(paste0(base::unique(metaDataRef[,higherClassColumn])[1:3]), "\n\n")
 
-  base::print(base::paste0("The column used for tumor domain labels within the metadata, is: ", domainColumn, ', containing values such as: '))
-  base::print(base::unique(metaDataRef[,domainColumn])[1:3])
-  base::print("If any of these are incorrect, specify a different 'classColumn' (subtype), 'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.")
+  base::cat(base::paste0("\nThe column used for tumor domain labels within the metadata, is: ",
+                         domainColumn, '\nThis column contains values such as: \t'))
+  base::cat(base::unique(metaDataRef[,domainColumn])[1:3])
+  base::cat(paste0("\n\nIf any of these are incorrect, specify a different 'classColumn' (subtype),",
+            "\n'higherClassColumn' (tumor type) or 'domainColumn' (domain) to function as labels.\n\n"))
 
   if (saveModel == T & !base::dir.exists(outputDir)) {
     checkDirectory <- base::tryCatch(base::dir.create(outputDir))
