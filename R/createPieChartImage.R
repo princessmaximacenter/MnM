@@ -32,7 +32,7 @@
 #' The pie-chart is generated for one domain, as there are many different tumor types and subtypes
 #' within each domain.
 #' @export
-#' @import RColorBrewer
+#' @import RColorBrewer common
 #'
 createPieChartImage <- function(metaDataRef,
          classColumn,
@@ -45,7 +45,9 @@ createPieChartImage <- function(metaDataRef,
          textSizeClass = 0.5,
          textSizeSubspec = 0.45,
          plotColors = NA,
-         includeNumbers = T) {
+         includeNumbers = T,
+         lowerLimitFraction = 0
+         ) {
 
 
   if (is.na(abbreviations)[1] & !is.na(domainColumn)[1]) {
@@ -75,7 +77,10 @@ createPieChartImage <- function(metaDataRef,
     metaDataRef$domainColumn <- whichDomain
     }
 
-
+  abbreviationsToRemove <- pieDF %>% dplyr::filter(fraction < lowerLimitFraction) %>% dplyr::pull(site_group)
+  for (i in seq_along(abbreviationsToRemove)) {
+    abbreviations[abbreviations$site_group == abbreviationsToRemove[i],"abbreviationSubtype"] <- common::spaces(i)
+  }
 
   pieDF <- getPieDF(metaDataRef = metaDataRef,
                     abbreviations = abbreviations,
@@ -83,6 +88,9 @@ createPieChartImage <- function(metaDataRef,
                     higherClassColumn = higherClassColumn
   )
 
+  pieDF <- pieDF %>% dplyr::arrange(!!sym(higherClassColumn), !!sym(classColumn))
+
+  abbreviations %<>% arrange(!!sym(higherClassColumn), !!sym(classColumn))
 
  # if(!is.na(domainColumn)[1]) {
  #   abbreviationCombi %<>% dplyr::filter(!!dplyr::sym(domainColumn) == whichDomain)
