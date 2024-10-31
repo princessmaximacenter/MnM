@@ -97,19 +97,24 @@ calculateMeanAndSDAccuracy <- function(
       predictionsMMFinal$originalCall <- metaDataTest[base::rownames(predictionsMMFinal), classColumn]
       }
 
+    predictionsMMFiltered <- predictionsMMFinal %>% dplyr::filter(probability1 > probabilityThreshold)
+
+    withoutF1 <- length(base::unique(c(predictionsMMFiltered$originalCall))) == 1
 
     if (subtype == T) {
-      fractionsCorrect <- getAccuraciesPerTumorTypeSize(predictionsMMFinal,
+      fractionsCorrect <- getAccuraciesPerTumorTypeSize(predictionsMM = predictionsMMFinal,
                                                         metaDataRef = minority$metaDataRef,
                                                         classColumn = classColumn,
                                                         rounding = rounding,
-                                                        probabilityThreshold = probabilityThreshold)
+                                                        probabilityThreshold = probabilityThreshold,
+                                                        withoutF1 = withoutF1)
     } else {
-      fractionsCorrect <- getAccuraciesPerTumorTypeSize(predictionsMMFinal,
+      fractionsCorrect <- getAccuraciesPerTumorTypeSize(predictionsMM = predictionsMMFinal,
                                                         metaDataRef = minority$metaDataRef,
                                                         classColumn = higherClassColumn,
                                                         rounding = rounding,
-                                                        probabilityThreshold = probabilityThreshold)
+                                                        probabilityThreshold = probabilityThreshold,
+                                                        withoutF1 = withoutF1)
 
     }
     fractionsCorrect$seed <- i
@@ -130,19 +135,28 @@ calculateMeanAndSDAccuracy <- function(
       sdFractionCorrect = stats::sd(fractionCorrect),
       sdFractionCorrectFiltered = stats::sd(fractionCorrectFiltered),
       meanCasesFiltered = base::round(base::mean(nSamplesFiltered, na.rm = T), digits = 0),
-      meanPrecision = base::mean(Precision, na.rm =T),
-      meanF1 = base::mean(F1, na.rm =T),
       meanFractionCorrect2 = base::mean(fractionCorrect2, na.rm = T),
       meanFractionCorrect3 = base::mean(fractionCorrect3, na.rm = T),
       sdFractionCorrect2 = stats::sd(fractionCorrect2),
       sdFractionCorrect3 = stats::sd(fractionCorrect3),
       meanRecall = base::mean(Recall, na.rm = T),
-      medianF1 = stats::median(F1),
-      sdPrecision = stats::sd(Precision),
-      sdF1 = stats::sd(F1),
       sdRecall = stats::sd(Recall),
       meanSamples = base::mean(nSamples, na.rm = T)
     )
+
+  if (withoutF1 == F) {
+    newDF <- accuracyDF %>%
+      dplyr::group_by(nCases) %>%
+      dplyr::summarise(
+    meanPrecision = base::mean(Precision, na.rm =T),
+    meanF1 = base::mean(F1, na.rm =T),
+    medianF1 = stats::median(F1),
+    sdPrecision = stats::sd(Precision),
+    sdF1 = stats::sd(F1))
+
+    meanNumbers2 <- cbind(meanNumbers, newDF)
+    meanNumbers <- meanNumbers2
+  }
 
   if (crossValidation == T) {
     meanNumbers$type <- "Train"
