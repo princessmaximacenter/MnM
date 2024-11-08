@@ -21,7 +21,7 @@ and the chosen settings of the Minority classifier ($metaDataRun)
 to keep track of the column for the tumor subtype, tumor type and domain labels.
 
 predictionsMMFinal contains the top 3 final classifications ($predict{2,3}) with their accompanying probability scores
-($probability{1,2,3} and the original diagnosis label ($originalCall).
+($probability{1,2,3}) and the original diagnosis label ($originalCall).
 
 MMProbabilityList is a list containing all samples as individual list entries,
 with their different probability scores per label.

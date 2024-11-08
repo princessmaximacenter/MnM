@@ -4,7 +4,7 @@
 \alias{calculateMissingGenes}
 \title{Impute missing RNA-transcripts}
 \usage{
-calculateMissingGenes(countDataRef, countDataNew, neededGenes, whichK = 10)
+calculateMissingGenes(countDataRef, countDataNew, neededGenes, whichK = 3)
 }
 \arguments{
 \item{countDataRef}{Matrix containing the RNA-transcript per million data for the reference cohort. Samples are in the columns,
@@ -15,6 +15,8 @@ Samples are in the columns, different RNA-transcripts in the rows.}
 
 \item{neededGenes}{RNA-transcripts that will be used within the classification process and are required for M&M to run.
 Therefore, these genes will be imputed in case they are missing from countDataNew.}
+
+\item{whichK}{The number of neighbor datapoints that need to be used to calculate missing RNA-transcripts from.}
 }
 \value{
 Matrix containing the RNA-transcript per million data for the new samples to be classified,

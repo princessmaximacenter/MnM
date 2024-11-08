@@ -10,6 +10,7 @@
 #' @param classColumn Name of column in the metadata file that contains the tumor subtype labels.
 #' @param nModels How many models should be created for the Majority classifier?
 #' @param vectorK Vector generated within the function 'trainKNNClassifier', calculating the optimal value for _k_ given the dataset and knn-model.
+#' @param maxNeighbors What is the maximum number of neighbors to be used for the weighted _k_-nearest neighbor algorithm?
 #' @return Dataframe containing the classifications for the _nModels_ different generated models, with the different folds
 #' in the columns and the different samples to be predicted in the rows.
 #' @import kknn

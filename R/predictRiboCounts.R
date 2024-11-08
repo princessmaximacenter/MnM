@@ -6,6 +6,9 @@
 #' @param riboModel Model for ribocorrection, normally stored inside the R-object
 #' obtained from running the function createModelsMinority or createScalingsMajority as 'riboModelList'.
 #' @param data Count data to be transformed.
+#' @param countDataRef Matrix containing the RNA-transcript per million data. Samples are in the columns,
+#' different RNA-transcripts in the rows.
+#' @param whichKimputation The number of neighbor datapoints that need to be used to calculate missing RNA-transcripts from (in case needed).
 #'
 #' @return Count data corrected for the efficacy of the ribodepletion protocol.
 #'

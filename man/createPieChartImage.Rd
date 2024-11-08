@@ -50,6 +50,9 @@ default colors from RColorBrewer palette spectral will be used.}
 
 \item{includeNumbers}{Do you want to show the numbers for the pie chart on the outer edge?
 Default is includeNumbers = TRUE.}
+
+\item{lowerLimitFraction}{Tumor subtype fraction that is required for plotting the
+name on the pie-chart. In case the fraction is lower than the limit, the name will be removed.}
 }
 \value{
 Pie-chart of how many samples are present within the dataset belonging to a

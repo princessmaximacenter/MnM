@@ -19,7 +19,8 @@
 #' Please supply it as a vector. This is needed for ribo-depletion correction model.
 #' @param whichSeed For reproducibility, the seed can be specified with this parameter.
 #' @param correctRibo Do you want to perform a correction for the ribodepletion protocol on your dataset? Default is TRUE.
-
+#' @param noAbbreviations Do you want to use abbreviations within the UMAP? If not, specify noAbbreviations = F. Default = TRUE.
+#'
 #' @return List containing the UMAP-transformed datapoints ($dataUMAP), the abbreviations used to name the UMAP-transformed datapoints, and the ribodepletion correction model ($riboModelList).
 #' @export
 #' @import umap

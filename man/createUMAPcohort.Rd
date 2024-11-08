@@ -38,6 +38,8 @@ the tumor (sub)type diagnosis within the reference cohort.}
 \item{abbreviations}{Optional. Dataframe containing the links between the tumor (sub)type,
 the abbreviation required in the plot, and the domain.}
 
+\item{noAbbreviations}{Do you want to use abbreviations within the UMAP? If not, specify noAbbreviations = F. Default = TRUE.}
+
 \item{proteinCodingGenes}{What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
 Please supply it as a vector. This is needed for ribo-depletion correction model.}
 

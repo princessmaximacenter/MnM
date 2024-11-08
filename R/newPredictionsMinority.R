@@ -10,6 +10,7 @@
 #' @param saveModel Do you want to save the results in an R object?
 #' @param correctRibo Do you want to perform a correction for the ribodepletion protocol on your dataset? Default is TRUE.
 #' @param CPMcorrect Do you want to make sure you have CPM counts? Put false in case when you supply a subset of RNA-transcripts at the start.
+#' @param whichKimputation The number of neighbor datapoints that need to be used to calculate missing RNA-transcripts from (in case needed).
 #' @return R-object containing the final classifications ($classifications) for the samples,
 #' the probabilities associated to the different classifications ($probability),
 #' the metadata file associated to the reference cohort ($metaDataRef)

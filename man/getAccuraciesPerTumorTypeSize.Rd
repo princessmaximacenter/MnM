@@ -23,6 +23,10 @@ getAccuraciesPerTumorTypeSize(
 \item{rounding}{Do you want rounded numbers for the performance scores? Default is TRUE.}
 
 \item{probabilityThreshold}{What is the probability score threshold you would like to use to call a classification 'confident'?}
+
+\item{withoutF1}{Do you need to run the calculations without the F1-score and precision?
+This is the case when there are only 1-2 sample types within the dataset, caret::confusionMatrix crashes.
+This parameter prevents the crashing.}
 }
 \value{
 Dataframe showing the performance scores for the different tumor frequencies (nCases).

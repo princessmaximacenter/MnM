@@ -27,6 +27,8 @@ and the information needed to scale new sample input data to center the features
 
 \item{classColumn}{Name of column in the metadata file that contains the tumor subtype labels.}
 
+\item{maxNeighbors}{What is the maximum number of neighbors to be used for the weighted \emph{k}-nearest neighbor algorithm?}
+
 \item{nModels}{How many models should be created for the Majority classifier?}
 
 \item{vectorK}{Vector generated within the function 'trainKNNClassifier', calculating the optimal value for \emph{k} given the dataset and knn-model.}

@@ -5,6 +5,9 @@
 #' @param classColumn Which column within the metadata file contains the tumor (sub)type labels?
 #' @param rounding Do you want rounded numbers for the performance scores? Default is TRUE.
 #' @param probabilityThreshold What is the probability score threshold you would like to use to call a classification 'confident'?
+#' @param withoutF1 Do you need to run the calculations without the F1-score and precision?
+#' This is the case when there are only 1-2 sample types within the dataset, caret::confusionMatrix crashes.
+#' This parameter prevents the crashing.
 #' @return Dataframe showing the performance scores for the different tumor frequencies (nCases).
 #' Shown are the total amount of samples within the range ($nSamples),
 #' how many are classified confidently ($nSamplesFiltered),

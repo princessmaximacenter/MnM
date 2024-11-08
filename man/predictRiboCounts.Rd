@@ -11,6 +11,11 @@ predictRiboCounts(riboModel, data, countDataRef, whichKimputation)
 obtained from running the function createModelsMinority or createScalingsMajority as 'riboModelList'.}
 
 \item{data}{Count data to be transformed.}
+
+\item{countDataRef}{Matrix containing the RNA-transcript per million data. Samples are in the columns,
+different RNA-transcripts in the rows.}
+
+\item{whichKimputation}{The number of neighbor datapoints that need to be used to calculate missing RNA-transcripts from (in case needed).}
 }
 \value{
 Count data corrected for the efficacy of the ribodepletion protocol.

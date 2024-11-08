@@ -17,7 +17,7 @@ getTopClassifications(minority, MMProbabilityList, higherClassColumn, subtype)
 If so, use \emph{subtype = T}. If you want to obtain tumor type predictions instead, use \emph{subtype = F}.}
 }
 \value{
-Dataframe showing the top 3 classifications for the tumor (sub)type ($predict{2,3}), together with their probability scores ($probability{1,2,3}.
+Dataframe showing the top 3 classifications for the tumor (sub)type ($predict{2,3}), together with their probability scores ($probability{1,2,3}).
 }
 \description{
 Function to extract the top 3 tumor (sub)type classifications for samples, with their accompanying probability scores.

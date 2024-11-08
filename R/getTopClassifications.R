@@ -7,7 +7,7 @@
 #' @param subtype Do you want to obtain the predictions on the tumor subtype classification level?
 #' If so, use _subtype = T_. If you want to obtain tumor type predictions instead, use _subtype = F_.
 #'
-#' @return Dataframe showing the top 3 classifications for the tumor (sub)type ($predict{2,3}), together with their probability scores ($probability{1,2,3}.
+#' @return Dataframe showing the top 3 classifications for the tumor (sub)type ($predict{2,3}), together with their probability scores ($probability{1,2,3}).
 #' @export
 #'
 getTopClassifications <- function(minority,

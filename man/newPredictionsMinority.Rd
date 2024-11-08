@@ -30,6 +30,8 @@ Samples are in the columns, different RNA-transcripts in the rows.}
 \item{correctRibo}{Do you want to perform a correction for the ribodepletion protocol on your dataset? Default is TRUE.}
 
 \item{CPMcorrect}{Do you want to make sure you have CPM counts? Put false in case when you supply a subset of RNA-transcripts at the start.}
+
+\item{whichKimputation}{The number of neighbor datapoints that need to be used to calculate missing RNA-transcripts from (in case needed).}
 }
 \value{
 R-object containing the final classifications ($classifications) for the samples,

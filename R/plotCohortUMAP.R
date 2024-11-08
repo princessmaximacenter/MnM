@@ -15,7 +15,7 @@
 #' If that is desired, fill out the tumor type that you would like to visualize at 'tumorType' (for example: tumorType = "B-ALL")
 #' @param plotColors Which colors do you want to use for the tumor types? If not specified, default ggplot2 colors will be used.
 #' @param useLabels Do you want to supply labels within the plot?
-
+#' @param labelSize What is the size that you would like to use for the labels on the UMAP? Default = 4.
 #' @return ggplot with only the datapoints of the selected domain,
 #' color coded by the tumor type (subtype = F) or tumor subtype (subtype = T).
 #' @export

@@ -31,6 +31,8 @@ If that is desired, fill out the tumor type that you would like to visualize at 
 \item{plotColors}{Which colors do you want to use for the tumor types? If not specified, default ggplot2 colors will be used.}
 
 \item{useLabels}{Do you want to supply labels within the plot?}
+
+\item{labelSize}{What is the size that you would like to use for the labels on the UMAP? Default = 4.}
 }
 \value{
 ggplot with only the datapoints of the selected domain,
