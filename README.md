@@ -1,4 +1,4 @@
-# M&M: A pan-cancer classifier for pediatric malignancies
+# M&M: A pan-cancer classifier for pediatric tumors
 
 ## What is MnM?
 
@@ -6,7 +6,7 @@
 
 ## Why and when to use this package?
 
-With over 120 documented tumor types and 250 tumor subtypes, identifying the correct malignancy during the diagnostic procedure remains a challenging but crucial process within pediatric oncology. M&M allows for inclusion of many rare pediatric malignancies with as few as three available samples, occurring with rates of less than once for every 500 children diagnosed with cancer. M&M is designed to assist pathologists during the diagnostic process to reduce inter-observer variability and help recognizing rare pediatric malignancies.
+With over 120 documented tumor types and 250 tumor subtypes, identifying the correct tumor entity during the diagnostic procedure remains a challenging but crucial process within pediatric oncology. M&M allows for inclusion of many rare pediatric tumors with as few as three available samples, occurring with rates of less than once for every 500 children diagnosed with cancer. M&M is designed to assist pathologists during the diagnostic process to reduce inter-observer variability and help recognizing rare pediatric tumors.
 
 ## Install
 
@@ -18,9 +18,9 @@ remotes::install_github("princessmaximacenter/MnM/", dependencies = T)
 
 ## Usage
 
-Please see the supplied tutorial, vignettes, and documentation within R on how to properly use all functions. If you wish to familiarize yourself with `MnM`, the tutorial is the best starting point.
+Please see the supplied tutorial, vignettes, and documentation within R on how to properly use all functions. If you wish to familiarize yourself with `MnM`, the tutorial is the best starting point (DataTutorial). For this purpose, you can download the ZIP of this github page (click <> Code, Download ZIP). 
 
-RNA TPM-normalized count data and metadata of the reference cohort and test cohort can be obtained from ArrayExpress (accession E-MTAB-14038). The final resulting pre-trained models, which can be used to classify new incoming RNA-samples, can be obtained from Zenodo in the near future.
+RNA TPM-normalized count data and metadata of the reference cohort and test cohort can be obtained from ArrayExpress (accession E-MTAB-14038). The final resulting pre-trained models, which can be used to classify new incoming RNA-samples, can be obtained from Zenodo (https://zenodo.org/records/11575098). These models now are also capable of performing missing gene imputation, making them more user-friendly. Please note that RNA-transcript count rownames are required to be HGNC-symbols, ENSEMBL-IDs currently cannot be used. 
 
 ## Contact
 
