@@ -22,7 +22,7 @@ newPredictionsMinority <- function(createdModelsMinority,
                                    saveModel = T,
                                    correctRibo = T,
                                    CPMcorrect = T,
-                                   whichKimputation = 10
+                                   whichKimputation = 3
                                    ) {
   # Find the predictions for the test data
   # PREPARE DATA

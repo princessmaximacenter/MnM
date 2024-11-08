@@ -54,7 +54,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                        metaDataRef = metaDataRef,
                        countDataRef = countDataRef,
                        outputDir = outputDir,
-                       saveModel = F)
+                       saveModel = T)
 
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
 

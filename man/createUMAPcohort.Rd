@@ -11,7 +11,7 @@ createUMAPcohort(
   higherClassColumn,
   domainColumn,
   sampleColumn,
-  correctRibo = T,
+  correctRibo = F,
   abbreviations = NA,
   noAbbreviations = F,
   proteinCodingGenes,

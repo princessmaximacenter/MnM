@@ -11,7 +11,7 @@ newPredictionsMinority(
   saveModel = T,
   correctRibo = T,
   CPMcorrect = T,
-  whichKimputation = 10
+  whichKimputation = 3
 )
 }
 \arguments{

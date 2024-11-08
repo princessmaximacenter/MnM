@@ -26,7 +26,7 @@ newPredictionsMajority <- function(createdModelsMajority,
                                    saveModel = T,
                                    correctRibo = T,
                                    CPMcorrect = T,
-                                   whichKimputation = 10
+                                   whichKimputation = 3
 ) {
   `%notin%` <<- Negate(`%in%`)
   checkFormatTestData(countDataNew = countDataNew,
