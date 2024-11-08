@@ -78,6 +78,8 @@ if(!require("MnM")) {
 }
 library("tidyverse")
 library("MnM")
+
+`%notin%` <- Negate(`%in%`)
 ```
 
 # Data formats
@@ -456,10 +458,9 @@ head(minority$classifications)
 "predict needs to be equal to originalCall"
 
 # c
-minority$classifications %>% filter(originalCall == predict) %>% nrow()
+correctClassifications <- minority$classifications %>% filter(originalCall == predict) %>% nrow()
 # accuracy
-240 / nrow(minority$classifications) # 90%
-
+correctClassifications / nrow(minority$classifications) 
 ```
 
 Now we will run the 10x cross-validation of the majority classifier,
@@ -604,15 +605,15 @@ predictionsMMFinal <- subtypeBALLClassifications$predictionsMMFinal
 
 # d
 
-predictionsMMFinal %>% filter(originalCall == predict) %>% dim() # 228
-228 / nrow(predictionsMMFinal) # 85%
+correctClassifications <- predictionsMMFinal %>% filter(originalCall == predict) %>% nrow() 
+correctClassifications / nrow(predictionsMMFinal) 
 
 # e
 
-predictionsMMFinal %>% filter(probability1 > 0.72,
-                              originalCall == predict) %>% dim() # 170 
-predictionsMMFinal %>% filter(probability1 > 0.72) # 174
-170 / 174 # 98%
+correctClassifications <- predictionsMMFinal %>% filter(probability1 > 0.72,
+                              originalCall == predict) %>% nrow() 
+allRecalledClassifications <- predictionsMMFinal %>% filter(probability1 > 0.72)  %>% nrow()
+correctClassifications / allRecalledClassifications 
 
 # f
 
@@ -879,14 +880,12 @@ modelsMajority <- readRDS("~/Downloads/createdModelsMajority.rds")
 # c
 predictionsTestMinority <- newPredictionsMinority(
                        createdModelsMinority = modelsMinority,
-                       outputDir = "~/Desktop/probi/",
                        countDataNew = countDataTest
                       )
 
 # d
 predictionsTestMajority <- newPredictionsMajority(createdModelsMajority = modelsMajority,
-                       countDataNew = countDataTest,
-                      outputDir = "~/Desktop/probi/",
+                       countDataNew = countDataTest
                       ) 
 
 # e
@@ -900,10 +899,10 @@ predictionsMMTest <- predictionsMMTestList$predictionsMMFinal
 # f
 predictionsMMTest$originalCall <- metaDataTest[rownames(predictionsMMTest),"tumorSubtype"]
 
-predictionsMMTest %>% filter(originalCall == predict)  %>% dim()# 89
-89 / nrow(predictionsMMTest) # 86
+correctClassifications <- predictionsMMTest %>% filter(originalCall == predict)  %>% nrow() 
+correctClassifications / nrow(predictionsMMTest) 
 
-# The new classifier for only B-ALL subtype classifications performs better. This comes as no surprise, as the full model also has to discriminate 51 other tumor types and many tumor subtypes. However, the difference in the error count is negligible (1 sample). Therefore, the performance of M&M is considered remarkable. 
+# The new classifier for only B-ALL subtype classifications performs better. This comes as no surprise, as the full model also has to discriminate 51 other tumor types and many tumor subtypes. However, the difference in the error count is limited. Therefore, the performance of M&M is considered remarkable. 
 
 ```
 

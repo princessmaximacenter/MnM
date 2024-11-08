@@ -78,6 +78,8 @@ if(!require("MnM")) {
 }
 library("tidyverse")
 library("MnM")
+
+`%notin%` <- Negate(`%in%`)
 ```
 
 # Data formats
