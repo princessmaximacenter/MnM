@@ -7,7 +7,6 @@
 #' @param neededGenes RNA-transcripts that will be used within the classification process and are required for M&M to run.
 #' Therefore, these genes will be imputed in case they are missing from countDataNew.
 #' @param whichK The number of neighbor datapoints that need to be used to calculate missing RNA-transcripts from.
-#' @import impute
 #'
 #' @return Matrix containing the RNA-transcript per million data for the new samples to be classified,
 #' now containing all the needed genes for the classification process.
