@@ -40,6 +40,11 @@ calculateMissingGenes <- function(countDataRef,
 
   splits <- base::rep(1:howManySplits, each = 500)
   splits <- splits[1:base::ncol(newDataFrame)]
+  if (base::requireNamespace("impute") == F & base::requireNamespace("BiocManager") == F) {
+    base::install.packages("BiocManager")
+  } else if (base::requireNamespace("impute") == F) {
+    BiocManager::install("impute")
+  }
 
   for (i in unique(splits)) {
     combiSubset <- base::cbind(countDataRefSubset, countDataNewSubset[,splits == i])
