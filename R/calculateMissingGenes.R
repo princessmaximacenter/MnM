@@ -15,6 +15,7 @@ calculateMissingGenes <- function(countDataRef,
                                   neededGenes,
                                   whichK = 3) {
 
+
   missingGenes <- neededGenes[neededGenes %notin% base::rownames(countDataNew)]
 
   missingDF <- matrix(NA, nrow = length(missingGenes), ncol = base::ncol(countDataNew))
@@ -23,8 +24,8 @@ calculateMissingGenes <- function(countDataRef,
   newDataFrame <- base::rbind(countDataNew,
                         missingDF)
 
-  countDataNewSubset <- newDataFrame[neededGenes,]
-  countDataRefSubset <- countDataRef[neededGenes, ]
+  countDataNewSubset <- newDataFrame[neededGenes, , drop = F]
+  countDataRefSubset <- countDataRef[neededGenes, , drop = F]
 
   hush=function(code){
     sink("NUL") # use /dev/null in UNIX
@@ -46,10 +47,10 @@ calculateMissingGenes <- function(countDataRef,
   }
 
   for (i in unique(splits)) {
-    combiSubset <- base::cbind(countDataRefSubset, countDataNewSubset[,splits == i])
+    combiSubset <- base::cbind(countDataRefSubset, countDataNewSubset[,splits == i, drop = F])
     imputedDataComplete <- hush(impute::impute.knn(base::as.matrix(combiSubset), k = whichK))
 
-    imputedData <- imputedDataComplete$data[missingGenes,base::colnames(countDataNewSubset[,splits == i])]
+    imputedData <- imputedDataComplete$data[missingGenes,base::colnames(countDataNewSubset[,splits == i, drop = F]), drop = F]
 
     if (i == 1) {
       imputedDataTotal <- imputedData

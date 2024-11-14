@@ -56,7 +56,7 @@ newPredictionsMinority <- function(createdModelsMinority,
   missingGenes <- neededGenes[neededGenes %notin% rownames(countDataNew)]
 
   if (base::length(missingGenes) > 0) {
-    cat(paste0("There are ", length(missingGenes), " genes missing from the dataset.\nImputing their values.\n"))
+    cat(paste0("There are ", length(missingGenes), " genes missing from the dataset for classification.\nImputing their values.\n"))
     countDataRef <- createdModelsMinority$riboModelList$counts
 
     countDataNew <- calculateMissingGenes(countDataNew = countDataNew,
