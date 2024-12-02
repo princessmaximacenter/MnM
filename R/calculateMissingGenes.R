@@ -7,7 +7,6 @@
 #' @param neededGenes RNA-transcripts that will be used within the classification process and are required for M&M to run.
 #' Therefore, these genes will be imputed in case they are missing from countDataNew.
 #' @param whichK The number of neighbor datapoints that need to be used to calculate missing RNA-transcripts from.
-#' @import impute
 #'
 #' @return Matrix containing the RNA-transcript per million data for the new samples to be classified,
 #' now containing all the needed genes for the classification process.
@@ -15,6 +14,7 @@ calculateMissingGenes <- function(countDataRef,
                                   countDataNew,
                                   neededGenes,
                                   whichK = 3) {
+
 
   missingGenes <- neededGenes[neededGenes %notin% base::rownames(countDataNew)]
 
@@ -24,8 +24,8 @@ calculateMissingGenes <- function(countDataRef,
   newDataFrame <- base::rbind(countDataNew,
                         missingDF)
 
-  countDataNewSubset <- newDataFrame[neededGenes,]
-  countDataRefSubset <- countDataRef[neededGenes, ]
+  countDataNewSubset <- newDataFrame[neededGenes, , drop = F]
+  countDataRefSubset <- countDataRef[neededGenes, , drop = F]
 
   hush=function(code){
     sink("NUL") # use /dev/null in UNIX
@@ -40,12 +40,17 @@ calculateMissingGenes <- function(countDataRef,
 
   splits <- base::rep(1:howManySplits, each = 500)
   splits <- splits[1:base::ncol(newDataFrame)]
+  if (base::requireNamespace("impute") == F & base::requireNamespace("BiocManager") == F) {
+    base::install.packages("BiocManager")
+  } else if (base::requireNamespace("impute") == F) {
+    BiocManager::install("impute")
+  }
 
   for (i in unique(splits)) {
-    combiSubset <- base::cbind(countDataRefSubset, countDataNewSubset[,splits == i])
+    combiSubset <- base::cbind(countDataRefSubset, countDataNewSubset[,splits == i, drop = F])
     imputedDataComplete <- hush(impute::impute.knn(base::as.matrix(combiSubset), k = whichK))
 
-    imputedData <- imputedDataComplete$data[missingGenes,base::colnames(countDataNewSubset[,splits == i])]
+    imputedData <- imputedDataComplete$data[missingGenes,base::colnames(countDataNewSubset[,splits == i, drop = F]), drop = F]
 
     if (i == 1) {
       imputedDataTotal <- imputedData

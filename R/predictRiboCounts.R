@@ -15,18 +15,24 @@
 #'
 predictRiboCounts <- function(riboModel, data, countDataRef, whichKimputation) {
   # Predict how much protein coding reads v.s. the ribosomal reads are present within the data
+  `%notin%`  <- base::Negate(`%in%`)
   relevantCoefficients <- riboModel$relevantCoefficients
   highMeanGenes <- base::names(riboModel$meanGenes[names(relevantCoefficients[-1])])
   meanGenes <- riboModel$meanGenes[names(relevantCoefficients[-1])]
   varGenes <- riboModel$varGenes[names(relevantCoefficients[-1])]
   dataSub <- data[highMeanGenes[highMeanGenes %in% rownames(data)], , drop = F]
+  if (sum(names(varGenes) %notin% rownames(data)) > 0) {
 
-  dataSub <- calculateMissingGenes(countDataNew = dataSub,
-                                   neededGenes = names(varGenes),
-                                   countDataRef = countDataRef,
-                                   whichK = whichKimputation)
+    missingGenes <- names(varGenes)[names(varGenes) %notin% rownames(dataSub)]
+    cat(paste0("There are ", length(missingGenes), " genes missing from the dataset for ribodepletion correction.\nImputing their values.\n"))
 
-  dataSub <- dataSub[highMeanGenes,]
+    dataSub <- calculateMissingGenes(countDataNew = dataSub,
+                                     neededGenes = names(varGenes),
+                                     countDataRef = countDataRef,
+                                     whichK = whichKimputation)
+  }
+
+  dataSub <- dataSub[highMeanGenes, , drop = F]
   normalizedData <- base::apply(dataSub,2,function(x) (x -meanGenes[highMeanGenes])/varGenes[highMeanGenes])
 
   predictProteinCoding <- 1-(relevantCoefficients[1] + base::t(normalizedData) %*% relevantCoefficients[-1])
