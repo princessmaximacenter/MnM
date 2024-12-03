@@ -1,6 +1,6 @@
 # Base image for R
-ARG BASE_IMAGE="r-base"
-ARG BASE_IMAGE_VERSION="4.4.0"
+ARG BASE_IMAGE_NAME="r-base"
+ARG BASE_IMAGE_VERSION=4.4.0
 ARG BASE_IMAGE_DIGEST=sha256:2a29b5ba91a84dd60f5706546e6165b292c7e8f4da6c07153c1a0a3a4a01e429
 ARG IMAGE_NAME=MnM
 ARG IMAGE_VERSION_TAG=1.0.0
@@ -32,7 +32,6 @@ RUN apt-get update && \
     apt-get install -y \
       build-essential \
       libssl-dev \
-      libcurl4-gnutls-dev \
       libcurl4-openssl-dev \
       libxml2-dev \
       libbz2-dev \
@@ -45,8 +44,7 @@ RUN apt-get update && \
       libfreetype6-dev \
       libpng-dev \
       libtiff5-dev \
-      libjpeg-dev \
-  && Rscript ./install_packages.R
+      libjpeg-dev
 
 # Install R packages (CRAN and Bioconductor) using R command block
 RUN R -e "install.packages(c('BiocManager', 'dplyr', 'ggplot2'), repos='https://cloud.r-project.org')"
