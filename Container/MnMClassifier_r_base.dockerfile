@@ -53,11 +53,14 @@ RUN R -e "install.packages(c('BiocManager', 'dplyr', 'ggplot2'), repos='https://
 RUN R -e "\
     options(Ncpus = parallel::detectCores(), repos = 'https://cloud.r-project.org'); \
     install.packages(c('BiocManager', 'devtools')); \
-    devtools::install_version(c('tidyverse', 'caret', 'dplyr', 'magrittr', 'foreach', 'doParallel', \
-        'randomForest', 'kknn', 'glmnet', 'yaml', 'optparse', 'remotes'), \
-        version = c('1.3.1', '6.0-94', '1.1.4', '2.0.3', '1.5.2', '1.0.17', '4.7-1.1', \
-        '1.3.1', '4.1-8', '2.3.8', '1.7.4', '2.5.0'), dependencies = TRUE); \
-    cat('All specified packages installed successfully.'); \
+    pkgs <- c('tidyverse', 'caret', 'dplyr', 'magrittr', 'foreach', 'doParallel', \
+              'randomForest', 'kknn', 'glmnet', 'yaml', 'optparse', 'remotes'); \
+    versions <- c('1.3.1', '6.0-94', '1.1.4', '2.0.3', '1.5.2', '1.0.17', \
+                  '4.7-1.1', '1.3.1', '4.1-8', '2.3.8', '1.7.4', '2.5.0'); \
+    for (i in seq_along(pkgs)) { \
+        devtools::install_version(pkgs[i], version = versions[i], dependencies = TRUE); \
+    } \
+    message('All specified packages installed successfully.'); \
 "
 
 # Create and set the working directory
