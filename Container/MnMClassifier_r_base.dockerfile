@@ -73,10 +73,13 @@ WORKDIR /app
 #RUN mkdir -p /app/Scripts /app/Inputs /app/MnM /app/Outputs /app/SavedModels
 
 # Install MnM package from local directory (will be changed to install_github when published)
-RUN R -e 'library(remotes) remotes::install_github("princessmaximacenter/MnM/", dependencies = T, force = T)'
+RUN R -e " \
+    library(remotes); \
+    remotes::install_github('princessmaximacenter/MnM', dependencies = TRUE, force = TRUE); \
+"
 
 #Create an entrypoint to run from terminal
-ENTRYPOINT [ "/bin/bash", "-c" ]
+ENTRYPOINT [ "/bin/bash"]
 
 # Copy all .R files from the local Scripts directory into the container's /app/scripts directory
 #COPY ./Scripts/ /app/Scripts/
