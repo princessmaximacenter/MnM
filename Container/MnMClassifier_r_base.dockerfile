@@ -68,15 +68,14 @@ RUN R -e " \
 # Set the working directory
 WORKDIR /app
 
-
-# Create a directory for scripts
-#RUN mkdir -p /app/Scripts /app/Inputs /app/MnM /app/Outputs /app/SavedModels
-
 # Install MnM package from local directory (will be changed to install_github when published)
 RUN R -e " \
     library(remotes); \
     remotes::install_github('princessmaximacenter/MnM', dependencies = TRUE, force = TRUE); \
 "
+
+# Create a directory for scripts
+#RUN mkdir -p /app/Scripts /app/Inputs /app/MnM /app/Outputs /app/SavedModels
 
 #Create an entrypoint to run from terminal
 ENTRYPOINT [ "/bin/bash"]

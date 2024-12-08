@@ -1,7 +1,7 @@
 ###########
 #Dedicated R Script to running the MnM Classifier via containerization
-#Date 24-04-2024
-#Project: MnM/Tumor Classification
+#Date 06-12-2024
+#Project: MnM Classifier
 ###########
 
 "Loading Packages"
