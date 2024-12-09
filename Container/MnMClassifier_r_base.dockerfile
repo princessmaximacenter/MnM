@@ -71,7 +71,7 @@ WORKDIR /app
 # Install MnM package from local directory (will be changed to install_github when published)
 RUN R -e " \
     library(remotes); \
-    remotes::install_github('princessmaximacenter/MnM', dependencies = TRUE, force = TRUE); \
+    remotes::install_github('princessmaximacenter/MnM/dev', dependencies = TRUE, force = TRUE); \
 "
 
 # Create a directory for scripts
