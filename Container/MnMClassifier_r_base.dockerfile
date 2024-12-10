@@ -74,11 +74,5 @@ RUN R -e " \
     remotes::install_github('princessmaximacenter/MnM', ref = 'dev', dependencies = TRUE, force = TRUE); \
 "
 
-# Create a directory for scripts
-#RUN mkdir -p /app/Scripts /app/Inputs /app/MnM /app/Outputs /app/SavedModels
-
 #Create an entrypoint to run from terminal
 ENTRYPOINT [ "/bin/bash"]
-
-# Copy all .R files from the local Scripts directory into the container's /app/scripts directory
-#COPY ./Scripts/ /app/Scripts/
