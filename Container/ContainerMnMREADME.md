@@ -5,7 +5,7 @@
 
 The **RunningMnM.r** script is dedicated to executing the MnM (Minority and Majority) Classifier for tumor classification. It integrates metadata and count data for reference and test cohorts, performs classification using pre-trained or newly trained models, and outputs predictions and saved models.
 
-This script uses containerization for streamlined execution, ensuring reproducibility and consistency in results. The configuration inputs are provided via a YAML file.
+This script uses containerization for streamlined execution, ensuring reproducibility and consistency in results. The configuration inputs are provided via a **YAML** file.
 
 ## Key Features
 
@@ -55,12 +55,12 @@ This script uses containerization for streamlined execution, ensuring reproducib
 
 ## Configuration File: YAML Input
 
-### Example Structure
+### Example Input Structure
 ```yaml
 # Script Configuration
 script:
   name: "MnM Classifier via Docker/Singularity"
-  date: "29-04-2024"
+  date: "11-12-2024"
   project: "Tumor-Classification"
 
 # File Paths
