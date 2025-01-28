@@ -1,7 +1,7 @@
 # R Script Configuration
 script:
   name: "MnM Classifier via Docker/Singularity"
-  date: "29-04-2024"
+  date: "11-06-2024"
   project: "Tumor-Classification"
 
 # File Paths

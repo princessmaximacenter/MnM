@@ -12,7 +12,7 @@ With over 120 documented tumor types and 250 tumor subtypes, identifying the cor
 
 ```{r}
 library(remotes)
-remotes::install_github("princessmaximacenter/MnM/", dependencies = T)
+remotes::install_github("princessmaximacenter/MnM", dependencies = T)
 
 ```
 
