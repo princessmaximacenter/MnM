@@ -49,7 +49,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
 ) {
 
-  `%notin%` <- base::Negate(`%in%`)
+  `%notin%` <<- base::Negate(`%in%`)
 
   checkFormatInputData(sampleColumn = sampleColumn,
                        classColumn = classColumn,
@@ -148,7 +148,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
     dataCV$class <- base::as.character(metaDataRef[rownames(dataCV),classColumn])
 
     # Also create test data and specify which biomaterial IDs are in there
-    testDataCV <- dataLogCV[ -folds[[i]], ]
+    testDataCV <- dataLogCV[ -folds[[i]], , drop = F]
     #testSamples <- rownames(testDataCV)
 
     # Reduce features using RF feature importance for accuracy

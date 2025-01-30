@@ -46,7 +46,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 ) {
 
 
-  `%notin%` <- base::Negate(`%in%`)
+  `%notin%` <<- base::Negate(`%in%`)
 
   checkFormatInputData(sampleColumn = sampleColumn,
                        classColumn = classColumn,
@@ -124,7 +124,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 
 
     # Also create test data and specify which biomaterial IDs are in there
-    testDataCV <- dataLogNonZero[ , -folds[[i]]]
+    testDataCV <- dataLogNonZero[ , -folds[[i]], drop = F]
     testSamples <- colnames(testDataCV)
 
     # Select biomaterial IDs as training data per model
