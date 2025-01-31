@@ -108,7 +108,7 @@ createScalingsMajority <-  function(countDataRef,
   dataLogZeroVar <- base::t(dataLogRef) %>% base::as.data.frame(.)
   zeroVar <- caret::nearZeroVar(dataLogZeroVar)
 
-  dataLogNonZero <- dataLogRef[-zeroVar, ]
+  dataLogNonZero <- dataLogRef[-zeroVar, , drop = F]
   nonZeroGenes <- base::rownames(dataLogNonZero)
   # Set seed for reproducibility
   base::set.seed(whichSeed)

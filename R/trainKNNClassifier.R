@@ -35,7 +35,7 @@ for (i in base::seq(1:nModels)) {
   }
 
   if (maxNeighbors > nrow(rotatedTrainDataK)) {
-    maxNeighborsNew <- nrow(rotatedTrainDataK)
+    maxNeighborsNew <- nrow(rotatedTrainDataK) - 1
   } else {
     maxNeighborsNew <- maxNeighbors
   }
