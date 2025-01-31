@@ -53,7 +53,7 @@ createScalingsMajority <-  function(countDataRef,
 
 ) {
   countDataOG <- countDataRef
-  `%notin%` <- base::Negate(`%in%`)
+  `%notin%` <<- base::Negate(`%in%`)
 
   checkFormatInputData(sampleColumn = sampleColumn,
                        classColumn = classColumn,
