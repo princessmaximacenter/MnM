@@ -48,11 +48,12 @@ createScalingsMajority <-  function(countDataRef,
                                     whichSeed = 1,
                                     outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                     proteinCodingGenes,
-                                    saveModel = T
+                                    saveModel = T,
+                                    correctRibo = T
 
 ) {
   countDataOG <- countDataRef
-  `%notin%` <- base::Negate(`%in%`)
+  `%notin%` <<- base::Negate(`%in%`)
 
   checkFormatInputData(sampleColumn = sampleColumn,
                        classColumn = classColumn,
@@ -80,21 +81,23 @@ createScalingsMajority <-  function(countDataRef,
 
   directory <- outputDir
 
-  # Correct for ribosomal protein contamination
-  riboCountFile <- base::paste0(directory, "modelListRiboCounts.rds")
-  if (!base::file.exists(riboCountFile)) {
+  if(correctRibo == T) {
+    # Correct for ribosomal protein contamination
+    riboCountFile <- base::paste0(directory, "modelListRiboCounts.rds")
+    if (!base::file.exists(riboCountFile)) {
 
-    base::set.seed(whichSeed)
-    riboModelList <- riboCorrectCounts(data = countDataRef,
-                                       proteinCodingGenes = proteinCodingGenes,
-                                       outputDir = directory
-    )
+      base::set.seed(whichSeed)
+      riboModelList <- riboCorrectCounts(data = countDataRef,
+                                         proteinCodingGenes = proteinCodingGenes,
+                                         outputDir = directory
+      )
 
-  } else {
-    riboModelList <- base::readRDS(riboCountFile)
+    } else {
+      riboModelList <- base::readRDS(riboCountFile)
+    }
+    base::cat("\nFinished the ribocorrection\n")
+    countDataRef <- riboModelList$counts
   }
-  base::cat("\nFinished the ribocorrection\n")
-  countDataRef <- riboModelList$counts
 
   # Log-transform data
   dataLogRef <- base::log(countDataRef +1)
@@ -105,7 +108,7 @@ createScalingsMajority <-  function(countDataRef,
   dataLogZeroVar <- base::t(dataLogRef) %>% base::as.data.frame(.)
   zeroVar <- caret::nearZeroVar(dataLogZeroVar)
 
-  dataLogNonZero <- dataLogRef[-zeroVar, ]
+  dataLogNonZero <- dataLogRef[-zeroVar, , drop = F]
   nonZeroGenes <- base::rownames(dataLogNonZero)
   # Set seed for reproducibility
   base::set.seed(whichSeed)

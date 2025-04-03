@@ -40,12 +40,13 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                                             maxNeighbors = 25,
                                             whichSeed = 1,
                                             outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
-                                            proteinCodingGenes
+                                            proteinCodingGenes,
+                                            correctRibo = T
 
 ) {
 
 
-  `%notin%` <- base::Negate(`%in%`)
+  `%notin%` <<- base::Negate(`%in%`)
 
   checkFormatInputData(sampleColumn = sampleColumn,
                        classColumn = classColumn,
@@ -79,22 +80,23 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
     base::dir.create(modelDirectory)
   }
 
-  # Correct for ribosomal protein contamination
-    riboCountFile <- base::paste0(modelDirectory, "/modelListRiboCounts.rds")
+  if(correctRibo == T) {
+    # Correct for ribosomal protein contamination
+    riboCountFile <- base::paste0(directory, "modelListRiboCounts.rds")
     if (!base::file.exists(riboCountFile)) {
 
       base::set.seed(whichSeed)
       riboModelList <- riboCorrectCounts(data = countDataRef,
                                          proteinCodingGenes = proteinCodingGenes,
-                                         outputDir = modelDirectory,
-                                         saveRiboModels = F
+                                         outputDir = directory
       )
 
     } else {
       riboModelList <- base::readRDS(riboCountFile)
-
     }
+    base::cat("\nFinished the ribocorrection\n")
     countDataRef <- riboModelList$counts
+  }
 
   # Log-transform data
   dataLogRef <- base::log(countDataRef +1)
@@ -122,7 +124,7 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
 
 
     # Also create test data and specify which biomaterial IDs are in there
-    testDataCV <- dataLogNonZero[ , -folds[[i]]]
+    testDataCV <- dataLogNonZero[ , -folds[[i]], drop = F]
     testSamples <- colnames(testDataCV)
 
     # Select biomaterial IDs as training data per model

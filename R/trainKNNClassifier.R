@@ -28,10 +28,23 @@ for (i in base::seq(1:nModels)) {
   rotatedTrainDataK <- rotatedTrainData[base::grep("\\.",base::rownames(rotatedTrainData),invert=T),]
 
   # Calculate optimal value for k for the given data in the specific feature space
+  if (nrow(rotatedTrainDataK) < 30) {
+    nfolds <- ceiling(nrow(rotatedTrainDataK) / 10)
+  } else {
+    nfolds <- 10
+  }
+
+  if (maxNeighbors > nrow(rotatedTrainDataK)) {
+    maxNeighborsNew <- nrow(rotatedTrainDataK) - 1
+  } else {
+    maxNeighborsNew <- maxNeighbors
+  }
+
   kTrain <- kknn::train.kknn(class~., rotatedTrainDataK,
                              distance = 1,
                              kernel = "optimal",
-                             scale=F,ks=c(1:maxNeighbors))
+                             scale=F,ks=c(1:maxNeighborsNew),
+                             kcv= nfolds)
 
   # Store calculated optimal k-value
   vectorK[i] <- kTrain$best.parameters$k

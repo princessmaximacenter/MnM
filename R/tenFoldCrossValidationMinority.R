@@ -44,11 +44,12 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                             nFeatures = 300,
                                             whichSeed = 1,
                                             outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
-                                            proteinCodingGenes
+                                            proteinCodingGenes,
+                                            correctRibo = T
 
 ) {
 
-  `%notin%` <- base::Negate(`%in%`)
+  `%notin%` <<- base::Negate(`%in%`)
 
   checkFormatInputData(sampleColumn = sampleColumn,
                        classColumn = classColumn,
@@ -80,21 +81,23 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
     base::dir.create(modelDirectory)
   }
 
-  # Correct for ribosomal protein contamination
-    riboCountFile <- paste0(modelDirectory, "/modelListRiboCounts.rds")
+  if(correctRibo == T) {
+    # Correct for ribosomal protein contamination
+    riboCountFile <- base::paste0(directory, "modelListRiboCounts.rds")
     if (!base::file.exists(riboCountFile)) {
 
       base::set.seed(whichSeed)
       riboModelList <- riboCorrectCounts(data = countDataRef,
                                          proteinCodingGenes = proteinCodingGenes,
-                                         outputDir = modelDirectory,
-                                         saveRiboModels = F
+                                         outputDir = directory
       )
 
     } else {
       riboModelList <- base::readRDS(riboCountFile)
     }
+    base::cat("\nFinished the ribocorrection\n")
     countDataRef <- riboModelList$counts
+  }
 
   # Log-transform data
   dataLogRef <- base::log(countDataRef +1) %>% base::t() %>% base::as.data.frame()
@@ -145,7 +148,7 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
     dataCV$class <- base::as.character(metaDataRef[rownames(dataCV),classColumn])
 
     # Also create test data and specify which biomaterial IDs are in there
-    testDataCV <- dataLogCV[ -folds[[i]], ]
+    testDataCV <- dataLogCV[ -folds[[i]], , drop = F]
     #testSamples <- rownames(testDataCV)
 
     # Reduce features using RF feature importance for accuracy

@@ -36,7 +36,13 @@ riboCorrectCounts <- function(data,
 
   base::set.seed(1)
   # Do cross-validation for glmnet, generalized linear model, Lasso and Elastic-Net Regularized
-  modelCV <- glmnet::cv.glmnet(x = base::t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian")
+  if (length(proteinCodingFraction) < 30) {
+    nfolds <- max(ceiling(length(proteinCodingFraction) / 10), 3)
+  } else {
+    nfolds <- 10
+  }
+  modelCV <- glmnet::cv.glmnet(x = base::t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian",
+                               nfolds = nfolds)
 
 
   model <- glmnet::glmnet(x = base::t(normalizedData),y = 1-proteinCodingFraction,family = "gaussian",lambda = modelCV$lambda.1se)

@@ -12,7 +12,7 @@ With over 120 documented tumour types and 250 tumour subtypes, identifying the c
 
 ```{r}
 library(remotes)
-remotes::install_github("princessmaximacenter/MnM/", dependencies = T)
+remotes::install_github("princessmaximacenter/MnM", dependencies = T)
 
 ```
 
