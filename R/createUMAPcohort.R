@@ -37,7 +37,7 @@ createUMAPcohort <- function(countDataRef,
                              proteinCodingGenes,
                              whichSeed = 1) {
 
-  `%notin%` <- base::Negate(`%in%`)
+  `%notin%` <<- base::Negate(`%in%`)
 
   if (sampleColumn %notin% base::colnames(metaDataRef)) {
     base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
