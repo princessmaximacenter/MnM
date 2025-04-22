@@ -21,6 +21,10 @@
 #' @param outputDir Directory in which you would like to store the R-object containing the results. Default is today's date.
 #' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
 #' Please supply it as a vector. This is needed for ribo-depletion correction model.
+#' @param useUpsimpler Do you want to use the Upsimpler modality to create new samples?
+#' @param upsampleBelow Which is the number of samples you want to leave as is within M&M, below which upsampling will be performed?
+#' @param upsamplerArgs What are the parameters you would like to use for upsampling?
+#' @param upsamplerModule Module containing the upsampling package.
 #'
 #' @return R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),
 #'  the probabilities for each classification ($probabilityList),
@@ -45,7 +49,12 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                             whichSeed = 1,
                                             outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                             proteinCodingGenes,
-                                            correctRibo = T
+                                            correctRibo = T,
+                                            useUpsimpler = F,
+                                            upsampleBelow = 6,
+                                            maxSamplesAfterUpsampling = 6,
+                                            upsamplerArgs = NULL,
+                                            upsamplerModule = NULL
 
 ) {
 
@@ -58,12 +67,16 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                        metaDataRef = metaDataRef,
                        countDataRef = countDataRef,
                        outputDir = outputDir,
-                       saveModel = T)
+                       saveModel = T,
+                       useUpsimpler = useUpsimpler,
+                       upsamplerModule = upsamplerModule
+                       )
+
 
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
 
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
-  if (base::length(tumorEntitiesWithTooFewSamples) >0) {
+  if (base::length(tumorEntitiesWithTooFewSamples) >0 & useUpsimpler == F) {
 
     metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
     base::cat("\nYou have labels within your dataset that have less than 3 available samples. \nPlease note samples with these labels have been removed.\n")
@@ -163,6 +176,51 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
 
     dataCV <- dataCV[,c(reducedFeatures, "class")]
 
+    tumorEntitiesWithTooFewSamples <- base::table(metaDataCV[,classColumn])[base::table(metaDataCV[,classColumn]) < upsampleBelow] %>% base::names()
+    # Apply upsampling to create new samples
+    if (useUpsimpler == T & length(tumorEntitiesWithTooFewSamples) >= 1) {
+
+      seedSamples <- metaDataCV %>% dplyr::filter(!!sym(classColumn) %in% tumorEntitiesWithTooFewSamples) %>%
+        dplyr::pull(!!dplyr::sym(sampleColumn))
+
+      print(seedSamples)
+
+      if(is.null(upsamplerArgs)) {
+        upsamplerArgs <- getDefaultSettingsUpsampling()
+      }
+
+      upsamplerArgs$init$dataDF <- dataCV %>% dplyr::select(!class)
+      upsamplerArgs$init$metadataDF <- metaDataCV
+      upsamplerArgs$init$class_col <- classColumn
+
+      upsimpler <- base::do.call(upsamplerModule$Upsimpler, upsamplerArgs$init)
+
+      synths <- applyUpsimpler(upsimpler = upsimpler,
+                               upsimplerUsedArgs = upsamplerArgs$upsimple,
+                               targetSampleIDs = seedSamples,
+                               metadataDF = metaDataCV,
+                               classColumn = classColumn,
+                               domainColumn = domainColumn,
+                               higherClassColumn = higherClassColumn,
+                               sampleColumn = sampleColumn)
+
+      countsSynths <- base::expm1(base::t(synths$synthDataDF)) # For reference later on
+      dataCV <- base::rbind(upsamplerArgs$init$dataDF, synths$synthDataDF)
+
+      # synths metadata is a single column; we need to add the other columns
+      # in order to rbind it to the original metadata
+      synths$synthMetadataDF[base::setdiff(base::names(metaDataCV), base::names(synths$synthMetadataDF))] <- NA
+      metaDataWithSynths <- base::rbind(metaDataCV, synths$synthMetadataDF)
+
+      # Alter training dataset to both contain real data and synthetic data points
+      samplesTrainDefList <- obtainTrainData(metaDataRef = metaDataWithSynths,
+                                             classColumn = classColumn,
+                                             nModels = nModels,
+                                             maxSamplesPerType = maxSamplesAfterUpsampling)
+
+      # Add back the class label to the dataset
+      dataCV$class <- base::as.character(metaDataWithSynths[rownames(dataCV), classColumn])
+    }
     #dataSynthList <- runUpsimpler("something", reducedFeatures = reducedFeatures)
     #dataSynth <- dataSynthList$dataSynth
     #metaDataSynth <- dataSynthList$metaDataSynth
@@ -249,6 +307,27 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                          reducedFeaturesList = reducedFeaturesList,
                                          metaDataRef = metaDataRef,
                                          metaDataRun = metaDataRun)
+
+  if (useUpsimpler == T) {
+    relevantParametersUpsampling <- upsamplerArgs$upsimple
+
+    #createdModelsMinority$relevantParametersUpsampling <- relevantParametersUpsampling
+    upsimplerParameters <- base::data.frame(nNeighbors = relevantParametersUpsampling$n_neighbors,
+                                            nSamples = relevantParametersUpsampling$n_samples,
+                                            excludeSamplesFromSameClass = relevantParametersUpsampling$exclude_same_class,
+                                            allowDistancesBetweenDifferentClasses = relevantParametersUpsampling$allow_interclass_dists,
+                                            subsampleFraction = relevantParametersUpsampling$subsample_frac,
+                                            sampleWithReplacement = relevantParametersUpsampling$with_replacement,
+                                            seed = relevantParametersUpsampling$rseed,
+                                            scalingStrategy = relevantParametersUpsampling$scaling_strategy,
+                                            scalingMaxDistance = relevantParametersUpsampling$nnmax_factor,
+                                            repelFromOtherDatapoint = relevantParametersUpsampling$nnrepel_factor,
+                                            negativeValues = relevantParametersUpsampling$neg_strategy
+    )
+    crossValidationMinorityResults$upsimplerParameters <- upsimplerParameters
+    crossValidationMinorityResults$metaDataRun$upsampleBelow <- upsampleBelow
+    crossValidationMinorityResults$metaDataRun$maxSamplesAfterUpsampling <- maxSamplesAfterUpsampling
+  }
 
   base::cat("\nWe have finished the classification process. Please find your results in the generated object.\n")
   filename <- base::paste0(modelDirectory, "/crossValidationMinorityResults.rds")

@@ -5,7 +5,9 @@ checkFormatInputData <- function(sampleColumn,
                                  metaDataRef,
                                  countDataRef,
                                  outputDir = "NA",
-                                 saveModel) {
+                                 saveModel,
+                                 useUpsimpler = F,
+                                 upsamplerModule = NULL) {
 
   if (sampleColumn %notin% base::colnames(metaDataRef)) {
     base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
@@ -51,6 +53,12 @@ checkFormatInputData <- function(sampleColumn,
       base::stop(base::paste0("The directory you want the classification to be saved in cannot be created due to an error in the directory path.",
                               " Please check the spelling of your specified outputDir - it is probable the parent-directory does not exist."))
     }
+  }
+
+  if (useUpsimpler == T & is.null(upsamplerModule)) {
+    base::stop(base::cat(paste0("\n\n You have specified that you would like to use the upsampling functionality, ",
+                                "but not provided the upsampling module. \nPlease supply the module as well, or turn off the upsampling functionality.")))
+
   }
 
 }

@@ -41,7 +41,8 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                                             whichSeed = 1,
                                             outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                             proteinCodingGenes,
-                                            correctRibo = T
+                                            correctRibo = T,
+                                            combineWithUpsimplerMinority = F
 
 ) {
 
@@ -55,13 +56,15 @@ tenFoldCrossValidationMajority <-  function(countDataRef,
                        metaDataRef = metaDataRef,
                        countDataRef = countDataRef,
                        outputDir = outputDir,
-                       saveModel = T)
+                       saveModel = T
+
+                       )
 
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
 
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
 
-  if (base::length(tumorEntitiesWithTooFewSamples) >0) {
+  if (base::length(tumorEntitiesWithTooFewSamples) >0 & combineWithUpsimplerMinority == F) {
 
     metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
     base::cat("\nYou have labels within your dataset that have less than 3 available samples. \nPlease note samples with these labels have been removed.\n")
