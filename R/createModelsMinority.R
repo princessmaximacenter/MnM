@@ -24,7 +24,10 @@
 #' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
 #' Please supply it as a vector. This is needed for ribo-depletion correction model.
 #' @param saveModel Do you want to save your generated scalings in an R-object? Default is TRUE.
-#'
+#' @param useUpsimpler Do you want to use the Upsimpler modality to create new samples?
+#' @param upsampleBelow Which is the number of samples you want to leave as is within M&M, below which upsampling will be performed?
+#' @param upsamplerArgs What are the parameters you would like to use for upsampling?
+#' @param upsamplerModule Module containing the upsampling package.
 #'
 #' @return R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),
 #'  the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
@@ -49,7 +52,12 @@ createModelsMinority <-  function(countDataRef,
                                   outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                   proteinCodingGenes,
                                   saveModel = T,
-                                  correctRibo = T
+                                  correctRibo = T,
+                                  useUpsimpler = F,
+                                  upsampleBelow = 4,
+                                  maxSamplesAfterUpsampling = 6,
+                                  upsamplerArgs = NULL,
+                                  upsamplerModule = NULL
 
 ) {
   countDataOG <- countDataRef
@@ -67,7 +75,7 @@ createModelsMinority <-  function(countDataRef,
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
 
-  if (base::length(tumorEntitiesWithTooFewSamples) >0) {
+  if (base::length(tumorEntitiesWithTooFewSamples) >0 & useUpsimpler == F) {
 
     metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
     base::print("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
@@ -148,6 +156,65 @@ createModelsMinority <-  function(countDataRef,
 
   dataLogRef <- dataLogRef[,c(reducedFeatures, "class")]
 
+  tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < upsampleBelow] %>% base::names()
+  # Apply upsampling to create new samples
+  if (useUpsimpler == T & length(tumorEntitiesWithTooFewSamples) >= 1) {
+    #tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < upsampleBelow] %>% base::names()
+    #cat(tumorEntitiesWithTooFewSamples)
+    seedSamples <- metaDataRef %>% dplyr::filter(!!sym(classColumn) %in% tumorEntitiesWithTooFewSamples) %>%
+      dplyr::pull(!!dplyr::sym(sampleColumn))
+
+    print(seedSamples)
+    #seedSamples <- base::lapply(tumorEntitiesWithTooFewSamples, function(x) {
+    #  base::sample(metaDataRef[metaDataRef[, classColumn] == x, sampleColumn], 1)
+    #}) %>% base::unlist()
+
+    if(is.null(upsamplerArgs)) {
+      upsamplerArgs <- getDefaultSettingsUpsampling()
+    }
+
+    upsamplerArgs$init$dataDF <- dataLogRef %>% dplyr::select(!class)
+    upsamplerArgs$init$metadataDF <- metaDataRef
+    upsamplerArgs$init$class_col <- classColumn
+
+    upsimpler <- base::do.call(upsamplerModule$Upsimpler, upsamplerArgs$init)
+
+    synths <- applyUpsimpler(upsimpler = upsimpler,
+                             upsimplerUsedArgs = upsamplerArgs$upsimple,
+                             targetSampleIDs = seedSamples,
+                             metadataDF = metaDataRef,
+                             classColumn = classColumn,
+                             domainColumn = domainColumn,
+                             higherClassColumn = higherClassColumn,
+                             sampleColumn = sampleColumn)
+
+    countsSynths <- base::expm1(base::t(synths$synthDataDF)) # For reference later on
+    dataLogRef <- base::rbind(upsamplerArgs$init$dataDF, synths$synthDataDF)
+
+    # synths metadata is a single column; we need to add the other columns
+    # in order to rbind it to the original metadata
+    synths$synthMetadataDF[base::setdiff(base::names(metaDataRef), base::names(synths$synthMetadataDF))] <- NA
+    metaDataWithSynths <- base::rbind(metaDataRef, synths$synthMetadataDF)
+
+    # Alter training dataset
+    samplesTrainDefList <- obtainTrainData(metaDataRef = metaDataWithSynths,
+                    classColumn = classColumn,
+                    nModels = nModels,
+                    maxSamplesPerType = maxSamplesAfterUpsampling)
+    # Update the samplesTrainDefList to reflect the new dataLogRef (i.e., including the synths),
+    # by breaking the synths up into the different models
+    # synthSamplesTrainDefList <- obtainTrainData(metaDataRef = synths$synthMetadataDF,
+    #                                             classColumn = classColumn,
+    #                                             nModels = nModels,
+    #                                             maxSamplesPerType = maxSamplesPerType)
+    # samplesTrainDefList <- base::Map(base::c, samplesTrainDefList, synthSamplesTrainDefList)
+
+    # Add back the class label to the dataset
+    dataLogRef$class <- base::as.character(metaDataWithSynths[rownames(dataLogRef), classColumn])
+  }
+
+
+
   base::print("Initiating RF")
 
   # Start the modelling of the data within the different compositions of training data
@@ -172,7 +239,31 @@ createModelsMinority <-  function(countDataRef,
                                 reducedFeatures = reducedFeatures,
                                 metaDataRef = metaDataRef,
                                 metaDataRun = metaDataRun,
-                                countDataRef = countDataOG)
+                                countDataRef = countDataOG
+                                )
+  if (useUpsimpler == T) {
+    createdModelsMinority$metaDataSynths <- synths$synthMetadataDF
+    createdModelsMinority$countsSynths <- countsSynths
+
+    relevantParametersUpsampling <- upsamplerArgs$upsimple
+
+    #createdModelsMinority$relevantParametersUpsampling <- relevantParametersUpsampling
+    upsimplerParameters <- base::data.frame(nNeighbors = relevantParametersUpsampling$n_neighbors,
+                                            nSamples = relevantParametersUpsampling$n_samples,
+                                            excludeSamplesFromSameClass = relevantParametersUpsampling$exclude_same_class,
+                                            allowDistancesBetweenDifferentClasses = relevantParametersUpsampling$allow_interclass_dists,
+                                            subsampleFraction = relevantParametersUpsampling$subsample_frac,
+                                            sampleWithReplacement = relevantParametersUpsampling$with_replacement,
+                                            seed = relevantParametersUpsampling$rseed,
+                                            scalingStrategy = relevantParametersUpsampling$scaling_strategy,
+                                            scalingMaxDistance = relevantParametersUpsampling$nnmax_factor,
+                                            repelFromOtherDatapoint = relevantParametersUpsampling$nnrepel_factor,
+                                            negativeValues = relevantParametersUpsampling$neg_strategy
+                                            )
+    createdModelsMinority$upsimplerParameters <- upsimplerParameters
+    createdModelsMinority$metaDataRun$upsampleBelow <- upsampleBelow
+    createdModelsMinority$metaDataRun$maxSamplesAfterUpsampling <- maxSamplesAfterUpsampling
+  }
 
   if (saveModel == T) {
   filename <- base::paste0(directory, "/createdModelsMinority.rds")
