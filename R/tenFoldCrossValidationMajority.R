@@ -19,6 +19,8 @@
 #' @param outputDir Directory in which you would like to store the R-object containing the results. Default is today's date.
 #' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
 #' Please supply it as a vector. This is needed for ribo-depletion correction model.
+#' @param combineWithUpsimplerMinority
+#'
 #' @import foreach
 #'
 #' @return R-object containing the predictions ($classifications), classifications errors ($wrongClassifications),

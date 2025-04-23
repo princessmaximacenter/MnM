@@ -28,7 +28,7 @@
 #' @param upsampleBelow Which is the number of samples you want to leave as is within M&M, below which upsampling will be performed?
 #' @param upsamplerArgs What are the parameters you would like to use for upsampling?
 #' @param upsamplerModule Module containing the upsampling package.
-#'
+#' @param upsamplingType Do you want to use upsimpler or random upsampling?
 #' @return R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),
 #'  the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
 #'   the metadata file associated to the reference cohort ($metaDataRef)
@@ -57,7 +57,8 @@ createModelsMinority <-  function(countDataRef,
                                   upsampleBelow = 4,
                                   maxSamplesAfterUpsampling = 6,
                                   upsamplerArgs = NULL,
-                                  upsamplerModule = NULL
+                                  upsamplerModule = NULL,
+                                  upsamplingType = "upsimpler"
 
 ) {
   countDataOG <- countDataRef
@@ -164,37 +165,49 @@ createModelsMinority <-  function(countDataRef,
     seedSamples <- metaDataRef %>% dplyr::filter(!!sym(classColumn) %in% tumorEntitiesWithTooFewSamples) %>%
       dplyr::pull(!!dplyr::sym(sampleColumn))
 
-    print(seedSamples)
-    #seedSamples <- base::lapply(tumorEntitiesWithTooFewSamples, function(x) {
-    #  base::sample(metaDataRef[metaDataRef[, classColumn] == x, sampleColumn], 1)
-    #}) %>% base::unlist()
-
     if(is.null(upsamplerArgs)) {
-      upsamplerArgs <- getDefaultSettingsUpsampling()
+      upsamplerArgs <- getDefaultSettingsUpsampling(upsamplingType = upsamplingType)
     }
 
-    upsamplerArgs$init$dataDF <- dataLogRef %>% dplyr::select(!class)
-    upsamplerArgs$init$metadataDF <- metaDataRef
-    upsamplerArgs$init$class_col <- classColumn
+    if (upsamplingType == "upsimpler") {
+      upsamplerArgs$init$dataDF <- dataLogRef %>% dplyr::select(!class)
+      upsamplerArgs$init$metadataDF <- metaDataRef
+      upsamplerArgs$init$class_col <- classColumn
+      upsimpler <- base::do.call(upsamplerModule$Upsimpler, upsamplerArgs$init)
 
-    upsimpler <- base::do.call(upsamplerModule$Upsimpler, upsamplerArgs$init)
 
-    synths <- applyUpsimpler(upsimpler = upsimpler,
-                             upsimplerUsedArgs = upsamplerArgs$upsimple,
-                             targetSampleIDs = seedSamples,
-                             metadataDF = metaDataRef,
-                             classColumn = classColumn,
-                             domainColumn = domainColumn,
-                             higherClassColumn = higherClassColumn,
-                             sampleColumn = sampleColumn)
+    } else if (upsamplingType == "random") {
+      upsamplerArgs$dataDF <- dataLogRef %>% dplyr::select(!class)
+      upsamplerArgs$metadataDF <- metaDataRef
+      upsamplerArgs$class_col <- classColumn
+      upsimpler <- upsamplerModule$baseline
 
-    countsSynths <- base::expm1(base::t(synths$synthDataDF)) # For reference later on
-    dataLogRef <- base::rbind(upsamplerArgs$init$dataDF, synths$synthDataDF)
+    }
 
-    # synths metadata is a single column; we need to add the other columns
-    # in order to rbind it to the original metadata
-    synths$synthMetadataDF[base::setdiff(base::names(metaDataRef), base::names(synths$synthMetadataDF))] <- NA
-    metaDataWithSynths <- base::rbind(metaDataRef, synths$synthMetadataDF)
+
+
+      synths <- applyUpsimpler(upsimpler = upsimpler,
+                               upsamplingType = upsamplingType,
+                               upsimplerUsedArgs = upsamplerArgs,
+                               targetSampleIDs = seedSamples,
+                               metadataDF = metaDataRef,
+                               classColumn = classColumn,
+                               domainColumn = domainColumn,
+                               higherClassColumn = higherClassColumn,
+                               sampleColumn = sampleColumn)
+
+      countsSynths <- base::expm1(base::t(synths$synthDataDF)) # For reference later on
+
+      if (upsamplingType == "upsimpler") {
+        dataLogRef <- base::rbind(upsamplerArgs$init$dataDF, synths$synthDataDF)
+      } else if (upsamplingType == "random") {
+        dataLogRef <- base::rbind(upsamplerArgs$dataDF, synths$synthDataDF)
+      }
+
+      # synths metadata is a single column; we need to add the other columns
+      # in order to rbind it to the original metadata
+      synths$synthMetadataDF[base::setdiff(base::names(metaDataRef), base::names(synths$synthMetadataDF))] <- NA
+      metaDataWithSynths <- base::rbind(metaDataRef, synths$synthMetadataDF)
 
     # Alter training dataset
     samplesTrainDefList <- obtainTrainData(metaDataRef = metaDataWithSynths,
@@ -248,18 +261,23 @@ createModelsMinority <-  function(countDataRef,
     relevantParametersUpsampling <- upsamplerArgs$upsimple
 
     #createdModelsMinority$relevantParametersUpsampling <- relevantParametersUpsampling
-    upsimplerParameters <- base::data.frame(nNeighbors = relevantParametersUpsampling$n_neighbors,
-                                            nSamples = relevantParametersUpsampling$n_samples,
-                                            excludeSamplesFromSameClass = relevantParametersUpsampling$exclude_same_class,
-                                            allowDistancesBetweenDifferentClasses = relevantParametersUpsampling$allow_interclass_dists,
-                                            subsampleFraction = relevantParametersUpsampling$subsample_frac,
-                                            sampleWithReplacement = relevantParametersUpsampling$with_replacement,
-                                            seed = relevantParametersUpsampling$rseed,
-                                            scalingStrategy = relevantParametersUpsampling$scaling_strategy,
-                                            scalingMaxDistance = relevantParametersUpsampling$nnmax_factor,
-                                            repelFromOtherDatapoint = relevantParametersUpsampling$nnrepel_factor,
-                                            negativeValues = relevantParametersUpsampling$neg_strategy
-                                            )
+    if (upsamplingType == "upsimpler") {
+      upsimplerParameters <- base::data.frame(nNeighbors = relevantParametersUpsampling$n_neighbors,
+                                              nSamples = relevantParametersUpsampling$n_samples,
+                                              excludeSamplesFromSameClass = relevantParametersUpsampling$exclude_same_class,
+                                              allowDistancesBetweenDifferentClasses = relevantParametersUpsampling$allow_interclass_dists,
+                                              subsampleFraction = relevantParametersUpsampling$subsample_frac,
+                                              sampleWithReplacement = relevantParametersUpsampling$with_replacement,
+                                              seed = relevantParametersUpsampling$rseed,
+                                              scalingStrategy = relevantParametersUpsampling$scaling_strategy,
+                                              scalingMaxDistance = relevantParametersUpsampling$nnmax_factor,
+                                              repelFromOtherDatapoint = relevantParametersUpsampling$nnrepel_factor,
+                                              negativeValues = relevantParametersUpsampling$neg_strategy
+      )
+    } else if (upsamplingType == "random") {
+      upsimplerParameters <- data.frame(Type = "random")
+    }
+
     createdModelsMinority$upsimplerParameters <- upsimplerParameters
     createdModelsMinority$metaDataRun$upsampleBelow <- upsampleBelow
     createdModelsMinority$metaDataRun$maxSamplesAfterUpsampling <- maxSamplesAfterUpsampling

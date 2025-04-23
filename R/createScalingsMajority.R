@@ -21,6 +21,8 @@
 #' @param proteinCodingGenes What are the names of the RNA-transcripts that stand for protein-coding genes within our dataset?
 #' Please supply it as a vector. This is needed for ribo-depletion correction model.
 #' @param saveModel Do you want to save your generated results in an R-object (saveModel = TRUE)? Default is TRUE.
+#' @param combineWithUpsimplerMinority
+#'
 #' @return R-object containing the rotations and scalings
 #' for each training data subset($rotationsAndScalingList),
 #' the model to correct for the ribodepletion efficacy ($riboModelList),
@@ -49,7 +51,8 @@ createScalingsMajority <-  function(countDataRef,
                                     outputDir = paste0("./", format(as.Date(Sys.Date(), "%Y-%m-%d"), "%Y_%m_%d")),
                                     proteinCodingGenes,
                                     saveModel = T,
-                                    correctRibo = T
+                                    correctRibo = T,
+                                    combineWithUpsimplerMinority = F
 
 ) {
   countDataOG <- countDataRef
@@ -67,10 +70,10 @@ createScalingsMajority <-  function(countDataRef,
   base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
 
   tumorEntitiesWithTooFewSamples <- base::table(metaDataRef[,classColumn])[base::table(metaDataRef[,classColumn]) < 3] %>% base::names()
-  if (base::length(tumorEntitiesWithTooFewSamples) >0) {
+  if (base::length(tumorEntitiesWithTooFewSamples) >0 & combineWithUpsimplerMinority == F) {
 
     metaDataRef %<>% dplyr::filter(!!dplyr::sym(classColumn) %notin% tumorEntitiesWithTooFewSamples)
-    base::cat("You have labels within your dataset that have less than 3 available samples.  Please note samples with these labels have been removed.")
+    base::cat("\nYou have labels within your dataset that have less than 3 available samples. \nPlease note samples with these labels have been removed.\n")
     #stop("You have tumor subtypes within your dataset that have less than 3 available samples. Please remove all tumor types with too few samples. ")
 
   }

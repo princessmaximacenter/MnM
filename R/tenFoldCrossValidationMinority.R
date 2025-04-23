@@ -54,7 +54,8 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                             upsampleBelow = 6,
                                             maxSamplesAfterUpsampling = 6,
                                             upsamplerArgs = NULL,
-                                            upsamplerModule = NULL
+                                            upsamplerModule = NULL,
+                                            upsamplingType = "upsimpler"
 
 ) {
 
@@ -183,20 +184,29 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
       seedSamples <- metaDataCV %>% dplyr::filter(!!sym(classColumn) %in% tumorEntitiesWithTooFewSamples) %>%
         dplyr::pull(!!dplyr::sym(sampleColumn))
 
-      print(seedSamples)
 
       if(is.null(upsamplerArgs)) {
-        upsamplerArgs <- getDefaultSettingsUpsampling()
+        upsamplerArgs <- getDefaultSettingsUpsampling(upsamplingType = upsamplingType)
       }
 
-      upsamplerArgs$init$dataDF <- dataCV %>% dplyr::select(!class)
-      upsamplerArgs$init$metadataDF <- metaDataCV
-      upsamplerArgs$init$class_col <- classColumn
+      if (upsamplingType == "upsimpler") {
+        upsamplerArgs$init$dataDF <- dataCV %>% dplyr::select(!class)
+        upsamplerArgs$init$metadataDF <- metaDataCV
+        upsamplerArgs$init$class_col <- classColumn
+        upsimpler <- base::do.call(upsamplerModule$Upsimpler, upsamplerArgs$init)
 
-      upsimpler <- base::do.call(upsamplerModule$Upsimpler, upsamplerArgs$init)
+
+      } else if (upsamplingType == "random") {
+        upsamplerArgs$dataDF <- dataCV %>% dplyr::select(!class)
+        upsamplerArgs$metadataDF <- metaDataCV
+        upsamplerArgs$class_col <- classColumn
+        upsimpler <- upsamplerModule$baseline
+
+      }
 
       synths <- applyUpsimpler(upsimpler = upsimpler,
-                               upsimplerUsedArgs = upsamplerArgs$upsimple,
+                               upsamplingType = upsamplingType,
+                               upsimplerUsedArgs = upsamplerArgs,
                                targetSampleIDs = seedSamples,
                                metadataDF = metaDataCV,
                                classColumn = classColumn,
@@ -205,7 +215,13 @@ tenFoldCrossValidationMinority <-  function(countDataRef,
                                sampleColumn = sampleColumn)
 
       countsSynths <- base::expm1(base::t(synths$synthDataDF)) # For reference later on
-      dataCV <- base::rbind(upsamplerArgs$init$dataDF, synths$synthDataDF)
+
+      if (upsamplingType == "upsimpler") {
+        dataCV <- base::rbind(upsamplerArgs$init$dataDF, synths$synthDataDF)
+      } else if (upsamplingType == "random") {
+        dataCV <- base::rbind(upsamplerArgs$dataDF, synths$synthDataDF)
+      }
+
 
       # synths metadata is a single column; we need to add the other columns
       # in order to rbind it to the original metadata

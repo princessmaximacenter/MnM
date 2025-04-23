@@ -18,6 +18,7 @@
 #' @export
 #'
 applyUpsimpler <- function(upsimpler,
+                           upsamplingType = "upsimpler",
                            upsimplerUsedArgs,
                            metadataDF,
                            targetSampleIDs,
@@ -32,6 +33,11 @@ applyUpsimpler <- function(upsimpler,
 
   synthDataDF <- base::data.frame()
   synthMetadataDF <- base::data.frame()
+
+  if(upsamplingType == "upsimpler") {
+    upsimplerUsedArgs <- upsimplerUsedArgs$upsimple
+  }
+
   for (i in base::seq_along(targetSampleIDs)) {
     targetSampleID <- targetSampleIDs[[i]]
     print(paste0('[', i, '/', nSeeds,
@@ -39,7 +45,13 @@ applyUpsimpler <- function(upsimpler,
                  ' from class ', metadataDF[targetSampleID, classColumn]))
 
     upsimplerUsedArgs$target_sample_id <- targetSampleID
-    synths <- do.call(upsimpler$upsimple, upsimplerUsedArgs)
+
+    if(upsamplingType == "upsimpler") {
+      synths <- do.call(upsimpler$upsimple, upsimplerUsedArgs)
+    } else {
+      synths <- do.call(upsimpler$baseline, upsimplerUsedArgs)
+    }
+
 
     synthDataDF <- base::rbind(synthDataDF, synths)
     synthsMeta <- base::data.frame(matrix(nrow = base::nrow(synths), ncol = 0))
