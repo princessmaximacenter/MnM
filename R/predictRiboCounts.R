@@ -9,9 +9,8 @@
 #' @param countDataRef Matrix containing the RNA-transcript per million data. Samples are in the columns,
 #' different RNA-transcripts in the rows.
 #' @param whichKimputation The number of neighbor datapoints that need to be used to calculate missing RNA-transcripts from (in case needed).
-#'
 #' @return Count data corrected for the efficacy of the ribodepletion protocol.
-#'
+#' @export
 #'
 predictRiboCounts <- function(riboModel, data, countDataRef, whichKimputation) {
   # Predict how much protein coding reads v.s. the ribosomal reads are present within the data
