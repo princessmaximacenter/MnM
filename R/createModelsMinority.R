@@ -29,6 +29,7 @@
 #' @param upsamplerArgs What are the parameters you would like to use for upsampling?
 #' @param upsamplerModule Module containing the upsampling package.
 #' @param upsamplingType Do you want to use upsimpler or random upsampling?
+#' @param featuresToRemove Do you want to remove specific features so they are not being considered for use within the classification procedure?
 #' @return R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),
 #'  the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
 #'   the metadata file associated to the reference cohort ($metaDataRef)
@@ -58,7 +59,8 @@ createModelsMinority <-  function(countDataRef,
                                   maxSamplesAfterUpsampling = 6,
                                   upsamplerArgs = NULL,
                                   upsamplerModule = NULL,
-                                  upsamplingType = "upsimpler"
+                                  upsamplingType = "upsimpler",
+                                  featuresToRemove = NULL
 
 ) {
   countDataOG <- countDataRef
@@ -106,6 +108,14 @@ createModelsMinority <-  function(countDataRef,
     }
     base::cat("\nFinished the ribocorrection\n")
     countDataRef <- riboModelList$counts
+  }
+
+  # Remove features if needed
+  if (!is.null(featuresToRemove)) {
+    # Remove features by rownames.
+    countDataRef <- countDataRef %>% base::as.data.frame() %>%
+      dplyr::filter(rownames(.) %notin% featuresToRemove) %>%
+      base::as.matrix()
   }
 
   # Log-transform data
