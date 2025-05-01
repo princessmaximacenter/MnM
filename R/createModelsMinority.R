@@ -30,6 +30,7 @@
 #' @param upsamplerModule Module containing the upsampling package.
 #' @param upsamplingType Do you want to use upsimpler or random upsampling?
 #' @param featuresToRemove Do you want to remove specific features so they are not being considered for use within the classification procedure?
+#' @param useSpecificFeatures Do you want to use particular features for the classification procedure?
 #' @return R-object containing the generated RF-models ($modelList), the model for the ribodepletion correction ($riboModelList),
 #'  the features that were eventually used for the weighted RF within the different folds ($reducedFeaturesList),
 #'   the metadata file associated to the reference cohort ($metaDataRef)
@@ -60,7 +61,8 @@ createModelsMinority <-  function(countDataRef,
                                   upsamplerArgs = NULL,
                                   upsamplerModule = NULL,
                                   upsamplingType = "upsimpler",
-                                  featuresToRemove = NULL
+                                  featuresToRemove = NULL,
+                                  useSpecificFeatures = NULL
 
 ) {
   countDataOG <- countDataRef
@@ -126,25 +128,6 @@ createModelsMinority <-  function(countDataRef,
     maxSamplesPerType <- base::ceiling(stats::median(base::table(metaDataRef[, classColumn])))
   }
 
-  # Remove genes with mean expression for ANOVA
-  meanVals <- base::apply(countDataRef, 1, base::mean)
-  countDataRef <- countDataRef[meanVals >= meanExpression,]
-
-  base::print("We will now start with the selection of ANOVA-genes")
-  # Set seed for reproducibility
-  base::set.seed(whichSeed)
-
-
-  # Run an ANOVA to select the top n genes from the training data for use in the further classification process
-  interestingANOVAgenes <- selectAnovaGenes(metaDataRef = metaDataRef,
-                                         countDataRef = countDataRef,
-                                         nANOVAgenes = nANOVAgenes, # How many ANOVA genes
-                                         classColumn = classColumn)
-
-  base::print("We have finished with the ANOVA gene selection")
-  # Select the ANOVA genes within the log-transformed data
-  dataLogRef <- dataLogRef[ ,interestingANOVAgenes]
-
   # Select biomaterial IDs as training data per model
   base::set.seed(whichSeed)
   samplesTrainDefList <- obtainTrainData(metaDataRef = metaDataRef,
@@ -152,18 +135,49 @@ createModelsMinority <-  function(countDataRef,
                                          nModels = nModels,
                                          maxSamplesPerType = maxSamplesPerType)
 
-  # Add class label to the dataset
-  dataLogRef$class <- base::as.character(metaDataRef[rownames(dataLogRef),classColumn])
+  if (is.null(useSpecificFeatures)) {
+    # Remove genes with mean expression for ANOVA
+    meanVals <- base::apply(countDataRef, 1, base::mean)
+    countDataRef <- countDataRef[meanVals >= meanExpression,]
 
-  base::print("Starting to reduce features")
-  # Reduce features using RF feature importance for accuracy
-  base::set.seed(whichSeed)
-  reducedFeatures <- reduceFeatures(dataTrain = dataLogRef,
-                                    samplesTrainDefList = samplesTrainDefList,
-                                    ntree = 500,
-                                    nModels = nModels,
-                                    nFeatures = nFeatures,
-                                    nANOVAgenes = nANOVAgenes)
+
+
+    base::print("We will now start with the selection of ANOVA-genes")
+    # Set seed for reproducibility
+    base::set.seed(whichSeed)
+
+
+    # Run an ANOVA to select the top n genes from the training data for use in the further classification process
+    interestingANOVAgenes <- selectAnovaGenes(metaDataRef = metaDataRef,
+                                              countDataRef = countDataRef,
+                                              nANOVAgenes = nANOVAgenes, # How many ANOVA genes
+                                              classColumn = classColumn)
+
+    base::print("We have finished with the ANOVA gene selection")
+    # Select the ANOVA genes within the log-transformed data
+    dataLogRef <- dataLogRef[ ,interestingANOVAgenes]
+
+
+
+    # Add class label to the dataset
+    dataLogRef$class <- base::as.character(metaDataRef[rownames(dataLogRef),classColumn])
+
+    base::print("Starting to reduce features")
+    # Reduce features using RF feature importance for accuracy
+    base::set.seed(whichSeed)
+    reducedFeatures <- reduceFeatures(dataTrain = dataLogRef,
+                                      samplesTrainDefList = samplesTrainDefList,
+                                      ntree = 500,
+                                      nModels = nModels,
+                                      nFeatures = nFeatures,
+                                      nANOVAgenes = nANOVAgenes)
+  } else {
+    reducedFeatures <- useSpecificFeatures
+
+    # Add class label to the dataset
+    dataLogRef$class <- base::as.character(metaDataRef[rownames(dataLogRef),classColumn])
+  }
+
 
   dataLogRef <- dataLogRef[,c(reducedFeatures, "class")]
 
