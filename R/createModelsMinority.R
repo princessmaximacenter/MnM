@@ -195,7 +195,7 @@ createModelsMinority <-  function(countDataRef,
     }
 
 
-
+      set.seed(whichSeed)
       synths <- applyUpsimpler(upsimpler = upsimpler,
                                upsamplingType = upsamplingType,
                                upsimplerUsedArgs = upsamplerArgs,
@@ -220,6 +220,7 @@ createModelsMinority <-  function(countDataRef,
       metaDataWithSynths <- base::rbind(metaDataRef, synths$synthMetadataDF)
 
     # Alter training dataset
+      set.seed(whichSeed)
     samplesTrainDefList <- obtainTrainData(metaDataRef = metaDataWithSynths,
                     classColumn = classColumn,
                     nModels = nModels,
