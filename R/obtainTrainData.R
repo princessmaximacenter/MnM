@@ -10,7 +10,7 @@
 #' @return A list with the specified number of different training data subsets from the available complete training data,
 #' all with the specified maximum samples per tumor subtype.
 #'
-obtainTrainData <- function(metaDataRef, classColumn, maxSamplesPerType = 50, nModels = 100) {
+obtainTrainData <- function(metaDataRef, classColumn, maxSamplesPerType, nModels) {
 
   samplesTrainDefList <- base::list()
   metaDataRef[, classColumn] <- base::as.factor(metaDataRef[, classColumn])

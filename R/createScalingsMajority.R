@@ -129,7 +129,7 @@ createScalingsMajority <-  function(countDataRef,
   scaleFeaturesList <- getVarFeaturesMajority(dataTrain = dataLogNonZero,
                                               samplesTrainDefList = samplesTrainDefList,
                                               nFeatures = nFeatures,
-                                              nModels = nModels )
+                                              nModels = nModels)
 
   base::cat("\nSelected features and calculated scaling\n")
 

@@ -13,8 +13,8 @@
 trainKNNClassifier <- function(rotationsAndScalingsList,
                                metaDataRef,
                                classColumn,
-                               maxNeighbors = 25,
-                               nModels = 100) {
+                               maxNeighbors,
+                               nModels) {
 
 vectorK <- c()
 for (i in base::seq(1:nModels)) {
@@ -24,7 +24,6 @@ for (i in base::seq(1:nModels)) {
   rotatedTrainData <- rotationsAndScalingsList[["prList"]][[i]]$x %>% base::as.data.frame()
   # Add training class labels
   rotatedTrainData$class <- base::as.factor(metaDataRef[base::rownames(rotatedTrainData),classColumn])
-
   rotatedTrainDataK <- rotatedTrainData[base::grep("\\.",base::rownames(rotatedTrainData),invert=T),]
 
   # Calculate optimal value for k for the given data in the specific feature space
@@ -34,7 +33,7 @@ for (i in base::seq(1:nModels)) {
     nfolds <- 10
   }
 
-  if (maxNeighbors > nrow(rotatedTrainDataK)) {
+  if (maxNeighbors > (nrow(rotatedTrainDataK)-1)) {
 
     maxNeighborsNew <- nrow(rotatedTrainDataK) - min(5, nrow(rotatedTrainDataK) - 1)
 

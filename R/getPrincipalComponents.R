@@ -18,8 +18,8 @@
 getPrincipalComponents <- function(dataTrain,
                                    scaleFeaturesList,
          samplesTrainDefList,
-         nModels = 100,
-         nComps = 100
+         nModels,
+         nComps
 ) {
 
   # The RNA-transcripts are in the columns right now, so the variance should be determined per column

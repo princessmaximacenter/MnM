@@ -10,8 +10,8 @@
 getVarFeaturesMajority <- function(
     dataTrain,
     samplesTrainDefList,
-    nFeatures = 2500,
-    nModels = 100
+    nFeatures,
+    nModels
 
     ) {
 
