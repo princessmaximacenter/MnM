@@ -29,13 +29,13 @@ for (i in base::seq(1:nModels)) {
 
   # Calculate optimal value for k for the given data in the specific feature space
   if (nrow(rotatedTrainDataK) < 30) {
-    nfolds <- ceiling(nrow(rotatedTrainDataK) / 10)
+    nfolds <- round(nrow(rotatedTrainDataK) / 10)
   } else {
     nfolds <- 10
   }
 
   if (maxNeighbors > nrow(rotatedTrainDataK)) {
-    maxNeighborsNew <- nrow(rotatedTrainDataK) - 1
+    maxNeighborsNew <- nrow(rotatedTrainDataK) - 5
   } else {
     maxNeighborsNew <- maxNeighbors
   }
