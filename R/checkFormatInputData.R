@@ -5,9 +5,7 @@ checkFormatInputData <- function(sampleColumn,
                                  metaDataRef,
                                  countDataRef,
                                  outputDir = "NA",
-                                 saveModel,
-                                 useUpsimpler = F,
-                                 upsamplerModule = NULL) {
+                                 saveModel) {
 
   if (sampleColumn %notin% base::colnames(metaDataRef)) {
     base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
@@ -58,13 +56,6 @@ checkFormatInputData <- function(sampleColumn,
                               " Please check the spelling of your specified outputDir - it is probable the parent-directory does not exist."))
     }
   }
-
-  if (useUpsimpler == T & is.null(upsamplerModule)) {
-    base::stop(base::cat(paste0("\n\n You have specified that you would like to use the upsampling functionality, ",
-                                "but not provided the upsampling module. \nPlease supply the module as well, or turn off the upsampling functionality.")))
-
-  }
-
 }
 
 
@@ -86,6 +77,11 @@ checkFormatTestData <- function(countDataNew,
   # Check whether counts are supplied within the RNA-seq counts
   if (base::is.numeric(countDataNew) != T) {
     base::stop("Your input data is not as required. Please make sure your countDataNew object only contains numerical count data and is a matrix.")
+  }
+
+  # Check whether there are NAs within the RNA-seq counts
+  if (base::sum(base::is.na(countDataNew)) > 0) {
+    base::stop("Your count data is not as required, as there are NA values in there. Currently there is no missing value imputation implemented. Please make sure your countDataRef object contains no NA values and is a matrix.")
   }
 
   # Generate the directory, if not possible abort
