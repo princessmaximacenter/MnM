@@ -81,7 +81,7 @@ checkFormatTestData <- function(countDataNew,
 
   # Check whether there are NAs within the RNA-seq counts
   if (base::sum(base::is.na(countDataNew)) > 0) {
-    base::stop("Your count data is not as required, as there are NA values in there. Currently there is no missing value imputation implemented. Please make sure your countDataRef object contains no NA values and is a matrix.")
+    base::stop("Your count data is not as required, as there are NA values in there. Currently there is no missing value imputation implemented. Please make sure your countDataNew object contains no NA values and is a matrix.")
   }
 
   # Generate the directory, if not possible abort
