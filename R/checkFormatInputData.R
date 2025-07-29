@@ -64,6 +64,9 @@ checkFormatTestData <- function(countDataNew,
                                 outputDir,
                                 saveModel) {
 
+  if (is.null(countDataRef)) {
+    base::stop("You probably are using an old version of the model that is no longer compatible with MnM.\n\nPlease download the latest version from https://zenodo.org/records/14167359. ")
+  }
   # Check whether the genes are within the rows of countDataNew
   geneOverlap <- sum(rownames(countDataNew) %in% rownames(countDataRef))
 
