@@ -697,7 +697,11 @@ predictionsMMTest$originalCall <- metaDataTest[rownames(predictionsMMTest),"tumo
 
 ```
 
-We now have created our own models to classify the test samples with. However, final models have also been generated with the whole reference cohort as input data. These final models are available for download at Zenodo. 
+We now have created our own models to classify the test samples with.
+However, final models have also been generated with the whole reference
+cohort as input data. These final models are available for download at
+[Zenodo](https://zenodo.org/records/14167359).
+
 
 ## Q16:
 
