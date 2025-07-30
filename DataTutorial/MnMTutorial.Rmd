@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 The goal of this tutorial is to familiarize yourself with `MnM`: the
 package to run [M&M, a pan-cancer ensemble-based classifier for
 pediatric
-tumors](https://www.medrxiv.org/content/10.1101/2024.06.06.24308366v1).
+tumors](https://www.thelancet.com/journals/ebiom/article/PIIS2352-3964(24)00542-5/fulltext).
 
 In short, M&M is an classifier that facilitates infrequently occurring
 tumor (sub)type classifications, for help during the diagnostic process
