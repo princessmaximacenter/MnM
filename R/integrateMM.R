@@ -39,7 +39,7 @@ integrateMM <- function(minority,
     base::stop("You have supplied minority and majority objects that contain different numbers of samples.
                Please make sure that the correct minority and majority objects are supplied to the function.")
 
-  } else if (!(all(names(majority$probabilityList) %in% names(minority$probabilityList)))) {
+  } else if (!(base::all(base::names(majority$probabilityList) %in% base::names(minority$probabilityList)))) {
     base::stop("You have supplied minority and majority objects that contain different samples.
     Please make sure that the correct minority and majority objects are supplied to the function.")
   }
