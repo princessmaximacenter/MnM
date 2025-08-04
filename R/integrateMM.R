@@ -27,6 +27,22 @@ integrateMM <- function(minority,
                         integrate = T
                         ) {
 
+   `%notin%` <- Negate(`%in%`)
+  if (("probabilityList" %notin% base::names(minority)) |  ("probabilityList" %notin% base::names(majority))) {
+    base::stop("You have supplied R-objects within minority and/or majority that do not contain predictions.
+               Please make sure that the correct minority and majority objects are supplied to the function.")
+
+  }
+
+  if ((base::length(majority$probabilityList) != base::length(minority$probabilityList))) {
+    base::stop("You have supplied minority and majority objects that contain different numbers of samples.
+               Please make sure that the correct minority and majority objects are supplied to the function.")
+
+  } else if (!(all(names(majority$probabilityList) %in% names(minority$probabilityList)))) {
+    base::stop("You have supplied minority and majority objects that contain different samples.
+    Please make sure that the correct minority and majority objects are supplied to the function.")
+  }
+
   classColumn <- minority$metaDataRun$classColumn
   higherClassColumn <- minority$metaDataRun$higherClassColumn
   probabilitiesMinority <- obtainProbabilities(minority)
