@@ -37,30 +37,7 @@ createUMAPcohort <- function(countDataRef,
                              proteinCodingGenes,
                              whichSeed = 1) {
 
-  `%notin%` <- base::Negate(`%in%`)
-
-  if (sampleColumn %notin% base::colnames(metaDataRef)) {
-    base::stop("The column you specified for the sample IDs is not present within metaDataRef. Please check the sampleColumn.")
-  }  else if (classColumn %notin% base::colnames(metaDataRef)) {
-    base::stop("The column you specified for the tumor subtype labels is not present within metaDataRef. Please check the classColumn")
-  } else if (higherClassColumn %notin% base::colnames(metaDataRef)){
-    base::stop("The column you specified for the tumor type labels is not present within metaDataRef. Please check the higherClassColumn")
-  } else if (domainColumn %notin% base::colnames(metaDataRef)) {
-    base::stop("The column you specified for the tumor domain labels is not present within metaDataRef. Please check the domainColumn")
-  }
-
-  if (base::nrow(metaDataRef) != base::ncol(countDataRef)) {
-    base::stop("The number of samples do not match between the metadata and the count data. Please make sure you include all same samples in both objects.")
-  }
-  base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
-  if (base::all(base::rownames(metaDataRef) %notin% base::colnames(countDataRef))) {
-    base::stop("Your input data is not as required. Please make sure your sample IDs are within the row names of the metadata, and in the column names of the count data")
-  }
-
-  if (base::is.numeric(countDataRef) != T) {
-    base::stop("Your input data is not as required. Please make sure your countDataRef object only contains numerical count data and is a matrix. Non-available measurements are not allowed.")
-
-  }
+  `%notin%` <<- base::Negate(`%in%`)
 
   checkFormatInputData(sampleColumn = sampleColumn,
                        classColumn = classColumn,
@@ -71,6 +48,8 @@ createUMAPcohort <- function(countDataRef,
                        saveModel = F
   )
 
+  base::rownames(metaDataRef) <- metaDataRef[, sampleColumn]
+
   if (base::is.na(abbreviations)[1]) {
 
     abbreviations <- metaDataRef[, c(domainColumn, classColumn, higherClassColumn)] %>% base::unique()
@@ -78,20 +57,21 @@ createUMAPcohort <- function(countDataRef,
     abbreviations$abbreviationTumorType <- abbreviations[,higherClassColumn]
 
     base::print(base::paste("You have not supplied any abbreviations (abbreviations). If you would like to use abbreviations,",
-                " please generate a dataframe with the following columns and abbreviations within abbreviationSubtype and abbreviationTumorType:"))
+                            " please generate a dataframe with the following columns and abbreviations within abbreviationSubtype and abbreviationTumorType:"))
     base::print(abbreviations[1:4,])
   }
 
   if (correctRibo == T) {
 
-  base::set.seed(whichSeed)
-  riboModelList <- riboCorrectCounts(data = countDataRef,
-                                     proteinCodingGenes = proteinCodingGenes,
-                                     outputDir = ".",
-                                     saveRiboModels = F
-  )
-  countDataRef <- riboModelList$counts
+    base::set.seed(whichSeed)
+    riboModelList <- riboCorrectCounts(data = countDataRef,
+                                       proteinCodingGenes = proteinCodingGenes,
+                                       outputDir = ".",
+                                       saveRiboModels = F
+    )
+    countDataRef <- riboModelList$counts
   }
+
   # Log-transform data
   dataLogRef <- base::log(countDataRef +1) %>% base::t() %>% base::as.data.frame()
 
@@ -113,7 +93,7 @@ createUMAPcohort <- function(countDataRef,
   base::set.seed(whichSeed)
   dataLogUMAP <- dataLogRef %>%
     dplyr::select(dplyr::where(is.numeric)) %>%
-    umap::umap()
+    umap::umap(n_neighbors=min(25, (nrow(metaDataRef) - 1)))
   base::colnames(dataLogUMAP$layout) <- c("UMAP1", "UMAP2")
 
   dataUMAP <- dataLogUMAP$layout %>%
